@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="bh-position-slideshow" data-uk-slideshow="{animation: 'fade', duration: 700}">
+    <ul class="uk-slideshow bh-slideshow">
+        <li>
+            <img src="{% static 'images/fbg.jpg' %}" width="1200" height="auto" alt="Slideshow Image" data-demo-style>
+            <div class="uk-caption uk-text-center">
+                <div class="uk-height-1-1 uk-vertical-align">
+                    <div class="bh-teaser uk-vertical-align-middle">
+                        <p class="bh-teaser-subtitle-primary bh-text-uppercase uk-animation-slide-top bh-animation-delay-300">On Demand</p>
+                        <h1 class="bh-teaser-headline uk-margin-remove uk-animation-fade bh-animation-delay-200">BLOWOUTS</h1>
+                        <p class="bh-teaser-subtitle-secondary bh-text-uppercase uk-visible-large uk-animation-slide-bottom bh-animation-delay-300">Bring the stylist to you</p>
+                        <p class="uk-margin-bottom-remove">
+                            <a href="services.html" class="uk-button uk-button-large bh-button-third uk-margin-right uk-animation-fade bh-animation-delay-500">Services</a>
+                            <a href="blowout.html" class="uk-button uk-button-large bh-button-secondary uk-animation-fade bh-animation-delay-500">Book Now</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <a data-uk-slideshow-item="previous" href="#" class="uk-slidenav uk-slidenav-previous uk-hidden-small">
+                <div class="bh-slideshow-preview">
+                    <img class="bh-slideshow-preview-image" src="{% static 'images/braid_next.jpg' %}" width="120" height="120">
+                    <h4 class="uk-text-muted uk-margin-top-remove uk-margin-small-bottom uk-visible-large">Braids Half Off</h4>
+                    <p class="uk-margin-remove uk-visible-large">Take the chance to get the best deals.</p>
+                </div>
+            </a>
+            <a data-uk-slideshow-item="next" href="#" class="uk-slidenav uk-slidenav-next uk-hidden-small">
+                <div class="bh-slideshow-preview">
+                    <img class="bh-slideshow-preview-image" src="{% static 'images/braid_next.jpg' %}" width="120" height="120">
+                    <h4 class="uk-text-muted uk-margin-top-remove uk-margin-small-bottom uk-visible-large">Braids Half Off</h4>
+                    <p class="uk-margin-remove uk-visible-large">Take the chance to get the best deals.</p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <img src="{% static 'images/braid_home_bw.jpg' %}" width="1200" height="auto" alt="Slideshow Image" data-demo-style>
+
+            <div class="uk-caption uk-text-center">
+                <div class="uk-height-1-1 uk-vertical-align">
+                    <div class="uk-vertical-align-middle">
+                        <p class="bh-teaser-subtitle-primary bh-text-contrast-color bh-text-uppercase uk-animation-slide-top bh-animation-delay-300">Braid Deals for the Holidays</p>
+                        <h1 class="bh-teaser-headline bh-text-contrast-color uk-margin-remove uk-animation-fade bh-animation-delay-200">50% Off All Braids</h1>
+                        <p class="bh-teaser-subtitle-secondary bh-text-contrast-color bh-text-uppercase uk-visible-large uk-animation-slide-bottom bh-animation-delay-300">Use the promo code RUDOLPH upon checkout</p>
+                        <p>
+                            <a href="shop.html" class="uk-button uk-button-large bh-button-secondary bh-button-secondary-contrast uk-margin-right uk-animation-fade bh-animation-delay-500">Schedule A Braid</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <a data-uk-slideshow-item="previous" href="#" class="uk-slidenav uk-slidenav-previous uk-hidden-small">
+                <div class="bh-slideshow-preview">
+                    <img class="bh-slideshow-preview-image" src="http://placehold.it/120x120&text=demo" width="120" height="120" data-demo-style>
+                    <h4 class="uk-text-muted uk-margin-top-remove uk-margin-small-bottom">Summer Collection</h4>
+                    <p class="uk-margin-remove">Check out the new collection</p>
+                </div>
+            </a>
+            <a data-uk-slideshow-item="next" href="#" class="uk-slidenav uk-slidenav-next uk-hidden-small">
+                <div class="bh-slideshow-preview">
+                    <img class="bh-slideshow-preview-image" src="http://placehold.it/120x120&text=demo" width="120" height="120" data-demo-style>
+                    <h4 class="uk-text-muted uk-margin-top-remove uk-margin-small-bottom uk-visible-large">Big Spring Sale</h4>
+                    <p class="uk-margin-remove uk-visible-large">Take the chance to get the best deals</p>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="bh-position bh-position-light">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-small-1-2 uk-width-medium-1-3">
+                <div class="uk-panel">
+                    <div class="uk-grid">
+                        <div class="uk-width-1-6">
+                            <i class="uk-icon-clock-o uk-icon-medium"></i>
+                        </div>
+                        <div class="uk-width-5-6">
+                            <h5 class="uk-display-inline-block uk-margin-bottom-remove uk-margin-small-right">On Your Time</h5><br class="uk-hidden-large">Pick the time and place.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-width-small-1-2 uk-width-medium-1-3">
+                <div class="uk-panel">
+                    <div class="uk-grid">
+                        <div class="uk-width-1-6">
+                            <i class="uk-icon-scissors uk-icon-medium"></i>
+                        </div>
+                        <div class="uk-width-5-6">
+                            <h5 class="uk-display-inline-block uk-margin-bottom-remove uk-margin-small-right">Talent</h5><br class="uk-hidden-large">We only hire the best.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-width-small-1-2 uk-width-medium-1-3">
+                <div class="uk-panel">
+                    <div class="uk-grid">
+                        <div class="uk-width-1-6">
+                            <i class="uk-icon-credit-card uk-icon-medium"></i>
+                        </div>
+                        <div class="uk-width-5-6">
+                            <h5 class="uk-display-inline-block uk-margin-bottom-remove uk-margin-small-right">Easy Payment</h5><br class="uk-hidden-large">Pay and tip online
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="home_subhead">This is blohaute.</h1>
+            <p class="home_subtext">The mobile styling service that brings the blowdry salon right to your door. Beautiful hair with the click of a button.</p>
+        </div>
+    </div>
+</div>
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid">
+
+            <div class="uk-width-1-1">
+                <article class="uk-article">
+                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
+
+                        <div class="uk-width-medium-1-2 uk-width-large-2-5">
+                            <div class="uk-panel uk-panel-box">
+                                <h1 class="uk-article-title">Blowouts</h1>
+                                <p class="uk-article-lead">What made us famous.</p>
+                                <p class="uk-margin-bottom">Experience a blowout like never before and better yet, in the comfort of your own home or venue. Click to learn more about our blowout services!</p>
+                                <a href="shop.html" class="uk-button bh-button-secondary">Blowout Services</a>
+                            </div>
+                        </div>
+
+                        <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
+                            <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
+                                <img class="bh-img-height-1-1 uk-float-right" src="https://static.pexels.com/wp-content/uploads/2014/09/funny-girl-hairs-2867-825x550.jpg" width="800" height="400" alt="Collection Image" data-demo-style>
+                                <div class="uk-overlay-area">
+                                    <div class="uk-overlay-area-content">
+                                        <h1 class="bh-text-contrast-color" data-uk-scrollspy="{cls:'uk-animation-fade'}">Blowout Styles Gallery</h1>
+                                        <a href="shop.html" class="uk-button bh-button-secondary bh-button-secondary-contrast" data-uk-scrollspy="{cls:'uk-animation-fade', delay: 500}">Explore</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
+
+                        <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
+                            <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
+                                <img class="bh-img-height-1-1 uk-float-right" src="https://static.pexels.com/wp-content/uploads/2014/05/girl-hair-meadow-403-827x550.jpg" width="800" height="400" alt="Collection Image" data-demo-style>
+                                <div class="uk-overlay-area">
+                                    <div class="uk-overlay-area-content">
+                                        <h1 data-uk-scrollspy="{cls:'uk-animation-fade'}">Braid Styles Gallery</h1>
+                                        <a href="shop.html" class="uk-button bh-button-secondary bh-button-secondary" data-uk-scrollspy="{cls:'uk-animation-fade', delay: 500}">Explore</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="uk-width-medium-1-2 uk-width-large-2-5">
+                            <div class="uk-panel uk-panel-box">
+                                <h1 class="uk-article-title">Braids</h1>
+                                <p class="uk-article-lead">A braid you can't pass up.</p>
+                                <p class="uk-margin-bottom">A braid works for any occasion and we do them all. From your standard french braid to the more complex braiding styles, we are trained to braid anything you can dream up.</p>
+                                <a href="shop.html" class="uk-button bh-button-secondary">Braid Services</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="home_subhead">That is just the beginning.</h1>
+            <p class="home_subtext">Head to our services page to see all the on demand services we offer.</p>
+            <center>
+                <a href="shop.html" class="uk-button uk-margin-right-small bh-margin-top-only-small">Services</a>
+            </center>
+        </div>
+    </div>
+</div>
+
+<div class="bh-position">
+    <div class="uk-panel uk-panel-space uk-text-center">
+        <form class="uk-form">
+            Sign up for the style newsletter
+            <br class="uk-visible-small">
+            <input class="uk-form-large uk-margin-small-left uk-margin-small-right bh-margin-top-only-small" type="text" placeholder="Enter your email...">
+            <br class="uk-visible-small">
+            <a href="shop.html" class="uk-button uk-margin-right-small bh-margin-top-only-small">Suscribe</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

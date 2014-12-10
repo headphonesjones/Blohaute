@@ -3,8 +3,7 @@ Blohaute
 
 BloHaute Website
 
-Installation
-============
+##Installation
 
 1. Create an environment outside the repo using virtualenv to hold your packages
 ````

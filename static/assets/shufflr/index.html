@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-gb" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Shufflr</title>
+
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.7.1/css/uikit.css">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/uikit/2.7.1/css/addons/uikit.addons.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/uikit/2.7.1/js/uikit.js"></script>
+
+        <link rel="stylesheet" href="animate.css">
+        <script src="shufflr.js"></script>
+
+        <style type="text/css">
+
+            .uk-panel {
+                height: 80px;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+            $(function(){
+
+                var select = $('#selAnimation').on('change', function(){
+                    $('[data-shufflr-init]').each(function(){
+                        $(this).data('shufflr').options.animation = select.val();
+                    });
+                })
+            })
+
+        </script>
+
+    </head>
+
+    <body>
+        <div class="uk-container uk-container-center uk-margin-top">
+
+            <h1>Shufflr</h1>
+
+
+            <strong>Animation</strong>
+
+            <select id="selAnimation">
+
+                    <optgroup label="Attention Seekers">
+                      <option value="bounce">bounce</option>
+                      <option value="flash">flash</option>
+                      <option value="pulse">pulse</option>
+                      <option value="rubberBand">rubberBand</option>
+                      <option value="shake">shake</option>
+                      <option value="swing">swing</option>
+                      <option value="tada">tada</option>
+                      <option value="wobble">wobble</option>
+                    </optgroup>
+
+                    <optgroup label="Bouncing">
+                      <option value="bounceIn">bounceIn</option>
+                      <option value="bounceInDown">bounceInDown</option>
+                      <option value="bounceInLeft">bounceInLeft</option>
+                      <option value="bounceInRight">bounceInRight</option>
+                      <option value="bounceInUp">bounceInUp</option>
+                    </optgroup>
+
+                    <optgroup label="Fading">
+                      <option value="fadeIn">fadeIn</option>
+                      <option value="fadeInDown">fadeInDown</option>
+                      <option value="fadeInDownBig">fadeInDownBig</option>
+                      <option value="fadeInLeft">fadeInLeft</option>
+                      <option value="fadeInLeftBig">fadeInLeftBig</option>
+                      <option value="fadeInRight">fadeInRight</option>
+                      <option value="fadeInRightBig">fadeInRightBig</option>
+                      <option value="fadeInUp">fadeInUp</option>
+                      <option value="fadeInUpBig">fadeInUpBig</option>
+                    </optgroup>
+
+                    <optgroup label="Flippers">
+                      <option value="flip">flip</option>
+                      <option value="flipInX">flipInX</option>
+                      <option value="flipInY">flipInY</option>
+                    </optgroup>
+
+                    <optgroup label="Lightspeed">
+                      <option value="lightSpeedIn">lightSpeedIn</option>
+                    </optgroup>
+
+                    <optgroup label="Rotating">
+                      <option value="rotateIn">rotateIn</option>
+                      <option value="rotateInDownLeft">rotateInDownLeft</option>
+                      <option value="rotateInDownRight">rotateInDownRight</option>
+                      <option value="rotateInUpLeft">rotateInUpLeft</option>
+                      <option value="rotateInUpRight">rotateInUpRight</option>
+                    </optgroup>
+
+                    <optgroup label="Sliders">
+                      <option value="slideInDown">slideInDown</option>
+                      <option value="slideInLeft">slideInLeft</option>
+                      <option value="slideInRight">slideInRight</option>
+                    </optgroup>
+
+                    <optgroup label="Specials">
+                      <option value="rollIn">rollIn</option>
+                    </optgroup>
+                  </select>
+
+            <div class="uk-margin" data-shufflr-init>
+
+                <div class="uk-margin">
+                    <div class="uk-button-group" data-uk-button-radio>
+                        <button class="uk-button" data-filter="">All</button>
+                        <button class="uk-button" data-filter="team">Team</button>
+                        <button class="uk-button" data-filter="service">Service</button>
+                        <button class="uk-button" data-filter="support">Support</button>
+                        <button class="uk-button" data-filter="management">Management</button>
+                        <button class="uk-button" data-filter="team,support">Team + Support</button>
+                    </div>
+
+                </div>
+
+                <div class="uk-grid uk-grid-width-1-4 shufflr-collection">
+                    <div class="uk-grid-margin" data-group="team"><div class="uk-panel uk-panel-box">Team</div></div>
+                    <div class="uk-grid-margin" data-group="service"><div class="uk-panel uk-panel-box">Service</div></div>
+                    <div class="uk-grid-margin" data-group="support"><div class="uk-panel uk-panel-box">Support</div></div>
+                    <div class="uk-grid-margin" data-group="management"><div class="uk-panel uk-panel-box">Management</div></div>
+                    <div class="uk-grid-margin" data-group="team"><div class="uk-panel uk-panel-box">Team</div></div>
+                    <div class="uk-grid-margin" data-group="service"><div class="uk-panel uk-panel-box">Service</div></div>
+                    <div class="uk-grid-margin" data-group="support"><div class="uk-panel uk-panel-box">Support</div></div>
+                    <div class="uk-grid-margin" data-group="management"><div class="uk-panel uk-panel-box">Management</div></div>
+                    <div class="uk-grid-margin" data-group="team"><div class="uk-panel uk-panel-box">Team</div></div>
+                    <div class="uk-grid-margin" data-group="service"><div class="uk-panel uk-panel-box">Service</div></div>
+                    <div class="uk-grid-margin" data-group="support"><div class="uk-panel uk-panel-box">Support</div></div>
+                    <div class="uk-grid-margin" data-group="management"><div class="uk-panel uk-panel-box">Management</div></div>
+                    <div class="uk-grid-margin" data-group="team"><div class="uk-panel uk-panel-box">Team</div></div>
+                    <div class="uk-grid-margin" data-group="service"><div class="uk-panel uk-panel-box">Service</div></div>
+                    <div class="uk-grid-margin" data-group="support"><div class="uk-panel uk-panel-box">Support</div></div>
+                    <div class="uk-grid-margin" data-group="management"><div class="uk-panel uk-panel-box">Management</div></div>
+                    <div class="uk-grid-margin" data-group="team"><div class="uk-panel uk-panel-box">Team</div></div>
+                    <div class="uk-grid-margin" data-group="service"><div class="uk-panel uk-panel-box">Service</div></div>
+                    <div class="uk-grid-margin" data-group="support"><div class="uk-panel uk-panel-box">Support</div></div>
+                    <div class="uk-grid-margin" data-group="management"><div class="uk-panel uk-panel-box">Management</div></div>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

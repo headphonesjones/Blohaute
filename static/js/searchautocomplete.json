@@ -1,0 +1,8 @@
+{
+    "results": [
+        {"title":"Product", "url":"#", "text":"Lorem ipsum dolor sit amet, consectetur ..."},
+        {"title":"Product", "url":"#", "text":"Ut enim ad minim veniam, quis nostrud ..."},
+        {"title":"Product", "url":"#", "text":"Duis aute irure dolor in reprehenderit ..."},
+        {"title":"Product", "url":"#", "text":"Excepteur sint occaecat cupidatat non ..."}
+    ]
+}

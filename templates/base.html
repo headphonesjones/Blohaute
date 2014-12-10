@@ -35,10 +35,10 @@
                     <div class="bh-navbar-nav-wrapper uk-visible-large">
                         <ul class="uk-navbar-nav">
                             <li class="uk-parent">
-                                <a href="about.html">About</a>
+                                <a href="{% url 'about' %}">About</a>
                             </li>
                             <li class="uk-parent">
-                                <a href="services.html">Services</a>
+                                <a href="{% url 'services'}">Services</a>
                             </li>
                             <li class="uk-parent" data-uk-dropdown>
                                 <a href="#">Book</a>
@@ -48,7 +48,7 @@
                                             <ul class="uk-nav uk-nav-navbar">
                                                 <li class="uk-nav-header">Book Now</li>
                                                 <li>
-                                                    <a href="blowouts.html">Blowouts</a>
+                                                    <a href="{% url 'blowouts'}">Blowouts</a>
                                                 </li>
                                                 <li>
                                                     <a href="braids.html">Braids</a>
@@ -68,13 +68,13 @@
                                 </div>
                             </li>
                             <li class="uk-parent">
-                                <a href="stylists.html">Stylists</a>
+                                <a href="{% url 'stylists'}">Stylists</a>
                             </li>
                             <li class="uk-parent">
-                                <a href="partners.html">Partners</a>
+                                <a href="{% url 'partners' %}">Partners</a>
                             </li>
                             <li class="uk-parent">
-                                <a href="contact.html">Contact</a>
+                                <a href="{% url 'contact' %}">Contact</a>
                             </li>
                         </ul>
                     </div>
@@ -289,7 +289,7 @@
                     <ul class="uk-nav uk-nav-offcanvas">
                         <ul class="uk-nav-sub">
                             <li>
-                                <a href="blowouts.html">Book Blowouts</a>
+                                <a href="{% url 'blowouts' %}">Book Blowouts</a>
                             </li>
                             <li>
                                 <a href="braids.html">Book Braids</a>
@@ -299,25 +299,25 @@
                             </li>
                         </ul>
                         <li class="uk-parent">
-                            <a href="index.html">Home</a>
+                            <a href="{% url 'home' %}">Home</a>
                         </li>
                         <li class="uk-parent">
                             <a href="#login" data-uk-modal>Login</a>
                         </li>
                         <li class="uk-parent">
-                            <a href="about.html">About</a>
+                            <a href="{% url 'about' %}">About</a>
                         </li>
                         <li class="uk-parent">
-                            <a href="services.html">Services</a>
+                            <a href="{% url 'services' %}">Services</a>
                         </li>
                         <li class="uk-parent">
-                            <a href="stylists.html">Stylists</a>
+                            <a href="{% url 'stylists' %}">Stylists</a>
                         </li>
                         <li class="uk-parent">
-                            <a href="partners.html">Partners</a>
+                            <a href="{% url 'partners'}">Partners</a>
                         </li>
                         <li class="uk-parent">
-                            <a href="contact.html">Contact</a>
+                            <a href="{% url 'contact'}">Contact</a>
                         </li>
                     </ul>
                 </div>

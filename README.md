@@ -15,9 +15,10 @@ virtualenv PROJECT_NAME --no-site-packages
 source PROJECT_NAME/bin/activate
 ```
 
-3. Install django
+3. Install requirements
 ```
-pip install django
+cd PROJECT_DIRECTORY
+pip install -r requirements.text
 ```
 
 4. Change to the project directory and run

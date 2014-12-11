@@ -119,10 +119,15 @@
 
                         <ul id="login-tab" class="uk-switcher uk-margin">
                             <li class="uk-active">
-                                {% login_form %}
+                                <form class="uk-form">
+                                	{% login_form %}
+                                </form>
                             </li>
                             <li>
-                                {% registration_form %}
+                                <form class="uk-form">
+                                	{% registration_form %}   
+                                </form>
+  
                             </li>
                         </ul>
                     </div>

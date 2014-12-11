@@ -22,9 +22,9 @@
         <div class="bh-header" data-uk-sticky="{top:-1}">
             <div class="bh-navbar">
 
-                <a class="bh-logo uk-visible-large" href="index.html"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
+                <a class="bh-logo uk-visible-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
 
-                <a class="bh-logo-small uk-hidden-large" href="index.html"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
+                <a class="bh-logo-small uk-hidden-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
 
                 <!-- img use like this -->
                 <!-- <a class="bh-logo" href="frontpage.html">
@@ -41,20 +41,20 @@
                                 <a href="{% url 'services' %}">Services</a>
                             </li>
                             <li class="uk-parent" data-uk-dropdown>
-                                <a href="#">Book</a>
+                                <a href="{% url 'book' %}">Book</a>
                                 <div class="uk-dropdown uk-dropdown-navbar uk-dropdown-width-3">
                                     <div class="uk-grid uk-dropdown-grid">
                                         <div class="uk-width-medium-1-3">
                                             <ul class="uk-nav uk-nav-navbar">
-                                                <li class="uk-nav-header">Book Now</li>
+                                                <li class="uk-nav-header">Bookable Services</li>
                                                 <li>
                                                     <a href="{% url 'blowouts' %}">Blowouts</a>
                                                 </li>
                                                 <li>
-                                                    <a href="braids.html">Braids</a>
+                                                    <a href="{% url 'braids' %}">Braids</a>
                                                 </li>
                                                 <li>
-                                                    <a href="upstyles.html">Upstyles</a>
+                                                    <a href="{% url 'upstyles' %}">Upstyles</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -90,6 +90,9 @@
                 <div class="bh-toolbar-right">
                     <div class="uk-panel uk-hidden-small">
                         <ul class="uk-subnav uk-subnav-line">
+                            <li>
+                                <a href="{% url 'cart' %}"><i class="uk-icon-shopping-cart inactive-icon"></i></a>
+                            </li>
                             <li>
                                 <a href="#login" data-uk-modal><i class="uk-icon-user"></i></a>
                             </li>

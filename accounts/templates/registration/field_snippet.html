@@ -1,0 +1,8 @@
+{% load widget_tweaks %}
+
+{% if field.errors %}
+    {{field|add_class:"uk-form-large uk-width-1-1 uk-form-danger"}}
+{% else %}
+    {{field|add_class:"uk-form-large uk-width-1-1"}}
+{% endif %}
+{{field.errors}}

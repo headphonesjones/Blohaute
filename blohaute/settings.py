@@ -47,6 +47,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    #3rd party libraries
+    'widget_tweaks',  # allows easy modification of form widgets
+
+    #project apps
+    'accounts',
 )
 
 MIDDLEWARE_CLASSES = (

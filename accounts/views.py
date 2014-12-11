@@ -8,6 +8,10 @@ from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.detail import DetailView
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 def register(request):
@@ -49,3 +53,14 @@ def login(request):
 
         else:
             return render(request, 'registration/login.html', {'login_form': form})
+
+
+class ProfileView(DetailView):
+    model = User
+
+    def get_object(self):
+        return self.request.user
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ProfileView, self).dispatch(*args, **kwargs)

@@ -3,10 +3,6 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'blohaute.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),

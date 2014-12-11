@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load auth_forms %}
+
 <!doctype html>
 <html lang="en" data-theme="BloHaute">
 
@@ -94,7 +96,13 @@
                                 <a href="{% url 'cart' %}"><i class="uk-icon-shopping-cart inactive-icon"></i></a>
                             </li>
                             <li>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'logout' %}"><i class="uk-icon-sign-out"></i></a>
+                            {% else %}
                                 <a href="#login" data-uk-modal><i class="uk-icon-user"></i></a>
+                            {% endif %}
+
+
                             </li>
                         </ul>
                     </div>
@@ -111,6 +119,7 @@
 
                         <ul id="login-tab" class="uk-switcher uk-margin">
                             <li class="uk-active">
+<<<<<<< HEAD
                                 <form class="uk-form">
                                     <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
                                         <div class="uk-width-1-1 uk-text-center">
@@ -154,6 +163,12 @@
                                         </div>
                                     </div>
                                 </form>
+=======
+                                {% login_form %}
+                            </li>
+                            <li>
+                                {% registration_form %}
+>>>>>>> 9c7a8bc334054f97a79328098c92769807bd4fa4
                             </li>
                         </ul>
                     </div>
@@ -347,6 +362,7 @@
 
             <!-- demo related script - remove it!  -->
             <script src="{% static 'demo.js' %}"></script>
+            <script src="{% static 'js/auth.js' %}"></script>
     </body>
 </html>
 

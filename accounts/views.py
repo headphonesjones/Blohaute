@@ -43,11 +43,9 @@ def login(request):
                 request.session.set_expiry(0)
 
             auth_login(request, form.get_user())
-            print 'returning successfully'
+
             return HttpResponse(json.dumps({'url': reverse('welcome')}),
                                 content_type='application/json')
 
         else:
-            print form.errors
-            print form.non_field_errors()
             return render(request, 'registration/login.html', {'login_form': form})

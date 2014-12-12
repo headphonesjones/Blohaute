@@ -1,6 +1,7 @@
 import json
 import requests
 from django.conf import settings
+from django import forms
 
 
 class Client(object):
@@ -22,8 +23,9 @@ class Client(object):
 class BookerClient(Client):
     token = None
 
-    def __init__(self):
-        self.load_token()
+    def __init__(self, token=None):
+        if token is None:
+            self.load_token()
 
     def load_token(self):
         params = {'client_id': settings.BOOKER_API_KEY,
@@ -82,7 +84,15 @@ class BookerCustomerClient(BookerClient):
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        return self.post('/customer/account', params)
+        response =  self.post('/customer/account', params)
+        if response['ErrorCode'] == 200:
+            print 'got an error!'
+            for error in response['ArgumentErrors']:
+                raise forms.ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
+        return response
 
     def login(self, email, password):
         params = {'LocationID': self.location_id,

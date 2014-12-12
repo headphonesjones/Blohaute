@@ -95,15 +95,20 @@
                             <li>
                                 <a href="{% url 'cart' %}"><i class="uk-icon-shopping-cart inactive-icon"></i></a>
                             </li>
-                            <li>
                             {% if user.is_authenticated %}
-                                <a href="{% url 'logout' %}"><i class="uk-icon-sign-out"></i></a>
+                                <li>
+                                    <a href="{% url 'welcome' %}"><i class="uk-icon-user"></i></a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'logout' %}"><i class="uk-icon-sign-out"></i></a>
+                                </li>
                             {% else %}
-                                <a href="#login" data-uk-modal><i class="uk-icon-user"></i></a>
+                                <li>
+                                    <a href="#login" data-uk-modal><i class="uk-icon-user"></i></a>
+                                </li>
                             {% endif %}
 
 
-                            </li>
                         </ul>
                     </div>
                 </div>

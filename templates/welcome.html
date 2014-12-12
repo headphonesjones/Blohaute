@@ -8,7 +8,7 @@
         <div class="uk-grid uk-grid-divider" data-uk-grid-margin="">
             <div class="uk-width-small-1-3">
                 <div class="uk-panel">
-                    <img src="{% static 'images/amanda.jpg' %}" width="600" height="360" alt="Amanda Soltwisch, Founder and CEO of Blohaute">
+                    <img src="{% static 'images/funny-girl.jpg' %}" width="600" height="360" alt="Amanda Soltwisch, Founder and CEO of Blohaute">
                     <div class="uk-margin-top uk-clearfix">
                         <h3 class="uk-margin-remove">{{user.first_name}} {{user.last_name}}</h3>
                     </div>
@@ -40,12 +40,12 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'blowouts' %}">
+                                                        <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Blowout</a><br>
+                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'blowouts' %}">Blowout</a><br>
                                                     <span class="uk-text-muted uk-text-small">No. 097744</span>
                                                 </td>
                                                 <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
@@ -55,12 +55,12 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'braids' %}">
+                                                        <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Braid</a><br>
+                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'braids' %}">Braid</a><br>
                                                     <span class="uk-text-muted uk-text-small">No. 097745</span>
                                                 </td>
                                                 <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
@@ -70,12 +70,12 @@
                                             </tr>
                                              <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'upstyles' %}">
+                                                        <img src="{% static 'images/upstyle-small.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Upstyle</a><br>
+                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'upstyles' %}">Upstyle</a><br>
                                                     <span class="uk-text-muted uk-text-small">No. 097746</span>
                                                 </td>
                                                 <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
@@ -108,8 +108,8 @@
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'blowouts' %}">
+                                                        <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
@@ -123,8 +123,8 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'braids' %}">
+                                                        <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
@@ -138,8 +138,8 @@
                                             </tr>
                                              <tr>
                                                 <td>
-                                                    <a href="shop-singleproduct.html">
-                                                        <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                                    <a href="{% url 'upstyles' %}">
+                                                        <img src="{% static 'images/upstyle-small.jpg' %}" width="100" height="75" alt="Product Image">
                                                     </a>
                                                 </td>
                                                 <td>
@@ -227,12 +227,12 @@
                     <tbody>
                         <tr>
                             <td>
-                                <a href="shop-singleproduct.html">
-                                    <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
+                                <a href="{% url 'braids' %}">
+                                    <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
                                 </a>
                             </td>
                             <td>
-                                <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Blowout</a><br>
+                                <a class="bh-text-uppercase uk-link-reset" href="{% url 'braids' %}">Blowout</a><br>
                                 <span class="uk-text-muted uk-text-small">No. 097744</span>
                             </td>
                             <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>

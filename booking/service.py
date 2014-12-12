@@ -32,7 +32,7 @@ class BookerClient(Client):
         self.token = response['access_token']
 
     def get(self, path, params):
-        response = self.get(path, params)
+        response = super(BookerClient, self).get(path, params)
         error_code = response['ErrorCode']
         if error_code == 1000:
             self.load_token()

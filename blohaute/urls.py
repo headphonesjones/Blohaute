@@ -18,4 +18,6 @@ urlpatterns = patterns(
     url(r'^cart/', TemplateView.as_view(template_name="cart.html"), name='cart'),
     url(r'^book/', TemplateView.as_view(template_name="book.html"), name='book'),
     url(r'^checkout/', TemplateView.as_view(template_name="checkout.html"), name='checkout'),
+    url(r'^password_lost/', TemplateView.as_view(template_name="password.html"), name='password'),
+    url(r'^password_change/', TemplateView.as_view(template_name="passwordchange.html"), name='passwordchange'),
 )

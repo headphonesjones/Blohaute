@@ -256,8 +256,13 @@
 	                        </ul>
 	                    </div>
 	                </div><br /><br />
-	        		<label for="profile_time_picker">Choose A Date:</label><br />
-				    <input type="text" id="profile_time_picker" data-uk-timepicker="{format:'12h'}"><br />
+	                <!-- 
+	                		var datepicker = $.UIkit.datepicker($('#profile_date_picker'), { format:'MM.DD.YYYY'}); 
+		                    URL: http://getuikit.com/docs/addons_datepicker.html
+		            
+	                -->
+	        		<label for="profile_time_picker">Choose A Date:</label><br /> 
+				    <input type="text" id="profile_time_picker" id="profile_date_picker" data-uk-timepicker="{format:'12h'}"><br />
 				    <label for="profile_date_picker">Choose A Time:</label><br />
 				    <input type="text" id="profile_date_picker" data-uk-datepicker="{format:'MM.DD.YYYY'}">
 	            </form>

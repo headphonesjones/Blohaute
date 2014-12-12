@@ -42,7 +42,7 @@ jQuery(function($) {
         return fn();
 
     })());
-
+	
     /*
      * Search Focus
      */
@@ -102,6 +102,7 @@ jQuery(function($) {
             var scrollspy = $.UIkit.scrollspy(ele);
         });
     }
+    
 
 });
 

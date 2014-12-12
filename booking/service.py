@@ -74,6 +74,15 @@ class BookerCustomerClient(BookerClient):
     def get_packages(self):
         return self.post('/series', {})
 
+    def create_user(self, email, password, fname, lname, phone):
+        params = {'Email': email,
+                  'Password': password,
+                  'FirstName': fname,
+                  'LastName': lname,
+                  'HomePhone': phone,
+                  'Address': {'Street1': None}}
+        return self.post('/customer/account', params)
+
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,
                           'Treatments': {'TreatmentID': treatment_id}}
@@ -86,4 +95,6 @@ class BookerCustomerClient(BookerClient):
 
     def post(self, path, params):
         params['LocationID'] = self.location_id
+        # TODO:
+        # params['LocationID'] = settings.BLOHAUTE_LOCATION_ID
         return super(BookerCustomerClient, self).post(path, params)

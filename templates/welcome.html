@@ -202,36 +202,75 @@
                     <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
             </div>
         </div>
-        <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
-            <div class="uk-width-1-1">
-                <h2 class="bh-headline-bottom-border"><span>Your Profile Settings</span></h2>
-                <form class="uk-form uk-form">
-                    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                        <div class="uk-width-large-1-4">
-                            <label class="uk-form-label" for="form-contact-name">Old Password</label>
-                            <input type="text" placeholder="Old Password" id="form-contact-name" class="uk-width-1-1 uk-form-large">
-                        </div>
-                        <div class="uk-width-large-1-4">
-                            <label class="uk-form-label" for="form-contact-mail">New Password</label>
-                            <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
-                        </div>
-                        <div class="uk-width-large-1-4">
-                            <label class="uk-form-label" for="form-contact-mail">New Password (repeat)</label>
-                            <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
-                        </div>
-                        <div class="uk-width-large-1-4">
-                        	<label class="uk-form-label" for="form-contact-mail">&nbsp;</label>
-                            <button class="uk-button uk-button-success">Change Password</button>
-                        </div>
-                    </div>
-                </form> 
-                <hr />  
+        <div class="uk-width-small-1-1">
+            <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                 <button class="uk-button bh-button">Change Billing Info</button>
-                 <button class="uk-button bh-button">Reschedule Appointment(s)</button>
-                 <button class="uk-button bh-button">Change Email Address</button>
-                 <button class="uk-button bh-button">Delete Account</button>
-                </div>
+                <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#account-info-details'}">
+                    <li class="uk-active"><a href="">Change Password</a></li>
+                    <li><a href="">Billing Info</a></li>
+                    <li><a href="">Change Email</a></li>
+                    <li><a href="">Delete Account</a></li>
+                </ul>
+                <ul id="account-info-details" class="uk-switcher uk-margin">
+                    <li>
+                        <form class="uk-form uk-form">
+                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
+                                <div class="uk-width-large-1-2">
+                                    <label class="uk-form-label" for="form-contact-name">Old Password</label>
+                                    <input type="text" placeholder="Old Password" id="form-contact-name" class="uk-width-1-1 uk-form-large">
+                                </div>
+                            </div>
+                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
+                                <div class="uk-width-large-1-2">
+                                    <label class="uk-form-label" for="form-contact-mail">New Password</label>
+                                    <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
+                                </div>
+                                <div class="uk-width-large-1-2">
+                                    <label class="uk-form-label" for="form-contact-mail">New Password (repeat)</label>
+                                    <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
+                                </div>
+
+                            </div>
+                            <div class="uk-grid" data-uk-margin="{cls: 'uk-margin-top'}">
+                                <div class="uk-width-large-1-2">
+                                    <label class="uk-form-label" for="form-contact-mail">&nbsp;</label>
+                                    <button class="uk-button uk-button-success">Change Password</button>
+                                </div>
+                            </div>
+                        </form> 
+                    </li>
+                    <li>
+                        <div class="uk-grid">
+                            <div class="uk-width-1-10">
+                                <i id="personal_info_home" class="uk-icon uk-icon-home"></i>
+                            </div>
+
+                            <div class="uk-width-9-10">
+                                <a href="">717 West Roscoe</a><br />
+                                <a href="">Chicago, IL</a><br />
+                                <a href="">60657</a><br /><br />
+                                <button class="uk-button uk-button-success">Change Address</button>
+                            </div>
+
+                        </div>
+                    </li>
+                    <li>
+                        <form class="uk-form uk-form">
+                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
+                                <div class="uk-width-large-1-1">
+                                    <label class="uk-form-label" for="form-contact-name">New Email Address</label>
+                                    <input type="email" placeholder="New Email" id="form-profile-email-change" class="uk-width-1-1 uk-form-large"><br /><br />
+                                    <button class="uk-button uk-button-success">Change Email</button>
+                                </div>
+                            </div>
+                        </form> 
+                    </li>
+                    <li>
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1">
+                                <button class="uk-button uk-button-danger">Delete Account</button>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

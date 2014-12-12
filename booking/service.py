@@ -15,6 +15,7 @@ class Client(object):
         headers = {'content-type': 'application/json'}
         request_url = "%s%s" % (self.base_url, path)
         response = requests.post(request_url, data=json.dumps(params), headers=headers)
+        print("response was %s" % response.json())
         return response.json()
 
 
@@ -82,6 +83,19 @@ class BookerCustomerClient(BookerClient):
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
         return self.post('/customer/account', params)
+
+    def login(self, email, password):
+        params = {'LocationID': self.location_id,
+                  'Email': email,
+                  'Password': password,
+                  'client_id': settings.BOOKER_API_KEY,
+                  'client_secret': settings.BOOKER_API_SECRET}
+        response = Client.post(self, '/customer/login', params)
+        return response['access_token']
+
+    def logout(self, customer_token):
+        params = {'access_token': customer_token}
+        Client.get(self, '/logout', params = params)
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,

@@ -63,7 +63,7 @@
                                         <div class="uk-width-medium-2-3">
                                             <div class="uk-panel">
                                                 <div class="uk-panel-badge uk-badge uk-badge-danger">Add a braid to any order - $15</div>
-                                                <a href="braids.html"><img src="{% static 'images/braid.jpg' %}" width="400" height="300" alt="Product Image"></a>
+                                                <a href="{% url 'braids' %}"><img src="{% static 'images/braid.jpg' %}" width="400" height="300" alt="Product Image"></a>
                                             </div>
                                         </div>
                                     </div>
@@ -204,8 +204,8 @@
                         <div class="uk-panel uk-panel-space uk-text-center-small">
                             <p class="bh-text-uppercase">General</p>
                             <ul class="uk-list uk-panel-space">
-                                <li><a href="#">Terms & Conditions</a></li>
-                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="{% static 'images/Blohaute-Terms-of-Use.pdf' %}" target="_blank">Terms of Use</a></li>
+                                <li><a href="{% static 'images/Blohaute-Privacy-Policy.pdf' %}" target="_blank">Privacy Policy</a></li>
                             </ul>
                         </div>
                     </div>

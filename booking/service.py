@@ -18,7 +18,7 @@ class Client(object):
         return response.json()
 
 
-class BookerClient(object):
+class BookerClient(Client):
     token = None
 
     def __init__(self):
@@ -40,8 +40,6 @@ class BookerClient(object):
         if error_code != 0:
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
                   (path, params, error_code, response['ErrorMessage']))
-            # Nathan, should I raise something here? or return some different response?
-            # Not super sure how to do error handling so Im just printing for now
         return response
 
     def post(self, path, params):
@@ -54,12 +52,21 @@ class BookerClient(object):
         if error_code != 0:
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
                   (path, params, error_code, response['ErrorMessage']))
+            # Nathan, should I raise something here? or return some different response?
+            # Not super sure how to do error handling so Im just printing for now
         return response
+
+
+class BookerMerchantClient(BookerClient):
+    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
+
+    def get_locations(self):
+        return self.post('/locations', {})
 
 
 class BookerCustomerClient(BookerClient):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
-    location_id = None
+    location_id = 29033  # From get location call, we should cache this for now
 
     def get_services(self):
         return self.post('/treatments', {})
@@ -79,11 +86,4 @@ class BookerCustomerClient(BookerClient):
 
     def post(self, path, params):
         params['LocationID'] = self.location_id
-        super(BookerCustomerClient, self).post(path, params)
-
-
-class BookerMerchantClient(BookerClient):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
-
-    def get_locations(self):
-        return self.post('/locations', {})
+        return super(BookerCustomerClient, self).post(path, params)

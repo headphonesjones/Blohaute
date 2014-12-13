@@ -24,9 +24,9 @@
         <div class="bh-header" data-uk-sticky="{top:-1}">
             <div class="bh-navbar">
 
-                <a class="bh-logo uk-visible-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
+                <a class="bh-logo uk-visible-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><img src="{% static 'images/logo.svg' %}" height="50px" width="50px" id="bloahute-logo" alt="BloHaute Logo"/>&nbsp;<span class="white-text" id="nav-title">Blohaute</span></div></a>
 
-                <a class="bh-logo-small uk-hidden-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><span class="uk-text-primary">Blo</span>haute</div></a>
+                <a class="bh-logo-small uk-hidden-large" href="{% url 'home' %}"><div class="uk-navbar-brand"><img src="{% static 'images/logo.svg' %}" height="45px" width="45px" id="bloahute-logo" alt="BloHaute Logo"/></div></a>
 
                 <!-- img use like this -->
                 <!-- <a class="bh-logo" href="frontpage.html">
@@ -86,7 +86,7 @@
                 </nav>
 
                 <div class="bh-toolbar-left uk-visible-large">
-                    <a class="bh-search-toggle" href="#" data-uk-toggle="{target:'.bh-search-bar', animation: 'uk-animation-slide-top'}"><i class="uk-icon-search"></i></a>
+                    <a class="bh-search-toggle" href="#" data-uk-toggle="{target:'.bh-search-bar', animation: 'uk-animation-slide-top'}"><i class="uk-icon-search inactive-icon"></i></a>
                 </div>
 
                 <div class="bh-toolbar-right">
@@ -97,14 +97,14 @@
                             </li>
                             {% if user.is_authenticated %}
                                 <li>
-                                    <a href="{% url 'welcome' %}"><i class="uk-icon-user"></i></a>
+                                    <a href="{% url 'welcome' %}"><i class="uk-icon-user inactive-icon"></i></a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'logout' %}"><i class="uk-icon-sign-out"></i></a>
+                                    <a href="{% url 'logout' %}"><i class="uk-icon-sign-out inactive-icon"></i></a>
                                 </li>
                             {% else %}
                                 <li>
-                                    <a href="#login" data-uk-modal><i class="uk-icon-user"></i></a>
+                                    <a href="#login" data-uk-modal><i class="uk-icon-user inactive-icon"></i></a>
                                 </li>
                             {% endif %}
 
@@ -262,9 +262,9 @@
 </div>
             <footer class="bh-footer uk-text-center-small">
                 <div class="uk-container uk-container-center uk-position-relative">
-                    <a href="frontpage.html"><img src="http://placehold.it/60x60&text=demo" class="uk-margin-right" alt="Footer Logo" width="60" height="60" data-demo-style></a>
+                    <img src="{% static 'images/logo-pink.svg' %}" height="50px" width="50px" id="bloahute-logo-footer" alt="BloHaute Logo" class="uk-margin-right" />
                     <span class="uk-hidden-small">
-                        Copyright &copy; 2014 <a href="http://www.bahemian.com" target="_blank">Blohaute</a> <i class="uk-icon-heart uk-text-primary uk-margin-small-left"></i>
+                        Copyright &copy; 2014 <a href="#" target="_blank">Blohaute</a> <i class="uk-icon-heart uk-text-primary uk-margin-small-left"></i>
                     </span>
                     <a class="bh-topscroller" data-uk-smooth-scroll href="#"><i class="uk-icon-angle-up"></i></a>
                 </div>

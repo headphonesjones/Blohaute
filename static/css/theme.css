@@ -51,10 +51,10 @@ body {
 }
 
 .inactive-icon{
-  color: #B2B2B2 !important;
+  color: #DEF0E9 !important;
 }
 .inactive-icon:hover{
-  color: #9e314e !important;
+  color: #f497b2 !important;
 }
 .stylists_name{
 	border-bottom: 3px solid #d94f77;
@@ -69,16 +69,39 @@ body {
 	color: #9e314e !important;
 }
 nav > div > ul > li > a:hover{
-	color: #9e314e !important;
+	color: #f497b2 !important;
 }
 
 nav > div > ul > li > .active{
-	color: #9e314e !important;
+	color: #f497b2 !important;
 }
 
 #personal_info_home{
   font-size: 6em;
 }
+
+.uk-navbar > div > ul > li > a {
+  color: #DEF0E9 !important;
+}
+
+.bh-navbar{
+  background-color: #9e314e !important; 
+}
+
+.white-text{
+  color: #DEF0E9;
+}
+#bloahute-logo{
+  position: relative;
+  top: -3px;
+}
+
+#nav-title{
+  letter-spacing: .05em;
+  font-size: .8em;
+}
+
+
 
 
 
@@ -8812,7 +8835,7 @@ body {
   width: 100%;
   height: 70px;
   padding: 0 12.5px;
-  background: #ffffff;
+  background: #9e314e;
   -webkit-transition: height 0.25s;
   transition: height 0.25s;
 }

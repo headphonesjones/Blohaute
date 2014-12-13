@@ -28,19 +28,19 @@
                                             <ul class="uk-slideshow">
                                                 <li>
                                                     <a href="#shop-singleproduct-01" class="uk-overlay">
-                                                        <img src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="auto" alt="Blowout Example 1">
+                                                        <img src="{% static 'images/braid-1.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                                     
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="#shop-singleproduct-02" class="uk-overlay">
-                                                        <img src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="auto" alt="Blowout Example 2">
+                                                        <img src="{% static 'images/braid-2.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                                     
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a href="#shop-singleproduct-03" class="uk-overlay">
-                                                        <img src="http://scontent-b-lga.cdninstagram.com/hphotos-xfp1/t51.2885-15/10802899_370435789792421_679398792_n.jpg" width="720" height="540" alt="Blowout Example 3">
+                                                        <img src="{% static 'images/braid-3.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                                        
                                                     </a>
                                                 </li>
@@ -53,21 +53,21 @@
 
                                     <div class="uk-width-1-3">
                                         <a href="#" class="uk-overlay" data-uk-slideshow-item="0">
-                                            <img src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="540" alt="Blowout Image Preview">
+                                            <img src="{% static 'images/braid-1.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                             <div class="uk-overlay-area"></div>
                                         </a>
                                     </div>
 
                                     <div class="uk-width-1-3">
                                         <a href="#" class="uk-overlay" data-uk-slideshow-item="1">
-                                            <img src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Blowout Image Preview">
+                                            <img src="{% static 'images/braid-2.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                             <div class="uk-overlay-area"></div>
                                         </a>
                                     </div>
 
                                     <div class="uk-width-1-3">
                                         <a href="#" class="uk-overlay" data-uk-slideshow-item="2">
-                                            <img src="http://scontent-b-lga.cdninstagram.com/hphotos-xfp1/t51.2885-15/10802899_370435789792421_679398792_n.jpg" width="720" height="540" alt="Blowout Image Preview">
+                                            <img src="{% static 'images/braid-3.jpg' %}" width="720" height="auto" alt="Blohaute Braid">
                                             <div class="uk-overlay-area"></div>
                                         </a>
                                     </div>
@@ -256,8 +256,8 @@
                             <div class="uk-panel">
                                 <div class="bh-product-overlay">
                                     <a href="{% url 'braids' %}"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <img class="bh-product-overlay-img" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute braids">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute braids">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
                                             <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">View Braid Services</a>
@@ -278,8 +278,8 @@
                                 -->
                                 <div class="bh-product-overlay">
                                     <a href="{% url 'blowouts' %}"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-a.ak.instagram.com/hphotos-ak-xap1/10513984_1521124414801248_918091363_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-a.ak.instagram.com/hphotos-ak-xap1/10513984_1521124414801248_918091363_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <img class="bh-product-overlay-img" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute blowouts">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute blowouts">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
                                             <a href="{% url 'blowouts' %}" class="uk-button uk-button-large uk-width-8-10">View Blowout Services</a>
@@ -300,8 +300,8 @@
                             <div class="uk-panel">
                                 <div class="bh-product-overlay">
                                     <a href="{% url 'upstyles' %}"></a>
-                                    <img class="bh-product-overlay-img" src="http://scontent-a-dfw.cdninstagram.com/hphotos-xap1/t51.2885-15/926865_1497619350497157_1604890278_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://scontent-a-dfw.cdninstagram.com/hphotos-xap1/t51.2885-15/926865_1497619350497157_1604890278_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <img class="bh-product-overlay-img" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyles">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyles">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
                                             <a href="{% url 'upstyles' %}" class="uk-button uk-button-large uk-width-8-10">View Upstyle Services</a>
@@ -321,26 +321,25 @@
                                 -->
                                 <div class="bh-product-overlay">
                                     <a href="{% url 'braids' %}"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <img class="bh-product-overlay-img" src="{% static 'images/keratin-treatment.jpg' %}" width="720" height="540" alt="Blohaute Keratin Treatment">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/keratin-treatment.jpg' %}" width="720" height="540" alt="Blohaute Keratin Treatment">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
-                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">View Braid Services</a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">Keratin Treatment</a>
                                             <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="uk-float-left uk-margin-top">
-                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Braid Add On</a></h3>
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Call or Email to Book</a></h3>
                                 </div>
-                                <span class="uk-float-right uk-margin-top uk-text-large">$15</span>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$85</span>
                             </div>
                         </div>
                         
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

@@ -51,7 +51,10 @@ body {
 }
 
 .inactive-icon{
-  color: #DEF0E9 !important;
+  color: #b0daca !important;
+  -webkit-transition: color .5s; /* For Safari 3.1 to 6.0 */
+  -moz-transition: color .5s; /* For Mozilla */
+  transition: color .5s;
 }
 .inactive-icon:hover{
   color: #f497b2 !important;
@@ -68,10 +71,6 @@ body {
 .uk-list > li > a:hover{
 	color: #9e314e !important;
 }
-nav > div > ul > li > a:hover{
-	color: #f497b2 !important;
-  text-decoration: none !important;
-}
 
 nav > div > ul > li > .active{
 	color: #f497b2 !important;
@@ -83,8 +82,14 @@ nav > div > ul > li > .active{
 
 .uk-navbar > div > ul > li > a {
   color: #DEF0E9 !important;
+  -webkit-transition: color .5s; /* For Safari 3.1 to 6.0 */
+  -moz-transition: color .5s; /* For Mozilla */
+  transition: color .5s;
 }
-
+.uk-navbar > div > ul > li > a:hover{
+  color: #f497b2 !important;
+  text-decoration: none !important;
+}
 .bh-navbar{
   background-color: #9e314e !important; 
 }
@@ -100,6 +105,13 @@ nav > div > ul > li > .active{
 #nav-title{
   letter-spacing: .05em;
   font-size: .8em;
+  -webkit-transition: color 1s; /* For Safari 3.1 to 6.0 */
+  -moz-transition: color 1s; /* For Mozilla */
+  transition: color 1s;
+}
+
+#nav-title:hover{
+  color: #f497b2;
 }
 
 

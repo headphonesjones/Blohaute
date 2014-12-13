@@ -1,18 +1,16 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from accounts.forms import RegistrationForm, AuthenticationRememberMeForm
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, \
+    update_session_auth_hash
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
 from django.forms import ValidationError
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic.detail import DetailView
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from booking.service import BookerCustomerClient
+from accounts.forms import RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm
 
 
 @sensitive_post_parameters()
@@ -51,6 +49,7 @@ def register(request):
 
             #store the user password for the length of the session
             request.session['password'] = request.POST['password1']
+            request.session['client'] = client
 
             messages.info(request, 'Thanks for registering. You are now logged in.')
 
@@ -99,12 +98,39 @@ def login(request):
     return render(request, 'registration/login_page.html', {'login_form': form})
 
 
-class ProfileView(DetailView):
-    model = User
+@csrf_protect
+@login_required
+def profile_view(request):
+    password_form = PasswordUpdateForm(user=request.user, prefix='password')
 
-    def get_object(self):
-        return self.request.user
+    if request.method == 'GET':
+        pass
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ProfileView, self).dispatch(*args, **kwargs)
+    if request.method == 'POST':
+        #check if the password form is in the request
+        if 'password-old_password' in request.POST:
+            password_form = PasswordUpdateForm(user=request.user, prefix='password',
+                                               data=request.POST)
+
+            if password_form.is_valid():
+                client = request.session['client']
+
+                try:  # try to update password on API
+                    client.update_password(
+                        request.user.id,
+                        request.user.email,
+                        password_form.cleaned_data['old_password'],
+                        password_form.cleaned_data['new_password1'])
+
+                except ValidationError as error:
+                    password_form.add_error(None, error)
+
+                password_form.save()
+                update_session_auth_hash(request, password_form.user)
+                messages.success(request, 'Password updated successfully.')
+
+    context = {
+        'user': request.user,
+        'password_form': password_form
+    }
+    return render(request, 'welcome.html', context)

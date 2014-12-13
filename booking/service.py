@@ -1,7 +1,7 @@
 import json
 import requests
 from django.conf import settings
-from django import forms
+from django.forms import ValidationError
 from booking.models import Setting
 
 
@@ -62,13 +62,19 @@ class BookerClient(Client):
 
     def post(self, path, params):
         #let the caller override access token
-        params['access_token'] = params.get(['access_token'], self.token)
+        params['access_token'] = params.get('access_token', self.token)
 
         response = super(BookerClient, self).post(path, params)
         error_code = response['ErrorCode']
         if error_code == 1000:
             self.load_token()
             response = super(BookerClient, self).post(path, params)
+        if error_code == 200:
+            for error in response['ArgumentErrors']:
+                raise ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
         if error_code != 0:
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
                   (path, params, error_code, response['ErrorMessage']))
@@ -104,13 +110,6 @@ class BookerCustomerClient(BookerClient):
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
         response = self.post('/customer/account', params)
-        if response['ErrorCode'] == 200:
-            print 'got an error!'
-            for error in response['ArgumentErrors']:
-                raise forms.ValidationError(
-                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
-                    code='argumnet_error'
-                )
         return response
 
     def login(self, email, password):

@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from accounts.models import User
 
 
@@ -96,3 +96,34 @@ class AuthenticationRememberMeForm(AuthenticationForm):
                                widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
     remember_me = forms.BooleanField(label=_('Remember Me'), initial=False,
                                      required=False)
+
+
+class PasswordUpdateForm(PasswordChangeForm):
+    """
+    Subclass of Django ``PasswordChangeForm`` which adds placeholder text.
+
+    """
+    old_password = forms.CharField(label=_("Old password"),
+                                   widget=forms.PasswordInput(attrs={'placeholder': _('Old Password')}))
+    new_password1 = forms.CharField(label=_("New password"),
+                                    widget=forms.PasswordInput(attrs={'placeholder': _('New Password')}))
+    new_password2 = forms.CharField(label=_("New password confirmation"),
+                                    widget=forms.PasswordInput(attrs={'placeholder': _('New Password Confirmation')}))
+
+
+    def clean_newpassword1(self):
+        # clean the new password to match API requirements
+        password1 = self.cleaned_data.get('new_password1')
+
+        # Between MIN_LENGTH and MAX_LENGTH
+        if len(password1) < self.MIN_LENGTH or len(password1) > self.MAX_LENGTH:
+            raise forms.ValidationError(
+                self.error_messages['password_length'],
+                code='password_length'
+            )
+
+        #At least one letter and one non-letter
+        first_isalpha = password1[0].isalpha()
+        if all(c.isalpha() == first_isalpha for c in password1):
+            raise forms.ValidationError("The new password must contain at least one letter and at "
+                                        "least one digit or punctuation character.")

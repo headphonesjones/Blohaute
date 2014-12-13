@@ -287,31 +287,7 @@
                 </ul>
                 <ul id="account-info-details" class="uk-switcher uk-margin">
                     <li>
-                        <form class="uk-form uk-form">
-                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                <div class="uk-width-large-1-2">
-                                    <label class="uk-form-label" for="form-contact-name">Old Password</label>
-                                    <input type="text" placeholder="Old Password" id="form-contact-name" class="uk-width-1-1 uk-form-large">
-                                </div>
-                            </div>
-                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                <div class="uk-width-large-1-2">
-                                    <label class="uk-form-label" for="form-contact-mail">New Password</label>
-                                    <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
-                                </div>
-                                <div class="uk-width-large-1-2">
-                                    <label class="uk-form-label" for="form-contact-mail">New Password (repeat)</label>
-                                    <input type="password" placeholder="New Password" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
-                                </div>
-
-                            </div>
-                            <div class="uk-grid" data-uk-margin="{cls: 'uk-margin-top'}">
-                                <div class="uk-width-large-1-2">
-                                    <label class="uk-form-label" for="form-contact-mail">&nbsp;</label>
-                                    <button class="uk-button uk-button-success">Change Password</button>
-                                </div>
-                            </div>
-                        </form> 
+                        {% include "registration/password_update.html" %} 
                     </li>
                     <li>
                         <div class="uk-grid">

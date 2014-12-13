@@ -141,6 +141,18 @@
                 <a href="#" class="uk-close" data-uk-toggle="{target:'.bh-search-bar'}"></a>
             </div>
         </div>
+
+             {% if messages %}
+            <div class="uk-width-1-1">
+                <div class="uk-alert">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+
+                </div>
+            </div>
+        {% endif %}
+
 {% block content %}{% endblock %}
 
 <div class="bh-position">

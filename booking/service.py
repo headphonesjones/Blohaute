@@ -182,7 +182,20 @@ class BookerCustomerClient(BookerClient):
                   'EndDateTime': end_date.strftime('%Y%m%d'),
                   'Itineraries': actual_product}
 
-        return self.delete('/availability/multiservice', params)
+        return self.get('/availability/multiservice', params)
+
+    def get_treatement_categories(self):
+        """
+        Returns the treatment categories for a spa/location.
+        Doesn't seem to work.
+        """
+        params = {'LocationID': self.location_id}
+        return self.get('/treatment_categories', params)
+
+    def find_treatements(self):
+        """
+        Returns treatments for a spa/location 
+        """
 
     def post(self, path, params):
         params['LocationID'] = self.location_id

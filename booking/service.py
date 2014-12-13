@@ -61,7 +61,9 @@ class BookerClient(Client):
         return response
 
     def post(self, path, params):
-        params['access_token'] = self.token
+        #let the caller override access token
+        params['access_token'] = params.get(['access_token'], self.token)
+
         response = super(BookerClient, self).post(path, params)
         error_code = response['ErrorCode']
         if error_code == 1000:
@@ -86,6 +88,7 @@ class BookerCustomerClient(BookerClient):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
     location_id = 29033  # From get location call, we should cache this for now
     customer_token = None
+    customer_password = None
 
     def get_services(self):
         return self.post('/treatments', {})
@@ -123,6 +126,18 @@ class BookerCustomerClient(BookerClient):
     def logout(self):
         params = {'access_token': self.customer_token}
         Client.get(self, '/logout', params=params)
+
+    def update_password(self, customer_id, email, old_password, new_password):
+        params = {'LocationID': self.location_id,
+                  'Email': email,
+                  'NewPassword': new_password,
+                  'OldPassword': old_password,
+                  'access_token': self.customer_token,
+                  'CustomerID': customer_id
+                  }
+
+        response = Client.post(self, '/customer/password', params)
+        return response
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,

@@ -79,14 +79,11 @@
                         <div class="uk-width-medium-1-2">
                             <p class="uk-text-muted uk-h3">
                                 <del>$65</del>
-                                <ins id="blowout_price">$50</ins> BloHaute Braids
+                                <ins id="blowout_price">$50</ins> Advanced BloHaute Braids
                             </p>
-                            <div>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                            </div>
+                            <p class="uk-text-muted uk-h3">
+                                <ins id="blowout_price">$15</ins> Simple BloHaute Braid Paired with a Blowout
+                            </p>
                             <hr>
                             <p>Qui animated corpse, cricket bat max brucks terribilem incessu zomby. The voodoo sacerdos flesh eater, suscitat mortuos comedere carnem virus. Zonbi tattered for solum oculi.</p>
                             <p>
@@ -258,56 +255,78 @@
                         <div>
                             <div class="uk-panel">
                                 <div class="bh-product-overlay">
-                                    <a href="shop-singleproduct.html"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <a href="{% url 'braids' %}"></a>
+                                    <img class="bh-product-overlay-img" src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="540" alt="Product Image">
+                                    <img class="bh-product-overlay-img-hover" src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="720" height="540" alt="Product Image Overlay">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
-                                            <a href="shop-cart.html" class="uk-button uk-button-large uk-width-8-10">View Braid Deals</a>
-                                            <a href="#" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">View Braid Services</a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="uk-float-left uk-margin-top">
                                     <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Braids</a></h3>                              
                                 </div>
-                                <span class="uk-float-right uk-margin-top uk-text-large">Starting at $15</span>
+                                <span class="uk-float-right uk-margin-top uk-text-large">Advanced Braids $50</span>
                             </div>
                         </div>
                         <div>
                             <div class="uk-panel">
+                            <!--
                                 <div class="uk-panel-badge uk-badge uk-badge-danger">Holiday Discounts</div>
+                                -->
                                 <div class="bh-product-overlay">
-                                    <a href="shop-singleproduct.html"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <a href="{% url 'blowouts' %}"></a>
+                                    <img class="bh-product-overlay-img" src="http://photos-a.ak.instagram.com/hphotos-ak-xap1/10513984_1521124414801248_918091363_n.jpg" width="720" height="540" alt="Product Image">
+                                    <img class="bh-product-overlay-img-hover" src="http://photos-a.ak.instagram.com/hphotos-ak-xap1/10513984_1521124414801248_918091363_n.jpg" width="720" height="540" alt="Product Image Overlay">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
-                                            <a href="shop-cart.html" class="uk-button uk-button-large uk-width-8-10">View Upstyle Deals</a>
-                                            <a href="#" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                            <a href="{% url 'blowouts' %}" class="uk-button uk-button-large uk-width-8-10">View Blowout Services</a>
+                                            <a href="{% url 'blowouts' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="uk-float-left uk-margin-top">
-                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Upstyle</a></h3>
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Blowouts</a></h3>
                                 </div>
                                 <span class="uk-float-right uk-margin-top uk-text-large">
-                                    <del>$100</del><br class="uk-hidden-large">
-                                    <ins>$85</ins>
+                                    <del>$85</del><br class="uk-hidden-large">
+                                    <ins>$50</ins>
                                 </span>
                             </div>
                         </div>
                         <div>
                             <div class="uk-panel">
-                                <div class="uk-panel-badge uk-badge">Going Quick</div>
                                 <div class="bh-product-overlay">
-                                    <a href="shop-singleproduct.html"></a>
+                                    <a href="{% url 'upstyles' %}"></a>
+                                    <img class="bh-product-overlay-img" src="http://scontent-a-dfw.cdninstagram.com/hphotos-xap1/t51.2885-15/926865_1497619350497157_1604890278_n.jpg" width="720" height="540" alt="Product Image">
+                                    <img class="bh-product-overlay-img-hover" src="http://scontent-a-dfw.cdninstagram.com/hphotos-xap1/t51.2885-15/926865_1497619350497157_1604890278_n.jpg" width="720" height="540" alt="Product Image Overlay">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'upstyles' %}" class="uk-button uk-button-large uk-width-8-10">View Upstyle Services</a>
+                                            <a href="{% url 'upstyles' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Upstyles</a></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="uk-panel">
+                            <!--
+                                <div class="uk-panel-badge uk-badge">Going Quick</div>
+                                -->
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'braids' %}"></a>
                                     <img class="bh-product-overlay-img" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image">
                                     <img class="bh-product-overlay-img-hover" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image Overlay">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
-                                            <a href="shop-cart.html" class="uk-button uk-button-large uk-width-8-10">View Braid Deals</a>
-                                            <a href="#" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">View Braid Services</a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -317,26 +336,7 @@
                                 <span class="uk-float-right uk-margin-top uk-text-large">$15</span>
                             </div>
                         </div>
-                        <div>
-                            <div class="uk-panel">
-                                <div class="bh-product-overlay">
-                                    <a href="shop-singleproduct.html"></a>
-                                    <img class="bh-product-overlay-img" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image">
-                                    <img class="bh-product-overlay-img-hover" src="http://photos-h.ak.instagram.com/hphotos-ak-xaf1/10818054_875819705775495_1766102351_n.jpg" width="720" height="540" alt="Product Image Overlay">
-                                    <div class="bh-product-overlay-content">
-                                        <div class="uk-button-group uk-width-1-1">
-                                            <a href="shop-cart.html" class="uk-button uk-button-large uk-width-8-10">Add to cart</a>
-                                            <a href="#" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-float-left uk-margin-top">
-                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Amercia Bag</a></h3>
-                                    <p class="uk-margin-remove"><a href="shop.html">Bags,</a> <a href="shop.html">Backpack</a></p>
-                                </div>
-                                <span class="uk-float-right uk-margin-top uk-text-large">$49.90</span>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>

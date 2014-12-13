@@ -1,6 +1,7 @@
 import json
 import requests
 from django.conf import settings
+from django import forms
 
 
 class Client(object):
@@ -15,14 +16,16 @@ class Client(object):
         headers = {'content-type': 'application/json'}
         request_url = "%s%s" % (self.base_url, path)
         response = requests.post(request_url, data=json.dumps(params), headers=headers)
+        print("response was %s" % response.json())
         return response.json()
 
 
 class BookerClient(Client):
     token = None
 
-    def __init__(self):
-        self.load_token()
+    def __init__(self, token=None):
+        if token is None:
+            self.load_token()
 
     def load_token(self):
         params = {'client_id': settings.BOOKER_API_KEY,
@@ -81,7 +84,28 @@ class BookerCustomerClient(BookerClient):
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        return self.post('/customer/account', params)
+        response =  self.post('/customer/account', params)
+        if response['ErrorCode'] == 200:
+            print 'got an error!'
+            for error in response['ArgumentErrors']:
+                raise forms.ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
+        return response
+
+    def login(self, email, password):
+        params = {'LocationID': self.location_id,
+                  'Email': email,
+                  'Password': password,
+                  'client_id': settings.BOOKER_API_KEY,
+                  'client_secret': settings.BOOKER_API_SECRET}
+        response = Client.post(self, '/customer/login', params)
+        return response['access_token']
+
+    def logout(self, customer_token):
+        params = {'access_token': customer_token}
+        Client.get(self, '/logout', params = params)
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,

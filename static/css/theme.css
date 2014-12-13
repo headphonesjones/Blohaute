@@ -82,9 +82,6 @@ nav > div > ul > li > .active{
 
 
 
-
-
-
 /* Links
  ========================================================================== */
 /*
@@ -3212,6 +3209,11 @@ select.uk-form-width-mini {
     margin-bottom: 5px;
     font-weight: normal;
   }
+  .bh-logo-small > .uk-navbar-brand{
+	position: relative;
+	left: -45px;	
+  }
+
 }
 /* Desktop and bigger */
 @media (min-width: 960px) {

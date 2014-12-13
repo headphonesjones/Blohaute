@@ -1,34 +1,85 @@
 import json
-import requests
+from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
 from booking.models import Setting
 
 
-class Client(object):
-    base_url = None
+class BookerRequest(Request):
+    """
+    Sets up, sends, and processes a single request to the Booker API
+    """
+    base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
+    path = None
+    method = None
+    params = {}
+    needs_user_token = False
+    token = None
 
-    def get(self, path, params):
-        request_url = "%s%s" % (self.base_url, path)
-        response = requests.get(request_url, params=params)
-        return response.json()
-
-    def post(self, path, params):
+    def __init__(self, path, token, params={}):
         headers = {'content-type': 'application/json'}
-        request_url = "%s%s" % (self.base_url, path)
-        response = requests.post(request_url, data=json.dumps(params), headers=headers)
-        print("response was %s" % response.json())
-        return response.json()
+        super(BookerRequest, self).__init__(params=params, headers=headers)
+        self.path = path
+        if token:
+            self.token = token
 
-    def delete(self, path, params):
-        headers = {'content-type': 'application/json'}
-        request_url = "%s%s" % (self.base_url, path)
-        response = requests.delete(request_url, data=json.dumps(params), headers=headers)
-        print("response was %s" % response.json())
-        return response.json()
+    def send(self):
+        self.url = "%s%s" % (self.base_url, self.path)
+        prepped = self.prepare()
+        s = Session()
+        response = s.send(prepped)
+        return self.process_response(response.json())
+
+    def post(self):
+        self.method = 'POST'
+        if self.token:
+            self.params['access_token'] = self.token
+        self.data = json.dumps(self.params)
+        self.params = None
+        return self.send()
+
+    def get(self):
+        self.method = 'GET'
+        if self.token:
+            self.params['access_token'] = self.token
+        return self.send()
+
+    def delete(self):
+        self.method = 'DELETE'
+        if self.token:
+            self.params['access_token'] = self.token
+        self.data = json.dumps(self.params)
+        self.params = None
+        return self.send()
+
+    def process_response(self, response):
+        print 'response is %s' % response
+        error_code = response.get('ErrorCode', 0)
+        if error_code == 1000:
+            self.load_token()
+            #if we have a user, lets try logging them in again for a new token
+            #skip if we're trying to login so we don't loop forever
+            if self.user and self.customer_password and '/customer/login' not in response.url:
+                self.login(self.user.email, self.customer_password)
+        if error_code == 200:
+            for error in response['ArgumentErrors']:
+                raise ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
+        if error_code != 0:
+            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
+                  (self.path, self.params, error_code, response['ErrorMessage']))
+            # Nathan, should I raise something here? or return some different response?
+            # Not super sure how to do error handling so Im just printing for now
+        return response
 
 
-class BookerClient(Client):
+class BookerAuthedRequest(BookerRequest):
+    needs_user_token = True
+
+
+class BookerClient(object):
     token = None
 
     def __init__(self, token=None):
@@ -49,130 +100,86 @@ class BookerClient(Client):
         params = {'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET,
                   'grant_type': 'client_credentials'}
-        response = super(BookerClient, self).get('/access_token', params=params)
+        response = BookerRequest('/access_token', None, params).get()
         self.token = response['access_token']
         if setting is None:
             setting = self.get_settings_object()
         setting.access_token = self.token
         setting.save()
 
-    def get(self, path, params):
-        response = super(BookerClient, self).get(path, params)
-        error_code = response['ErrorCode']
-        if error_code == 1000:
-            self.load_token()
-            response = super(BookerClient, self).get(path, params)
-        if error_code != 0:
-            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (path, params, error_code, response['ErrorMessage']))
-        return response
-
-    def post(self, path, params):
-        #let the caller override access token
-        params['access_token'] = params.get('access_token', self.token)
-
-        response = super(BookerClient, self).post(path, params)
-        error_code = response['ErrorCode']
-        if error_code == 1000:
-            self.load_token()
-            response = super(BookerClient, self).post(path, params)
-        if error_code == 200:
-            for error in response['ArgumentErrors']:
-                raise ValidationError(
-                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
-                    code='argumnet_error'
-                )
-        if error_code != 0:
-            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (path, params, error_code, response['ErrorMessage']))
-            # Nathan, should I raise something here? or return some different response?
-            # Not super sure how to do error handling so Im just printing for now
-        return response
-
-    def delete(self, path, params):
-        #let the caller override access token
-        params['access_token'] = params.get('access_token', self.token)
-
-        response = super(BookerClient, self).delete(path, params)
-        error_code = response['ErrorCode']
-        print response
-        if error_code == 1000:
-            self.load_token()
-            response = super(BookerClient, self).delete(path, params)
-        if error_code == 200:
-            for error in response['ArgumentErrors']:
-                raise ValidationError(
-                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
-                    code='argumnet_error'
-                )
-        if error_code != 0:
-            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (path, params, error_code, response['ErrorMessage']))
-            # Nathan, should I raise something here? or return some different response?
-            # Not super sure how to do error handling so Im just printing for now
-        return response
-
-
-class BookerMerchantClient(BookerClient):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
-
-    def get_locations(self):
-        return self.post('/locations', {})
-
 
 class BookerCustomerClient(BookerClient):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
     location_id = 29033  # From get location call, we should cache this for now
     customer_token = None
     customer_password = None
+    user = None
 
     def get_services(self):
-        return self.post('/treatments', {})
+        """
+        Returns treatments for a spa/location
+        """
+        return BookerRequest('/treatments', self.token).post()
 
     def get_packages(self):
-        return self.post('/series', {})
+        """
+        Returns packages for a spa/location
+        """
+        return BookerRequest('/series', self.token).post()
 
     def create_user(self, email, password, fname, lname, phone):
-        params = {'Email': email,
+        """
+        Create a new user account and customer
+        """
+        params = {'LocationID': self.location_id,
+                  'Email': email,
                   'Password': password,
                   'FirstName': fname,
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        response = self.post('/customer/account', params)
-        return response
+        return BookerRequest('/customer/account', self.token, params).post()
 
     def login(self, email, password):
+        """
+        Login a user to the API using their email and password
+        """
         params = {'LocationID': self.location_id,
                   'Email': email,
                   'Password': password,
                   'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET}
-        response = Client.post(self, '/customer/login', params)
+        response = BookerRequest('/customer/login', self.token, params).post()
         self.customer_token = response['access_token']
         return response['access_token']
 
     def logout(self):
-        params = {'access_token': self.customer_token}
-        Client.get(self, '/logout', params=params)
+        """
+        Logout the currently logged in user
+        This doesn't seem to work
+        """
+        return BookerRequest('/logout', self.customer_token, None).get()
 
-    def update_password(self, customer_id, email, old_password, new_password):
+    def update_password(self, email, old_password, new_password):
+        """
+        Updates a user's password
+        """
         params = {'LocationID': self.location_id,
                   'Email': email,
                   'NewPassword': new_password,
                   'OldPassword': old_password,
                   'access_token': self.customer_token,
-                  'CustomerID': customer_id
+                  'CustomerID': self.customer_id
                   }
 
-        response = Client.post(self, '/customer/password', params)
-        return response
+        return BookerRequest('/customer/password', self.token, params).post()
 
-    #this seems to always fail on invalid token
-    def delete_customer(self, customer_id):
-        params = {'CustomerID': customer_id, 'access_token': self.customer_token}
-        response = self.delete('/customer/%s' % customer_id, params)
-        return response
+    def delete_customer(self):
+        """
+        Delete a customer
+        This doesn't seem to work
+        """
+        params = {'CustomerID': self.customer.id}
+        return BookerRequest('/customer/%s' % self.customer.id, self.token, params).delete()
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,
@@ -180,9 +187,10 @@ class BookerCustomerClient(BookerClient):
 
         params = {'StartDateTime': start_date.strftime('%Y%m%d'),
                   'EndDateTime': end_date.strftime('%Y%m%d'),
-                  'Itineraries': actual_product}
+                  'Itineraries': actual_product,
+                  'LocationID': self.location_id}
 
-        return self.get('/availability/multiservice', params)
+        return BookerRequest('/availability/multiservice', self.token, params).get()
 
     def get_treatement_categories(self):
         """
@@ -190,15 +198,11 @@ class BookerCustomerClient(BookerClient):
         Doesn't seem to work.
         """
         params = {'LocationID': self.location_id}
-        return self.get('/treatment_categories', params)
+        return BookerRequest('/treatment_categories', self.token, params).get()
 
-    def find_treatements(self):
-        """
-        Returns treatments for a spa/location 
-        """
 
-    def post(self, path, params):
-        params['LocationID'] = self.location_id
-        # TODO:
-        # params['LocationID'] = settings.BLOHAUTE_LOCATION_ID
-        return super(BookerCustomerClient, self).post(path, params)
+class BookerMerchantClient(BookerClient):
+    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
+
+    def get_locations(self):
+        return self.post('/locations', {})

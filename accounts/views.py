@@ -43,7 +43,7 @@ def register(request):
                               {'registration_form': form})
 
             #login to the api
-            client.login(new_user.email, request.POST['password1'])
+            access_token = client.login(new_user.email, request.POST['password1'])
 
             #authenticate and login the user locally
             new_user = authenticate(email=request.POST['email'],
@@ -51,8 +51,9 @@ def register(request):
             auth_login(request, new_user)
 
             #store the user password for the length of the session
-            request.session['password'] = request.POST['password1']
             request.session['client'] = client
+            client.customer_password = request.POST['password1']
+            client.user = new_user
 
             messages.info(request, 'Thanks for registering. You are now logged in.')
 
@@ -81,8 +82,8 @@ def login(request):
             user = form.get_user()
             client = BookerCustomerClient()
             access_token = client.login(user.email, request.POST['password'])
-            request.session['password'] = request.POST['password']
             request.session['client'] = client
+            client.customer_password = request.POST['password']
             if access_token is None:
 
                 form.add_error(
@@ -91,8 +92,8 @@ def login(request):
                 auth_logout(request)
                 return render(request, 'registration/login_page.html', {'login_form': form})
             else:
-                request.session['access_token'] = access_token
                 user.save()
+                client.user = user
             return HttpResponseRedirect(reverse('welcome'))
 
         else:  # form is invalid
@@ -120,7 +121,6 @@ def profile_view(request):
 
                 try:  # try to update password on API
                     client.update_password(
-                        request.user.id,
                         request.user.email,
                         password_form.cleaned_data['old_password'],
                         password_form.cleaned_data['new_password1'])
@@ -131,6 +131,7 @@ def profile_view(request):
                 password_form.save()
                 update_session_auth_hash(request, password_form.user)
                 messages.success(request, 'Password updated successfully.')
+                client.customer_password = password_form.cleaned_data['new_password1']
 
     context = {
         'user': request.user,
@@ -157,13 +158,12 @@ class UserDelete(DeleteView):
 
         client = request.session['client']
         try:
-            client.delete_customer(self.object.id)
+            client.delete_customer()
         except:
             print 'unable to delete customer'
 
         messages.success(request, "Your account has been successfully deleted.")
 
         self.object.delete()
-
 
         return HttpResponseRedirect(success_url)

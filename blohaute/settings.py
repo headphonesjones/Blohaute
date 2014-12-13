@@ -66,6 +66,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
 ROOT_URLCONF = 'blohaute.urls'
 
 WSGI_APPLICATION = 'blohaute.wsgi.application'

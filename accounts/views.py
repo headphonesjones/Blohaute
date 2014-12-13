@@ -77,9 +77,10 @@ def login(request):
             auth_login(request, form.get_user())
 
             user = form.get_user()
-            client = BookerCustomerClient(token=user.access_token)
+            client = BookerCustomerClient()
             access_token = client.login(user.email, request.POST['password'])
-            request.session['password'] = request.POST['password1']
+            request.session['password'] = request.POST['password']
+            request.session['client'] = client
             if access_token is None:
 
                 form.add_error(

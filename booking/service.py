@@ -20,6 +20,13 @@ class Client(object):
         print("response was %s" % response.json())
         return response.json()
 
+    def delete(self, path, params):
+        headers = {'content-type': 'application/json'}
+        request_url = "%s%s" % (self.base_url, path)
+        response = requests.delete(request_url, data=json.dumps(params), headers=headers)
+        print("response was %s" % response.json())
+        return response.json()
+
 
 class BookerClient(Client):
     token = None
@@ -69,6 +76,29 @@ class BookerClient(Client):
         if error_code == 1000:
             self.load_token()
             response = super(BookerClient, self).post(path, params)
+        if error_code == 200:
+            for error in response['ArgumentErrors']:
+                raise ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
+        if error_code != 0:
+            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
+                  (path, params, error_code, response['ErrorMessage']))
+            # Nathan, should I raise something here? or return some different response?
+            # Not super sure how to do error handling so Im just printing for now
+        return response
+
+    def delete(self, path, params):
+        #let the caller override access token
+        params['access_token'] = params.get('access_token', self.token)
+
+        response = super(BookerClient, self).delete(path, params)
+        error_code = response['ErrorCode']
+        print response
+        if error_code == 1000:
+            self.load_token()
+            response = super(BookerClient, self).delete(path, params)
         if error_code == 200:
             for error in response['ArgumentErrors']:
                 raise ValidationError(
@@ -138,6 +168,12 @@ class BookerCustomerClient(BookerClient):
         response = Client.post(self, '/customer/password', params)
         return response
 
+    #this seems to always fail on invalid token
+    def delete_customer(self, customer_id):
+        params = {'CustomerID': customer_id, 'access_token': self.customer_token}
+        response = self.delete('/customer/%s' % customer_id, params)
+        return response
+
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,
                           'Treatments': {'TreatmentID': treatment_id}}
@@ -146,7 +182,7 @@ class BookerCustomerClient(BookerClient):
                   'EndDateTime': end_date.strftime('%Y%m%d'),
                   'Itineraries': actual_product}
 
-        return self.post('/availability/multiservice', params)
+        return self.delete('/availability/multiservice', params)
 
     def post(self, path, params):
         params['LocationID'] = self.location_id

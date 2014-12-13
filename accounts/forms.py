@@ -11,7 +11,8 @@ class RegistrationForm(forms.ModelForm):
     error_messages = {
         'password_mismatch': _("The two password fields didn't match."),
         'password_length': _("The new password must be between 8 and 25 characters long."),
-        'phone_length': _("Phone number must be 10 digits and include the area code and phone nubmer.")
+        'phone_length': _("Phone number must be 10 digits and include the area code and phone nubmer."),
+        'existing_account': _('An account with this email address already exists.')
     }
 
     first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
@@ -29,6 +30,15 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ("phone_number", "email", "first_name", "last_name")
 
+    def clean_email(self):
+        users = User.objects.filter(email=self.cleaned_data.get('email')).count()
+        if users > 0:
+            raise forms.ValidationError(
+                self.error_messages['existing_account'],
+                code='existing_account'
+            )
+        return self.cleaned_data.get('email')
+        
     def clean_password1(self):
         # clean the new password to match API requirements
         password1 = self.cleaned_data.get('password1')

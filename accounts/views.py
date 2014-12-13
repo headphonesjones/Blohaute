@@ -1,16 +1,19 @@
-from django.shortcuts import render
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, \
     update_session_auth_hash
-from django.views.decorators.cache import never_cache
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.forms import ValidationError
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.contrib.auth.decorators import login_required
-from booking.service import BookerCustomerClient
+from django.views.generic.edit import DeleteView
+
+from accounts.models import User
 from accounts.forms import RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm
+from booking.service import BookerCustomerClient
 
 
 @sensitive_post_parameters()
@@ -134,3 +137,33 @@ def profile_view(request):
         'password_form': password_form
     }
     return render(request, 'welcome.html', context)
+
+
+class UserDelete(DeleteView):
+    model = User
+    success_url = reverse_lazy('home')
+    template_name = 'registration/delete.html'
+
+    def get_object(self):
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Calls the delete() method on the fetched object and then
+        redirects to the success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        client = request.session['client']
+        try:
+            client.delete_customer(self.object.id)
+        except:
+            print 'unable to delete customer'
+
+        messages.success(request, "Your account has been successfully deleted.")
+
+        self.object.delete()
+
+
+        return HttpResponseRedirect(success_url)

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete your account? This can not be undone.</p>
+    <input type="submit" value="Confirm" />
+    <a href="{% url 'welcome' %}">I changed my mind.</a>
+</form>
+
+{% endblock %}

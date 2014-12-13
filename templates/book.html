@@ -3,147 +3,147 @@
 
 {% block content %}
 
+<div class="bh-position bh-position-light bh-position-title">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="uk-margin-remove">Book</h1>
+            <p class="uk-text-muted bh-text-uppercase uk-margin-remove">Choose BloHaute services to book</p>
+        </div>
+    </div>
+</div>
+
 <div class="bh-position">
     <div class="uk-container uk-container-center">
-        <article class="uk-article">
-            <div class="uk-grid" data-uk-grid-margin>
-                <div class="uk-width-1-1">
-                    <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#shop-single-details'}">
-                        <li class="uk-width-1-2 uk-active"><a href="#">Book Now</a></li>
-                        <li class="uk-width-1-2 uk-disabled"><a href="#">Book From Cart</a></li>
-                        <!-- if cart is empty book from cart is disabled -->
-                    </ul>
-                    <ul id="shop-single-details" class="uk-switcher uk-margin">
-                        <li>
-                            <div class="uk-width-1-1">
-                                <div class="uk-overflow-container">
-                                    <table class="uk-table uk-table-middle uk-text-nowrap">
-                                        <thead>
-                                            <tr>
-                                                <th>Product</th>
-                                                <th>Description</th>
-                                                <th class="uk-text-center">Quantity</th>
-                                                <th class="uk-text-center">Subtotal</th>
-                                                <th class="uk-text-center">Delete</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'blowouts' %}">
-                                                        <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Blowout</a><br>
-                                                    <span class="uk-text-muted uk-text-small">No. 097744</span>
-                                                </td>
-                                                <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                                <td class="uk-text-center">$119.00</td>
-                                                <td class="uk-text-center"><a href="#"><i class="uk-icon-times"></i></a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'braids' %}">
-                                                        <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Braid</a><br>
-                                                    <span class="uk-text-muted uk-text-small">No. 097745</span>
-                                                </td>
-                                                <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                                <td class="uk-text-center">$89.90</td>
-                                                <td class="uk-text-center"><a href="#"><i class="uk-icon-times"></i></a></td>
-                                            </tr>
-                                             <tr>
-                                                <td>
-                                                    <a href="{% url 'upstyles' %}">
-                                                        <img src="{% static 'images/upstyle-small.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Upstyle</a><br>
-                                                    <span class="uk-text-muted uk-text-small">No. 097746</span>
-                                                </td>
-                                                <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                                <td class="uk-text-center">$89.90</td>
-                                                <td class="uk-text-center"><a href="#"><i class="uk-icon-times"></i></a></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6">
-                                                    <form class="uk-form uk-grid" data-uk-margin>
-                                                        <div class="uk-width-1-2">
-                                                            <input type="text" placeholder="Enter coupon...">
-                                                            <button class="uk-button">Apply Coupon</button>
-                                                        </div>
-                                                        <div class="uk-width-1-2 uk-text-right">
-                                                            <button class="uk-button">Update Price</button>
-                                                            <a href="{% url 'checkout' %}" class="uk-button uk-button-primary">Checkout</a>
-                                                        </div>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+        <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
 
-                            <div class="uk-push-1-2 uk-width-medium-1-2">
-                                <div class="uk-panel uk-panel-box uk-panel-header">
-                                    <h3 class="uk-panel-title">Total</h3>
-                                    <span class="uk-float-left">Total Due</span>
-                                    <span class="uk-float-right">$209.80</span>
-                                    <br><br>
-                                    <span class="uk-float-left">Order Total Price</span>
-                                    <span class="uk-float-right">$209.80</span>
+            <div class="uk-width-medium-1-1">
 
-                                    <div id="shop-cart-shipping" class="uk-modal">
-                                        <div class="uk-modal-dialog">
-                                            <form class="uk-form">
-                                                <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                                    <div class="uk-width-medium-1-1">
-                                                        <select>
-                                                            <option>United Kingdom (UK)</option>
-                                                            <option>United Stated (US)</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="uk-width-medium-1-1">
-                                                        <input type="text" placeholder="State / county" class="uk-form-large uk-width-1-1">
-                                                    </div>
-                                                    <div class="uk-width-medium-1-1">
-                                                        <input type="text" placeholder="Postcode / ZIP" class="uk-form-large uk-width-1-1">
-                                                    </div>
-                                                    <div class="uk-width-1-1">
-                                                        <button class="uk-button uk-button-primary uk-float-right">Update Totals</button>
-                                                    </div>
-                                                </div>
-                                            </form>
+                <ul class="uk-breadcrumb">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="uk-active"><span>Book</span></li>
+                </ul>
+
+                <article class="uk-article">
+                    <div class="uk-grid" data-uk-grid-margin>
+
+                        <div class="uk-width-small-1-2">
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'blowouts' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute Blowouts Book">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute Blowouts Book">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-8-10">Add to cart</a>
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-shopping-cart"></i></a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
-                        <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
-                            <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="https://static.pexels.com/wp-content/uploads/2014/05/girl-hair-meadow-403-827x550.jpg" width="800" height="400" alt="Collection Image" data-demo-style>
-                             
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Blowouts</a></h3>
+                                    <p class="uk-margin-remove"><a href="#">Men,</a> <a href="#basic-braid">Add a Basic Braid for $15</a></p>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$50</span>
                             </div>
                         </div>
-	                    <div class="uk-width-medium-1-2 uk-width-large-2-5">
-	                        <div class="uk-panel uk-panel-box">
-	                            <h1 class="uk-article-title">Brazilian Keratin Treatment</h1>
-	                            <p class="uk-article-lead">Call or Email to Book</p>
-	                            <p class="uk-margin-bottom">Something here to describe the keratin treatment. It is so wonderful and amazing people you gotta try it out!</p>
-	                            <a href="shop.html" class="uk-button bh-button-secondary">Email to Book a Keratin Treatment</a>
-	                        </div>
-	                    </div>
+
+                        <div class="uk-width-small-1-2">
+                            <div class="uk-panel">
+                                <div class="uk-panel-badge uk-badge uk-badge-danger">Sale</div>
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'upstyles' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyle Book">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyle Book">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-8-10">Add to cart</a>
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-shopping-cart"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Upstyles</a></h3>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">
+                                    <del>$49.90</del>
+                                    <ins>$39.90</ins>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </article>
+                <article class="uk-article">
+                    <div class="uk-grid" data-uk-grid-margin>
+                     <div class="uk-width-small-1-2">
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'braids' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute Braid Book">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute Braid Book">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-8-10">Add to Car</a>
+                                            <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-shopping-cart"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="{% url 'cart' %}">Advanced Braid</a></h3>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$80</span>
+                            </div>
+                        </div>
+
+                        <div class="uk-width-small-1-2">
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'contact' %}"></a>
+                                    <img class="bh-product-overlay-img" src="http://www.aajproperty.com/blog/wp-content/uploads/2014/08/Permanent-Hair-Straightening.jpg" width="720" height="540" alt="Blohaute Keratin Book" />
+                                    <img class="bh-product-overlay-img-hover" src="http://www.aajproperty.com/blog/wp-content/uploads/2014/08/Permanent-Hair-Straightening.jpg" width="720" height="540" alt="Blohaute Keratin Book" />
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'contact' %}" class="uk-button uk-button-large uk-width-8-10">Contact to Book</a>
+                                            <a href="{% url 'contact' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-phone"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="{% url 'contact' %}">Brazilian Keratin Treatment</a></h3>
+                                    <p class="uk-margin-remove"><a href="{% url 'contact' %}">Please email or call us to book this treatment.</a></p>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$85</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <article class="uk-article">
+                    <div class="uk-grid" id="basic-braid" data-uk-grid-margin>
+                        <div class="uk-width-small-1-2">
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'braids' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/braid.jpg' %}" width="720" height="540" alt="Blohaute Braids Book">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/braid.jpg' %}" width="720" height="540" alt="Blohaute Braids Book">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="shop-cart.html" class="uk-button uk-button-large uk-width-8-10">Add to cart</a>
+                                            <a href="#" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Basic Braid Add On</a></h3>
+                                    <p class="uk-margin-remove"><a href="{% url 'cart' %}">Add to any blowout or upstyle for just $15</a></p>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$15</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
             </div>
-        </article>
+
+        </div>
     </div>
 </div>
 {% endblock %}

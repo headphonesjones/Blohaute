@@ -1,7 +1,6 @@
-import json
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from accounts.forms import RegistrationForm, AuthenticationRememberMeForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.views.decorators.cache import never_cache
@@ -32,28 +31,30 @@ def register(request):
             client = BookerCustomerClient()
             new_user = form.save(commit=False)
 
-            try:
+            try:  # create a user on the API
                 new_user.id = client.create_user(new_user.email, request.POST['password1'],
                                                  new_user.first_name, new_user.last_name,
                                                  new_user.phone_number)['CustomerID']
-
+                new_user.save()
             except ValidationError as error:
                 form.add_error(None, error)
-                return render(request, 'registration/registration_page.html', {'registration_form': form})
+                return render(request, 'registration/registration_page.html',
+                              {'registration_form': form})
 
             #login to the api
-            login_result = client.login(new_user.email, request.POST['password1'])
-            new_user.access_token = login_result
-            new_user.save()
+            client.login(new_user.email, request.POST['password1'])
 
+            #authenticate and login the user locally
             new_user = authenticate(email=request.POST['email'],
                                     password=request.POST['password1'])
-
             auth_login(request, new_user)
+
+            #store the user password for the length of the session
+            request.session['password'] = request.POST['password1']
 
             messages.info(request, 'Thanks for registering. You are now logged in.')
 
-            #redirect to the user profile page by returning the new url via JSON
+            #redirect user the profile page
             return HttpResponseRedirect(reverse('welcome'))
 
         return render(request, 'registration/registration_page.html', {'registration_form': form})
@@ -70,7 +71,6 @@ def login(request):
         form = AuthenticationRememberMeForm(data=request.POST)
         print form.is_valid()
         if form.is_valid():
-            print 'form is valid'
             if not form.cleaned_data.get('remember_me'):
                 request.session.set_expiry(0)
 
@@ -79,7 +79,7 @@ def login(request):
             user = form.get_user()
             client = BookerCustomerClient(token=user.access_token)
             access_token = client.login(user.email, request.POST['password'])
-
+            request.session['password'] = request.POST['password1']
             if access_token is None:
 
                 form.add_error(
@@ -88,12 +88,11 @@ def login(request):
                 auth_logout(request)
                 return render(request, 'registration/login_page.html', {'login_form': form})
             else:
-                user.access_token = access_token
+                request.session['access_token'] = access_token
                 user.save()
             return HttpResponseRedirect(reverse('welcome'))
 
-        else: # form is invalid
-            print form.errors
+        else:  # form is invalid
             return render(request, 'registration/login_page.html', {'login_form': form})
 
     return render(request, 'registration/login_page.html', {'login_form': form})

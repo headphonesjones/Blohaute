@@ -2,6 +2,7 @@ import json
 import requests
 from django.conf import settings
 from django import forms
+from booking.models import Setting
 
 
 class Client(object):
@@ -25,14 +26,28 @@ class BookerClient(Client):
 
     def __init__(self, token=None):
         if token is None:
-            self.load_token()
+            setting = self.get_settings_object()
 
-    def load_token(self):
+            self.token = setting.access_token
+            if self.token is None:
+                self.load_token()
+
+    def get_settings_object(self):
+        setting = Setting.objects.first()
+        if setting is None:
+            setting = Setting()
+        return setting
+
+    def load_token(self, setting=None):
         params = {'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET,
                   'grant_type': 'client_credentials'}
         response = super(BookerClient, self).get('/access_token', params=params)
         self.token = response['access_token']
+        if setting is None:
+            setting = self.get_settings_object()
+        setting.access_token = self.token
+        setting.save()
 
     def get(self, path, params):
         response = super(BookerClient, self).get(path, params)
@@ -70,6 +85,7 @@ class BookerMerchantClient(BookerClient):
 class BookerCustomerClient(BookerClient):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
     location_id = 29033  # From get location call, we should cache this for now
+    customer_token = None
 
     def get_services(self):
         return self.post('/treatments', {})
@@ -84,7 +100,7 @@ class BookerCustomerClient(BookerClient):
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        response =  self.post('/customer/account', params)
+        response = self.post('/customer/account', params)
         if response['ErrorCode'] == 200:
             print 'got an error!'
             for error in response['ArgumentErrors']:
@@ -101,11 +117,12 @@ class BookerCustomerClient(BookerClient):
                   'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET}
         response = Client.post(self, '/customer/login', params)
+        self.customer_token = response['access_token']
         return response['access_token']
 
-    def logout(self, customer_token):
-        params = {'access_token': customer_token}
-        Client.get(self, '/logout', params = params)
+    def logout(self):
+        params = {'access_token': self.customer_token}
+        Client.get(self, '/logout', params=params)
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,

@@ -40,11 +40,11 @@ class RegistrationForm(forms.ModelForm):
                 code='password_length'
             )
 
-        # At least one letter and one non-letter
-        # first_isalpha = password1[0].isalpha()
-        # if all(c.isalpha() == first_isalpha for c in password1):
-        #     raise forms.ValidationError("The new password must contain at least one letter and at least one digit or" \
-        #                                 " punctuation character.")
+        #At least one letter and one non-letter
+        first_isalpha = password1[0].isalpha()
+        if all(c.isalpha() == first_isalpha for c in password1):
+            raise forms.ValidationError("The new password must contain at least one letter and at "
+                                        "least one digit or punctuation character.")
 
         return password1
 

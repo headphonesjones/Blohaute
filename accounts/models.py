@@ -35,6 +35,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    id = models.IntegerField(primary_key=True)
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
@@ -48,8 +49,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     photo = models.ImageField(upload_to='nowhere/', blank=True)
-    access_token = models.CharField(max_length=255, blank=True)
-    id = models.IntegerField(primary_key=True)
 
     objects = UserManager()
 
@@ -77,7 +76,3 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
-    def login_to_api(self, client):
-        """
-        Logs the user into the API.
-        """

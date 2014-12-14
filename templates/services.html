@@ -78,7 +78,11 @@
                                 <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
                                 <p class="uk-article-lead">{{treatment.list_tagline}}</p>
                                 <p class="uk-margin-bottom">{{treatment.description}}</p>
-                                <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book a {{treatment.name}}</a>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input name="treatment" type="hidden" value={{treatment.pk}} />
+                                    <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
+                                </form><br />
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
                             </div>
                         </div>
@@ -91,7 +95,11 @@
                                 <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
                                 <p class="uk-article-lead">{{treatment.list_tagline}}</p>
                                 <p class="uk-margin-bottom">{{treatment.description}}</p>
-                                <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book a {{treatment.name}}</a>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input name="treatment" type="hidden" value={{treatment.pk}} />
+                                    <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
+                                </form><br />
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
 
                             </div>

@@ -1,6 +1,11 @@
 from django import forms
-from booking.models import Package, Membership
+from booking.models import Package, Membership, Treatment
 from django.template.defaultfilters import floatformat
+
+
+class QuickBookForm(forms.Form):
+    treatment = forms.ModelChoiceField(queryset=Treatment.objects.all(),
+                                       widget=forms.HiddenInput())
 
 
 class AddToCartForm(forms.Form):

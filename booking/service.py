@@ -28,6 +28,7 @@ class BookerRequest(Request):
         prepped = self.prepare()
         s = Session()
         response = s.send(prepped)
+        response.needs_user_token = self.needs_user_token
         return response
 
     def post(self):
@@ -185,7 +186,7 @@ class BookerCustomerClient(BookerClient):
             print 'loading token'
             self.load_token()
 
-            if response.request.needs_user_token:
+            if response.needs_user_token:
                 self.login(self.user.email, self.customer_password)
             else:
                 self.load_token()

@@ -197,9 +197,6 @@ class BookerCustomerClient(BookerClient):
         dt = datetime.utcfromtimestamp(timepart + hours * 3600)
         return dt
 
-    def test(self):
-        return self.get_available_times_for_day([{'treatment_id': 1500556, 'quantity': 2}], datetime.now() + timedelta(days=2))
-
     def get_availability(self, treatments_requested, start_date, end_date):
         treatments = []
         for treatment in treatments_requested:
@@ -219,17 +216,20 @@ class BookerCustomerClient(BookerClient):
         # print(response)
         return self.process_response(response)
 
-    def get_unavailable_days_in_range(self, treatments_requested, start_date, end_date):
-        days = []
+    def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
+        end_date = start_date + timedelta(weeks=number_of_weeks)
+        days = set()
         for single_date in self.date_range(start_date, end_date + timedelta(days=1)):
-            days.append(single_date.strftime("%Y-%m-%d"))
-        days = set(days)
+            days.add(single_date.strftime("%Y-%m-%d"))
 
-        response = self.get_availability(treatments_requested, start_date, end_date)
-        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
-            print(date_key)
-            days.remove(date_key)
+        current_date = start_date
+        for i in range(0, number_of_weeks):
+            end_date = current_date + timedelta(weeks=1)
+            response = self.get_availability(treatments_requested, current_date, end_date)
+            for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+                date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
+                days.discard(date_key)
+            current_date = end_date
         return days
 
     class AvailableTimeSlot(object):
@@ -265,11 +265,10 @@ class BookerCustomerClient(BookerClient):
             print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
             if len(emp_list) == 1:
                 avail_time_slot.single_employee_slots.append(itinerary_option)
-            elif len(emp_list) == 2:
+            elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
                 avail_time_slot.multiple_employee_slots.append(itinerary_option)
             times.append(avail_time_slot)
         return times
-        # return response
 
     def book_appointment(self):
         # adjusted_customer = self.customer

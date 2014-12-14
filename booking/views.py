@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, QuickBookForm
@@ -51,3 +51,18 @@ class TreatmentDetail(DetailView):
             self.form = AddToCartForm(treatment=self.object)
         context['add_to_cart_form'] = self.form
         return super(TreatmentDetail, self).get_context_data(**context)
+
+
+# def unavailable_days(request):
+#     client = request.session['client']
+#     unavailable_days = client.get_unavailable_days_in_range()
+#
+#     response = "beforeShowDay: function(date) {" \
+#                "    var day = date.getDate(); " \
+#                "    var month = date.getMonth(); " \
+#                "    var year = date.getFullYear();" \
+#                "    var full = year + \"-\" + month + \"-\" + day;"
+#                "    if ((day == 27 || day == 26) && date.getMonth()+1 == 9 && date.getFullYear() == 2014) { " \
+#                "return {0: false}} else {return {0: true}}}"
+#     return HttpResponse(response)
+

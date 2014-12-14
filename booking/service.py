@@ -3,6 +3,7 @@ from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
 from booking.models import Setting
+from datetime import timedelta, datetime
 import time
 
 
@@ -28,6 +29,7 @@ class BookerRequest(Request):
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
+        print(self.data)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self
@@ -96,6 +98,7 @@ class BookerCustomerClient(BookerClient):
     customer_token = None
     customer_password = None
     user = None
+    customer = None
 
     def get_services(self):
         """
@@ -138,6 +141,7 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/customer/login', self.token, params).post()
         response = self.process_response(response)
         self.customer_token = response['access_token']
+        self.customer = response['Customer']
         return response['access_token']
 
     def logout(self):
@@ -156,8 +160,7 @@ class BookerCustomerClient(BookerClient):
                   'Email': email,
                   'NewPassword': new_password,
                   'OldPassword': old_password,
-                  'CustomerID': self.customer_id
-                  }
+                  'CustomerID': self.customer_id}
 
         response = BookerAuthedRequest('/customer/password', self.customer_token, params).post()
         return self.process_response(response)
@@ -172,16 +175,97 @@ class BookerCustomerClient(BookerClient):
         return self.process_response(response)
 
     def get_availability(self, treatment_id, start_date, end_date):
-        actual_product = {'IsPackage': False,
-                          'Treatments': {'TreatmentID': treatment_id}}
+        actual_product = [{'IsPackage': False,
+                          'Treatments': [{'TreatmentID': treatment_id}]}]
 
-        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
-                  'EndDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
+        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000),
+                  'EndDateTime': "/Date(%s)/" % int(time.mktime(end_date.timetuple()) * 1000),
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 
-        return BookerRequest('/availability/multiservice', self.token, params).post()
+        response = BookerRequest('/availability/multiservice', self.token, params).post()
+        return self.process_response(response)
 
+    def daterange(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
+    def get_unavailable_days_in_range(self, treatment_id, start_date, end_date):
+        print(end_date.strftime("%Y-%m-%d"))
+        days = []
+        for single_date in self.daterange(start_date, end_date + timedelta(days=1)):
+            days.append(single_date.strftime("%Y-%m-%d"))
+
+        days.append('2014-12-19')
+        days = set(days)
+
+        print('days is %s' % days)
+        response = self.get_availability(treatment_id, start_date, end_date)
+        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
+            print(date_key)
+            days.remove(date_key)
+        # for single_date in self.daterange(start_date, end_date):
+        return days
+
+    def get_available_times_for_day(self, treatment_id, start_date):
+        times = []
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatment_id, start_date, end_date)
+        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            for timeslot in slot['TreatmentTimeSlots']:
+                # print(timeslot)
+                times.append(self.parse_date(timeslot['StartDateTime']).strftime("%I:%M %p"))
+        # for single_date in self.daterange(start_date, end_date):
+        return set(times)
+
+    def book_appointment(self):
+        # adjusted_customer = self.customer
+        # adjusted_customer['Address'] = {
+        #
+        # }
+        params = {
+            'LocationID': self.location_id,
+            'ItineraryTimeSlotList': {
+                'IsPackage': False,
+                'TreatmentTimeSlots': [
+                    {
+                        'CurrentPrice': {
+                            'Amount': 0,
+                            'CurrencyCode': ""
+                        },
+                        'Duration': None,
+                        'EmployeeID': None,
+                        'StartDateTime': None,
+                        'TreatmentID': None
+                    }
+                ]
+            },
+            'AppointmentPayment': {
+                'PaymentItem': {
+                    'Amount': {
+                        'Amount': 0,
+                        'CurrencyCode': 'USD',
+                    },
+
+                },
+                'CouponCode': ""
+            },
+            'Customer': self.customer
+        }
+
+        return BookerRequest('/appointment/create', self.customer_token, params).post
+        
     def process_response(self, response):
         print 'response is %s' % response
         formatted_response = response.json()

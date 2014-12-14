@@ -96,7 +96,8 @@ class BookerCustomerClient(BookerClient):
         """
         Returns treatments for a spa/location
         """
-        response = BookerRequest('/treatments', self.token).post()
+        params = {'LocationID': self.location_id}
+        response = BookerRequest('/treatments', self.token, params).post()
         return self.process_response(response)
 
     def get_packages(self):

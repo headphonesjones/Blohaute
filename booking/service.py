@@ -91,6 +91,7 @@ class BookerCustomerClient(BookerClient):
     customer_token = None
     customer_password = None
     user = None
+    customer = None
 
     def get_services(self):
         """
@@ -132,6 +133,7 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/customer/login', self.token, params).post()
         response = self.process_response(response)
         self.customer_token = response['access_token']
+        self.customer = response['Customer']
         return response['access_token']
 
     def logout(self):
@@ -150,8 +152,7 @@ class BookerCustomerClient(BookerClient):
                   'Email': email,
                   'NewPassword': new_password,
                   'OldPassword': old_password,
-                  'CustomerID': self.customer_id
-                  }
+                  'CustomerID': self.customer_id}
 
         response = BookerAuthedRequest('/customer/password', self.customer_token, params).post()
         return self.process_response(response)
@@ -175,6 +176,44 @@ class BookerCustomerClient(BookerClient):
                   'LocationID': self.location_id}
 
         return BookerRequest('/availability/multiservice', self.token, params).post()
+
+    def book_appointment(self):
+        params = {
+            'LocationID': self.location_id,
+            'ItineraryTimeSlotList': {
+                'IsPackage': False,
+                'TreatmentTimeSlots': [
+                    {
+                        'CurrentPrice': {
+                            'Amount': 0,
+                            'CurrencyCode': ""
+                        },
+                        'Duration': None,
+                        'EmployeeID': None,
+                        'StartDateTime': None,
+                        'TreatmentID': None
+                    }
+                ]
+            },
+            'AppointmentPayment': {
+                'PaymentItem': {
+                    'Amount': {
+                        'Amount': 0,
+                        'CurrencyCode': 'USD',
+                    },
+
+                },
+                'CouponCode': ""
+            },
+            'Customer': {
+                'ID': None,
+                'Address': {
+
+                }
+            }
+        }
+
+        return BookerRequest('/appointment/create', self.customer_token, params).post
         
     def process_response(self, response):
         print 'response is %s' % response

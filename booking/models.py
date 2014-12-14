@@ -9,10 +9,10 @@ class Setting(models.Model):
 
 
 class Treatment(models.Model):
-    booker_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255)
     plural_name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=50, unique=True)
+    booker_id = models.IntegerField(null=True, blank=True)
     list_tagline = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
     full_description = BleachField(blank=True)

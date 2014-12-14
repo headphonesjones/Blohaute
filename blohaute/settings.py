@@ -47,10 +47,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.humanize',
     #3rd party libraries
     'widget_tweaks',  # allows easy modification of form widgets
-
+    'changuito',  # shopping cart
+    'django_bleach',  # safe html sanitizing
     #project apps
     'accounts',
     'booking',
@@ -64,6 +65,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'changuito.middleware.CartMiddleware',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

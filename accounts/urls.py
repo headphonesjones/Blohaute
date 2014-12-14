@@ -9,5 +9,5 @@ urlpatterns = patterns(
     url(r'^login/', views.login, name='login'),
     url(r'^welcome/', views.profile_view, name='welcome'),
     url(r'^delete/', views.UserDelete.as_view(), name='delete_user'),
-    url(r'^reschedule/', views.reschedule, name='reschedule'),
+#    url(r'^reschedule/', views.reschedule, name='reschedule'),
 )

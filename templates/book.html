@@ -30,7 +30,41 @@
                             The Blohaute look is our top-seller, and the perfect style for any occasion. First date. Office party. Girl’s night on the town. Like your best girlfriend, our stylists are trained to listen first, with an open ear and mind, before recommending the perfect style to fit your event. We’ll then use our perfected blow-dry technique to craft the perfect voluminous (alt. full-volume) look, adding a bounce to both your hair and your step. 
                             </p>
                         </div>
+                        {% for treatment in object_list %}
+                            <div class="uk-width-small-1-2">
+                                <div class="uk-panel">
+                                    {% if treatment.original_price|floatformat:"-2" %}
+                                        <div class="uk-panel-badge uk-badge uk-badge-danger">Sale</div>
+                                    {% endif %}
+                                    <div class="bh-product-overlay">
+                                        <a href="{% url 'treatment_detail' treatment.slug %}"></a>
+                                        <img class="bh-product-overlay-img" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Book {{treatment.name}}">
+                                        <img class="bh-product-overlay-img-hover" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Book {{treatment.name}}">
+                                        <div class="bh-product-overlay-content">
+                                            <div class="uk-button-group uk-width-1-1">
+                                                <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-8-10">Add to cart</a>
+                                                <a href="{% url 'cart' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-shopping-cart"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="uk-float-left uk-margin-top">
+                                        <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">{{treatment.name}}</a></h3>
+                                        {% if treatment.list_tagline %}
+                                            <p class="uk-margin-remove"><a href="#">{{ tratment.list_tagline }}</a></p>
+                                        {% endif %}
+                                    </div>
+                                    {% if treatment.original_price %}
+                                        <span class="uk-float-right uk-margin-top uk-text-large">
+                                            <del>${{treatment.original_price|floatformat:"-2"}}</del>
+                                            <ins>${{treatment.price|floatformat:"-2"}}</ins>
+                                        </span>
+                                    {% else %}
+                                        <span class="uk-float-right uk-margin-top uk-text-large">${{treatment.price|floatformat:"-2"}}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
 
+                        {% endfor %}
                         <div class="uk-width-small-1-2">
                             <div class="uk-panel">
                                 <div class="bh-product-overlay">

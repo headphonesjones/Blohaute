@@ -188,7 +188,8 @@ class BookerCustomerClient(BookerClient):
 
     def process_response(self, response):
         print 'response is %s' % response
-        error_code = response.json().get('ErrorCode', 0)
+        formatted_response = response.json()
+        error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
             print 'loading token'
             self.load_token()
@@ -198,7 +199,7 @@ class BookerCustomerClient(BookerClient):
             else:
                 self.load_token()
         if error_code == 200:
-            for error in response['ArgumentErrors']:
+            for error in formatted_response['ArgumentErrors']:
                 raise ValidationError(
                     '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
                     code='argumnet_error'
@@ -208,7 +209,7 @@ class BookerCustomerClient(BookerClient):
                   (self.path, self.params, error_code, response['ErrorMessage']))
             # Nathan, should I raise something here? or return some different response?
             # Not super sure how to do error handling so Im just printing for now
-        return response.json()
+        return formatted_response
 
 
 class BookerMerchantClient(BookerClient):

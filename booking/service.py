@@ -28,6 +28,7 @@ class BookerRequest(Request):
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
+        print(self.data)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self
@@ -173,15 +174,16 @@ class BookerCustomerClient(BookerClient):
         return self.process_response(response)
 
     def get_availability(self, treatment_id, start_date, end_date):
-        actual_product = {'IsPackage': False,
-                          'Treatments': {'TreatmentID': treatment_id}}
+        actual_product = [{'IsPackage': False,
+                          'Treatments': [{'TreatmentID': treatment_id}]}]
 
-        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
-                  'EndDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
+        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000),
+                  'EndDateTime': "/Date(%s)/" % int(time.mktime(end_date.timetuple()) * 1000),
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 
-        return BookerRequest('/availability/multiservice', self.token, params).post()
+        response = BookerRequest('/availability/multiservice', self.token, params).post()
+        return self.process_response(response)
 
     def book_appointment(self):
         # adjusted_customer = self.customer

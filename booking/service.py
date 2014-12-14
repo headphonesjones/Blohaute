@@ -3,6 +3,7 @@ from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
 from booking.models import Setting
+import time
 
 
 class BookerRequest(Request):
@@ -102,7 +103,7 @@ class BookerCustomerClient(BookerClient):
         """
         params = {'LocationID': self.location_id}
         response = BookerRequest('/treatments', self.token, params).post()
-        return self.process_response(response)
+        return self.process_response(response)['Treatments']
 
     def get_packages(self):
         """
@@ -174,8 +175,8 @@ class BookerCustomerClient(BookerClient):
         actual_product = {'IsPackage': False,
                           'Treatments': {'TreatmentID': treatment_id}}
 
-        params = {'StartDateTime': start_date.strftime('%Y%m%d'),
-                  'EndDateTime': end_date.strftime('%Y%m%d'),
+        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
+                  'EndDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple())),
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 

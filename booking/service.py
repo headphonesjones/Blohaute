@@ -170,8 +170,8 @@ class BookerCustomerClient(BookerClient):
         Delete a customer
         This doesn't seem to work
         """
-        params = {'CustomerID': self.customer.id}
-        response = BookerRequest('/customer/%s' % self.customer.id, self.token, params).delete()
+        params = {'CustomerID': self.customer.booker_id}
+        response = BookerRequest('/customer/%s' % self.customer.booker_id, self.token, params).delete()
         return self.process_response(response)
 
     def get_availability(self, treatment_id, start_date, end_date):

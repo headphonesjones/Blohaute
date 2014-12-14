@@ -10,6 +10,11 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+# import environ
+# root = environ.Path(__file__) - 2  # three folder back (/a/b/c/ - 3 = /)
+# print root
+# env = environ.Env(DEBUG=(bool, False),)  # set default values and casting
+# environ.Env.read_env('.myenv')  # reading .env file
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -52,6 +57,7 @@ INSTALLED_APPS = (
     'widget_tweaks',  # allows easy modification of form widgets
     'changuito',  # shopping cart
     'django_bleach',  # safe html sanitizing
+    'django_extensions',
     #project apps
     'accounts',
     'booking',
@@ -79,10 +85,7 @@ WSGI_APPLICATION = 'blohaute.wsgi.application'
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    #'default': env.db(),  # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
 }
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -106,7 +109,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-BOOKER_API_KEY = 'jwyNBIhb1SoH'
-BOOKER_API_SECRET = 'hXis7ilIwc6P'
 
 BLOHAUTE_LOCATION_ID = '29033'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
+

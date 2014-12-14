@@ -58,3 +58,5 @@ target/
 Include/
 Scripts/
 bin/
+local_settings.py
+.myenv

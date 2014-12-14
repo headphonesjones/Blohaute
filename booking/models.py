@@ -33,7 +33,7 @@ class Treatment(models.Model):
 
 class TreatmentImage(models.Model):
     treatment = models.ForeignKey(Treatment, related_name="images")
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to='treatment_images')
     primary_image = models.BooleanField(default=False)
 
 

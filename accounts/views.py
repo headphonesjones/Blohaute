@@ -33,7 +33,7 @@ def register(request):
             new_user = form.save(commit=False)
 
             try:  # create a user on the API
-                new_user.id = client.create_user(new_user.email, request.POST['password1'],
+                new_user.booker_id = client.create_user(new_user.email, request.POST['password1'],
                                                  new_user.first_name, new_user.last_name,
                                                  new_user.phone_number)['CustomerID']
                 new_user.save()

@@ -36,7 +36,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    id = models.IntegerField(primary_key=True)
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
@@ -51,6 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     photo = models.ImageField(upload_to='nowhere/', blank=True)
 
+    booker_id = models.IntegerField(null=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

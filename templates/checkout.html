@@ -91,6 +91,10 @@
                         </div>
                     </form>
                 </div>
+                {% if user.is_authenticated %}
+                <div class="uk-width-medium-1-2">
+                </div>
+                {% else %}
                 <div class="uk-width-medium-1-2">
                     <h2 class="bh-headline-bottom-border"><span>Billing Information</span></h2>
                     <form class="uk-form uk-form-stacked">
@@ -131,10 +135,13 @@
                                 <label class="uk-form-label" for="shop-checkout-billing-phone">Phone Number</label>
                                 <input type="text" class="uk-form-large uk-width-1-1" id="shop-checkout-billing-phone">
                             </div>
-
+                            <div class="uk-form-row">
+                                <label><input type="checkbox" value="Create an Account" checked> Create an Account (allows rescheduling)</label>
+                            </div>
                         </div>
                     </form>
                 </div>
+            {% endif %}
             </div>
             <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                 <div class="uk-width-1-1">

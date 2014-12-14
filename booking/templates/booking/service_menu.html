@@ -1,0 +1,5 @@
+{% for treatment in treatments %}
+<li>
+	<a href="{% url 'treatment_detail' treatment.slug %}">{{treatment.plural_name}}</a>
+</li>
+{% endfor %}

@@ -24,6 +24,9 @@ class Treatment(models.Model):
     def __unicode__(self):
         return self.name
 
+    def cart_description(self):
+        return self.name
+
     def primary_image(self):
         return self.images.filter(primary_image=True).first()
 
@@ -43,6 +46,9 @@ class Package(models.Model):
     def __unicode__(self):
         return "%s Pack - $%s" % ((str(apnumber(self.quantity)).capitalize()), floatformat(self.price, -2))
 
+    def cart_description(self):
+        return "%s - %s Pack" % (self.treatment.name, self.quantity)
+
 
 class Membership(models.Model):
     booker_id = models.IntegerField(null=True, blank=True)
@@ -52,3 +58,9 @@ class Membership(models.Model):
 
     def __unicode__(self):
         return "%d %s / $%s per month" % (self.quantity, self.treatment.plural_name, floatformat(self.price, -2))
+
+    def cart_description(self):
+        return "%s Membership - %s per month" % (self.treatment.name, self.quantity)
+
+    def price_units(self):
+        return "/ month"

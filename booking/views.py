@@ -1,6 +1,5 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm
@@ -37,9 +36,3 @@ class TreatmentDetail(DetailView):
             self.form = AddToCartForm(treatment=self.object)
         context['add_to_cart_form'] = self.form
         return super(TreatmentDetail, self).get_context_data(**context)
-
-
-def shopping_cart(request):
-    if request.method == "GET":
-
-        return render(request, 'cart.html', {'cart': request.cart})

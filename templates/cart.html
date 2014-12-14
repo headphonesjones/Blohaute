@@ -9,13 +9,6 @@
         </div>
     </div>
 </div>
-        {% for item in cart %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.total_price }}</td>
-        </tr>
-        {% endfor %}
 
 <div class="bh-position">
     <div class="uk-container uk-container-center">
@@ -35,6 +28,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% if cart.is_empty %}
+                                <tr>
+                                <td colspan="6">There are no items in the shopping cart.</td>
+                                </tr>
+                                {% else %}
+                                {% for item in cart %}
                                 <tr>
                                     <td>
                                         <a href="shop-singleproduct.html">
@@ -42,25 +41,20 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Blowout</a><br>
+                                        <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">{{ item.product.cart_description }}</a><br>
                                     </td>
-                                    <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                    <td class="uk-text-center">$50</td>
-                                    <td class="uk-text-center"><a href="#"><i class="uk-icon-times"></i></a></td>
+                                    <td class="uk-text-center">
+                                        <form class="uk-form" action="{% url 'update_quantity' %}" method="POST">
+                                            {% csrf_token %}
+                                            <input class="uk-form-width-mini" type="number" value={{item.quantity}} min=0 name="quantity">                                               
+                                            <input class="" type="hidden" value={{item.pk}} name="pk">                                               
+                                            <button class="uk-button">Update</button>
+                                        </form>
+                                    </td>
+                                    <td class="uk-text-center">${{ item.total_price|floatformat:"-2" }} {{ item.product.price_units }}</td>
+                                    <td class="uk-text-center"><a href="#" data-pk="{{item.pk}}" class="cart-delete-item"><i class="uk-icon-times"></i></a></td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <a href="shop-singleproduct.html">
-                                            <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Blowout Cart Item">
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Braid</a><br>
-                                    </td>
-                                    <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                    <td class="uk-text-center">$50</td>
-                                    <td class="uk-text-center"><a href="#"><i class="uk-icon-times"></i></a></td>
-                                </tr>
+                                {% endfor %}
                                 <tr>
                                     <td colspan="6">
                                         <form class="uk-form uk-grid" data-uk-margin>
@@ -69,12 +63,14 @@
                                                 <button class="uk-button">Apply Coupon</button>
                                             </div>
                                             <div class="uk-width-1-2 uk-text-right">
-                                                <button class="uk-button">Update Cart</button>
                                                 <a href="{% url 'checkout' %}" class="uk-button uk-button-primary">Checkout</a>
                                             </div>
                                         </form>
                                     </td>
                                 </tr>
+                           
+                                {% endif %}
+
                             </tbody>
                         </table>
                     </div>
@@ -84,10 +80,10 @@
                     <div class="uk-panel uk-panel-box uk-panel-header">
                         <h3 class="uk-panel-title">Carts Total</h3>
                         <span class="uk-float-left">Cart Subtotal</span>
-                        <span class="uk-float-right">$209.80</span>
+                        <span class="uk-float-right">${{cart.cart.total_price|floatformat:"-2"}}</span>
                         <br><br>
                         <span class="uk-float-left">Order Total Price</span>
-                        <span class="uk-float-right">$209.80</span>
+                        <span class="uk-float-right">${{cart.cart.total_price|floatformat:"-2"}}</span>
                         <br />
                         <hr />
                         <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i></span>
@@ -123,4 +119,28 @@
 
     </div>
 </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$( document ).ready(function() {
+    $('.cart-delete-item').click(function(e) {
+        e.preventDefault();
+
+        data = {'pk': $(this).data('pk')}
+        var form = document.createElement('form');
+        form.setAttribute('action', '{% url 'remove_cart_item' %}');
+        form.setAttribute('method', 'POST');
+        var input1 = document.createElement('input');
+        input1.value = $(this).data('pk');
+        input1.name = 'pk'
+        var input2 = document.createElement('input');
+        input2.value =  getCookie('csrftoken');
+        input2.name = 'csrfmiddlewaretoken';
+        form.appendChild(input1);
+        form.appendChild(input2);
+        form.submit()
+    });
+});
+</script>
 {% endblock %}

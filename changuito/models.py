@@ -84,6 +84,7 @@ class Item(models.Model):
     product = property(get_product, set_product)
 
     def update_quantity(self, quantity):
+        
         self.quantity = quantity
         self.save()
 

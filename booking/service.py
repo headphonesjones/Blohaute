@@ -3,6 +3,7 @@ from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
 from booking.models import Setting
+from datetime import timedelta, datetime
 import time
 
 
@@ -184,6 +185,37 @@ class BookerCustomerClient(BookerClient):
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
         return self.process_response(response)
+
+    def daterange(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt.strftime("%Y-%m-%d")
+
+    def get_unavailable_days_in_range(self, treatment_id, start_date, end_date):
+        print(end_date.strftime("%Y-%m-%d"))
+        days = []
+        for single_date in self.daterange(start_date, end_date + timedelta(days=1)):
+            days.append(single_date.strftime("%Y-%m-%d"))
+
+        days.append('2014-12-19')
+        days = set(days)
+
+        print('days is %s' % days)
+        response = self.get_availability(treatment_id, start_date, end_date)
+        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            date_key = self.parse_date(slot['StartDateTime'])
+            print(date_key)
+            days.remove(date_key)
+        # for single_date in self.daterange(start_date, end_date):
+        return days
 
     def book_appointment(self):
         # adjusted_customer = self.customer

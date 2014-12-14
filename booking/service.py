@@ -174,18 +174,8 @@ class BookerCustomerClient(BookerClient):
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 
-        response = BookerRequest('/availability/multiservice', self.token, params).get()
-        return self.process_response(response)
-
-    def get_treatement_categories(self):
-        """
-        Returns the treatment categories for a spa/location.
-        Doesn't seem to work.
-        """
-        params = {'LocationID': self.location_id}
-        response = BookerRequest('/treatment_categories', self.token, params).get()
-        return self.process_response(response)
-
+        return BookerRequest('/availability/multiservice', self.token, params).post()
+        
     def process_response(self, response):
         print 'response is %s' % response
         error_code = response.json().get('ErrorCode', 0)

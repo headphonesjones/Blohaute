@@ -25,7 +25,7 @@ urlpatterns = patterns(
     url(r'^checkout/', TemplateView.as_view(template_name="checkout.html"), name='checkout'),
     url(r'^password_lost/', TemplateView.as_view(template_name="password.html"), name='password'),
 
-    url(r'^services/', TreatmentList.as_view(template_name="services.html"), name='services'),
+    url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
 
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='book'),

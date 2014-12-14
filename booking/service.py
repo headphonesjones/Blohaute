@@ -130,8 +130,8 @@ class BookerCustomerClient(BookerClient):
                   'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET}
         response = BookerRequest('/customer/login', self.token, params).post()
-        self.customer_token = response['access_token']
         response = self.process_response(response)
+        self.customer_token = response['access_token']
         return response['access_token']
 
     def logout(self):

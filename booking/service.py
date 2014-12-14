@@ -79,7 +79,7 @@ class BookerClient(object):
                   'client_secret': settings.BOOKER_API_SECRET,
                   'grant_type': 'client_credentials'}
         response = BookerRequest('/access_token', None, params).get()
-        self.token = response['access_token']
+        self.token = response.json()['access_token']
         if setting is None:
             setting = self.get_settings_object()
         setting.access_token = self.token
@@ -190,9 +190,9 @@ class BookerCustomerClient(BookerClient):
         print 'response is %s' % response
         error_code = response.json().get('ErrorCode', 0)
         if error_code == 1000:
+            print 'loading token'
             self.load_token()
-            #if we have a user, lets try logging them in again for a new token
-            #skip if we're trying to login so we don't loop forever
+
             if response.request.needs_user_token:
                 self.login(self.user.email, self.customer_password)
             else:

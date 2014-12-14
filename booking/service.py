@@ -178,6 +178,10 @@ class BookerCustomerClient(BookerClient):
         return BookerRequest('/availability/multiservice', self.token, params).post()
 
     def book_appointment(self):
+        # adjusted_customer = self.customer
+        # adjusted_customer['Address'] = {
+        #
+        # }
         params = {
             'LocationID': self.location_id,
             'ItineraryTimeSlotList': {
@@ -205,12 +209,7 @@ class BookerCustomerClient(BookerClient):
                 },
                 'CouponCode': ""
             },
-            'Customer': {
-                'ID': None,
-                'Address': {
-
-                }
-            }
+            'Customer': self.customer
         }
 
         return BookerRequest('/appointment/create', self.customer_token, params).post

@@ -190,15 +190,7 @@ class BookerCustomerClient(BookerClient):
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 
-        return BookerRequest('/availability/multiservice', self.token, params).get()
-
-    def get_treatement_categories(self):
-        """
-        Returns the treatment categories for a spa/location.
-        Doesn't seem to work.
-        """
-        params = {'LocationID': self.location_id}
-        return BookerRequest('/treatment_categories', self.token, params).get()
+        return BookerRequest('/availability/multiservice', self.token, params).post()
 
 
 class BookerMerchantClient(BookerClient):

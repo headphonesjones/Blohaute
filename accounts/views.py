@@ -42,22 +42,22 @@ def register(request):
                 return render(request, 'registration/registration_page.html',
                               {'registration_form': form})
 
-            #login to the api
+            # login to the api
             access_token = client.login(new_user.email, request.POST['password1'])
 
-            #authenticate and login the user locally
+            # authenticate and login the user locally
             new_user = authenticate(email=request.POST['email'],
                                     password=request.POST['password1'])
             auth_login(request, new_user)
 
-            #store the user password for the length of the session
+            # store the user password for the length of the session
             request.session['client'] = client
             client.customer_password = request.POST['password1']
             client.user = new_user
 
             messages.info(request, 'Thanks for registering. You are now logged in.')
 
-            #redirect user the profile page
+            # redirect user the profile page
             return HttpResponseRedirect(reverse('welcome'))
 
         return render(request, 'registration/registration_page.html', {'registration_form': form})
@@ -111,7 +111,7 @@ def profile_view(request):
         pass
 
     if request.method == 'POST':
-        #check if the password form is in the request
+        # check if the password form is in the request
         if 'password-old_password' in request.POST:
             password_form = PasswordUpdateForm(user=request.user, prefix='password',
                                                data=request.POST)

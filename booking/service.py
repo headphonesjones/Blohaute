@@ -174,19 +174,31 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/customer/%s' % self.customer.booker_id, self.token, params).delete()
         return self.process_response(response)
 
-    def get_availability(self, treatment_id, start_date, end_date):
-        actual_product = [{'IsPackage': False,
-                          'Treatments': [{'TreatmentID': treatment_id}]}]
+    def format_date_for_booker_json(self, start_date):
+        return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
 
-        params = {'StartDateTime': "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000),
-                  'EndDateTime': "/Date(%s)/" % int(time.mktime(end_date.timetuple()) * 1000),
-                  'Itineraries': actual_product,
+    def test(self, treatments_requested):
+        return self.get_availability(treatments_requested, datetime.now(), datetime.now() + timedelta(days=2))
+
+    def get_availability(self, treatments_requested, start_date, end_date):
+        treatments = []
+        for treatment in treatments_requested:
+            for i in range(0, treatment['quantity']):
+                treatments.append({'TreatmentID': treatment['treatment_id']})
+
+        itinerary = [{
+                'IsPackage': False,
+                'Treatments': treatments}]
+
+        params = {'StartDateTime': self.format_date_for_booker_json(start_date),
+                  'EndDateTime': self.format_date_for_booker_json(end_date),
+                  'Itineraries': itinerary,
                   'LocationID': self.location_id}
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
         return self.process_response(response)
 
-    def daterange(self, start_date, end_date):
+    def date_range(self, start_date, end_date):
         for n in range(int((end_date - start_date).days)):
             yield start_date + timedelta(n)
 
@@ -199,29 +211,24 @@ class BookerCustomerClient(BookerClient):
         dt = datetime.utcfromtimestamp(timepart + hours * 3600)
         return dt
 
-    def get_unavailable_days_in_range(self, treatment_id, start_date, end_date):
-        print(end_date.strftime("%Y-%m-%d"))
+    def get_unavailable_days_in_range(self, treatments_requested, start_date, end_date):
         days = []
-        for single_date in self.daterange(start_date, end_date + timedelta(days=1)):
+        for single_date in self.date_range(start_date, end_date + timedelta(days=1)):
             days.append(single_date.strftime("%Y-%m-%d"))
-
-        days.append('2014-12-19')
         days = set(days)
 
-        print('days is %s' % days)
-        response = self.get_availability(treatment_id, start_date, end_date)
+        response = self.get_availability(treatments_requested, start_date, end_date)
         for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
             print(date_key)
             days.remove(date_key)
-        # for single_date in self.daterange(start_date, end_date):
         return days
 
-    def get_available_times_for_day(self, treatment_id, start_date):
+    def get_available_times_for_day(self, treatments_requested, start_date):
         times = []
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        response = self.get_availability(treatment_id, start_date, end_date)
+        response = self.get_availability(treatments_requested, start_date, end_date)
         for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             for timeslot in slot['TreatmentTimeSlots']:
                 # print(timeslot)

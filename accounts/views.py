@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.translation import ugettext, ugettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters

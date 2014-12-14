@@ -197,7 +197,7 @@ class BookerCustomerClient(BookerClient):
         timepart = milliseconds / 1000
 
         dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt.strftime("%Y-%m-%d")
+        return dt
 
     def get_unavailable_days_in_range(self, treatment_id, start_date, end_date):
         print(end_date.strftime("%Y-%m-%d"))
@@ -211,11 +211,23 @@ class BookerCustomerClient(BookerClient):
         print('days is %s' % days)
         response = self.get_availability(treatment_id, start_date, end_date)
         for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            date_key = self.parse_date(slot['StartDateTime'])
+            date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
             print(date_key)
             days.remove(date_key)
         # for single_date in self.daterange(start_date, end_date):
         return days
+
+    def get_available_times_for_day(self, treatment_id, start_date):
+        times = []
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatment_id, start_date, end_date)
+        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            for timeslot in slot['TreatmentTimeSlots']:
+                # print(timeslot)
+                times.append(self.parse_date(timeslot['StartDateTime']).strftime("%I:%M %p"))
+        # for single_date in self.daterange(start_date, end_date):
+        return set(times)
 
     def book_appointment(self):
         # adjusted_customer = self.customer

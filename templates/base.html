@@ -16,6 +16,7 @@
         <!-- theme  -->
         <link id="theme-css" rel="stylesheet" href="{% static 'css/theme.css' %}">
         <!--[if IE 9]><link rel="stylesheet" href="{% static 'css/ie9.css' %}"><![endif]-->
+        {% block extracss %}{% endblock %}
 
     </head>
 
@@ -331,6 +332,7 @@
             <!-- demo related script - remove it!  -->
             <script src="{% static 'demo.js' %}"></script>
             <script src="{% static 'js/auth.js' %}"></script>
+            {% block extrajs %}{% endblock %}
     </body>
 </html>
 

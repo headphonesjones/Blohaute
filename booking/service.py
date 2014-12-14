@@ -28,6 +28,8 @@ class BookerRequest(Request):
         prepped = self.prepare()
         s = Session()
         response = s.send(prepped)
+        response.needs_user_token = self.needs_user_token
+        response.original_request = self
         return response
 
     def post(self):
@@ -35,6 +37,7 @@ class BookerRequest(Request):
         if self.token:
             self.params['access_token'] = self.token
         self.data = json.dumps(self.params)
+        self.original_params = self.params
         self.params = None
         return self.send()
 
@@ -49,6 +52,7 @@ class BookerRequest(Request):
         if self.token:
             self.params['access_token'] = self.token
         self.data = json.dumps(self.params)
+        self.original_params = self.params
         self.params = None
         return self.send()
 
@@ -97,7 +101,8 @@ class BookerCustomerClient(BookerClient):
         """
         Returns treatments for a spa/location
         """
-        response = BookerRequest('/treatments', self.token).post()
+        params = {'LocationID': self.location_id}
+        response = BookerRequest('/treatments', self.token, params).post()
         return self.process_response(response)
 
     def get_packages(self):
@@ -216,27 +221,40 @@ class BookerCustomerClient(BookerClient):
         
     def process_response(self, response):
         print 'response is %s' % response
-        error_code = response.json().get('ErrorCode', 0)
+        formatted_response = response.json()
+        error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
-            print 'loading token'
-            self.load_token()
 
-            if response.request.needs_user_token:
+            if response.needs_user_token:
                 self.login(self.user.email, self.customer_password)
+                new_request = BookerAuthedRequest(response.original_request.path, self.token)
             else:
                 self.load_token()
+                new_request = BookerRequest(response.original_request.path, self.token)
+            new_request.method = response.original_request.method
+            if new_request.method == 'GET':
+                new_request.params = response.original_request.params
+                return self.process_response(new_request.get())
+            else:
+                new_request.params = response.original_request.original_params
+                if new_request.token:
+                    new_request.params['access_token'] = self.token
+                new_request.data = json.dumps(new_request.params)
+                new_request.params = None
+                return self.process_response(new_request.send())
+
         if error_code == 200:
-            for error in response['ArgumentErrors']:
+            for error in formatted_response['ArgumentErrors']:
                 raise ValidationError(
                     '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
                     code='argumnet_error'
                 )
         if error_code != 0:
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (self.path, self.params, error_code, response['ErrorMessage']))
+                  (response.original_request.path, response.original_request.params, error_code, formatted_response['ErrorMessage']))
             # Nathan, should I raise something here? or return some different response?
             # Not super sure how to do error handling so Im just printing for now
-        return response.json()
+        return formatted_response
 
 
 class BookerMerchantClient(BookerClient):

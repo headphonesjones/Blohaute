@@ -94,9 +94,9 @@
                             <form class="uk-form uk-grid" method="post">
                                     {% csrf_token %}
                                 <div class="uk-width-1-1" data-uk-margin>
-                                    {% if add_to_cart_form.errors %}
+                                    {% if add_to_cart_form.non_field_errors %}
                                         <div class="uk-alert uk-alert-danger ">
-                                                {% for error in add_to_cart_form.errors %}
+                                                {% for error in add_to_cart_form.non_field_errors %}
                                                     <p>{{error}}</p>
                                                 {% endfor %}
                                         </div>

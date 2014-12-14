@@ -14,6 +14,7 @@ class Treatment(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
     booker_id = models.IntegerField(null=True, blank=True)
     list_tagline = models.CharField(max_length=255, blank=True)
+    list_image = models.ImageField(upload_to='treatment_images')
     description = models.TextField(blank=True)
     full_description = BleachField(blank=True)
     price = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)

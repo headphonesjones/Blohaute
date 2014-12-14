@@ -177,6 +177,19 @@ class BookerCustomerClient(BookerClient):
     def format_date_for_booker_json(self, start_date):
         return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
 
+    def date_range(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
     def test(self, treatments_requested):
         return self.get_availability(treatments_requested, datetime.now(), datetime.now() + timedelta(days=2))
 
@@ -197,19 +210,6 @@ class BookerCustomerClient(BookerClient):
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
         return self.process_response(response)
-
-    def date_range(self, start_date, end_date):
-        for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
 
     def get_unavailable_days_in_range(self, treatments_requested, start_date, end_date):
         days = []

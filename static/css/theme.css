@@ -1576,6 +1576,7 @@ ul.uk-nav-sub {
   float: right;
   font-family: FontAwesome;
   text-align: center;
+  color: #9e314e !important;
 }
 .uk-nav-parent-icon > .uk-parent.uk-open > a:after {
   content: "\f107";

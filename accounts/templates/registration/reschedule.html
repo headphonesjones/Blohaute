@@ -11,51 +11,27 @@
             </div>
             <div class="uk-width-1-3">
                 <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
-                    <button class="uk-button">Available Services to Book <i class="uk-icon-caret-down"></i></button>
+                    <button class="uk-button">Available Services to Reschedule <i class="uk-icon-caret-down"></i></button>
                     <div style="" class="uk-dropdown">
                         <ul class="uk-nav uk-nav-dropdown">
-                            <li class="uk-nav-header">Services</li>
-                            <li><a href="#">Blowout (2)</a></li>
-                            <li><a href="#">Braid (1)</a></li>
-                            <li><a href="#">Upstyles (1)</a></li>
+                            <li class="uk-nav-header">Upcoming Appointments</li>
+                            <li><a href="#">11/16 - 2:30pm</a></li>
+                            <li><a href="#">12/27 - 2:30pm</a></li>
+                            <li><a href="#">04/30 - 2:30pm</a></li>
                         </ul>
                     </div>
                 </div>
-                
-                <br />
-                <br />
-                <table class="uk-table uk-table-middle uk-text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th class="uk-text-center">Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <a href="{% url 'braids' %}">
-                                    <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
-                                </a>
-                            </td>
-                            <td>
-                                <a class="bh-text-uppercase uk-link-reset" href="{% url 'braids' %}">Blowout</a><br>
-                                <span class="uk-text-muted uk-text-small">No. 097744</span>
-                            </td>
-                            <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                            
-                        </tr>
-                    </tbody>
-                </table>                
+                <br /><br />
+                <p><b>Selected: </b>11/16 - 2:30pm</p>
             </div>
             <div class="uk-width-1-4">
                 <form class="uk-form">
                     <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
-                        <button class="uk-button">Choose Your Stylist <i class="uk-icon-caret-down"></i></button>
+                        <button class="uk-button">Change Your Stylist <i class="uk-icon-caret-down"></i></button>
                         <div style="" class="uk-dropdown">
                             <ul class="uk-nav uk-nav-dropdown">
                                 <li class="uk-nav-header">Stylists</li>
-                                <li><a href="#">No Preference</a></li>
+                                <li><a href="#">No thank you</a></li>
                                 <li><a href="#">Amanda D.</a></li>
                                 <li><a href="#">Amanda L.</a></li>
                                 <li><a href="#">Morgan S.</a></li>
@@ -68,9 +44,9 @@
                             URL: http://getuikit.com/docs/addons_datepicker.html
                     
                     -->
-                    <label for="profile_time_picker">Choose A Date:</label><br /> 
+                    <label for="profile_time_picker">Choose A New Date:</label><br /> 
                     <input type="text" id="profile_time_picker" id="profile_date_picker" data-uk-timepicker="{format:'12h'}"><br />
-                    <label for="profile_date_picker">Choose A Time:</label><br />
+                    <label for="profile_date_picker">Choose A New Time:</label><br />
                     <input type="text" id="profile_date_picker" data-uk-datepicker="{format:'MM.DD.YYYY'}">
                 </form>
             </div>

@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-	{% include "registration/login.html" %} 
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
+            <div class="uk-width-medium-1-4"></div>
+            <div class="uk-width-medium-1-2">
+	           {% include "registration/login.html" %} 
+            </div>
+            <div class="uk-width-medium-1-4"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -28,7 +28,7 @@ class BookerRequest(Request):
         prepped = self.prepare()
         s = Session()
         response = s.send(prepped)
-        return self.process_response(response.json())
+        return response
 
     def post(self):
         self.method = 'POST'
@@ -51,28 +51,6 @@ class BookerRequest(Request):
         self.data = json.dumps(self.params)
         self.params = None
         return self.send()
-
-    def process_response(self, response):
-        print 'response is %s' % response
-        error_code = response.get('ErrorCode', 0)
-        if error_code == 1000:
-            self.load_token()
-            #if we have a user, lets try logging them in again for a new token
-            #skip if we're trying to login so we don't loop forever
-            if self.user and self.customer_password and '/customer/login' not in response.url:
-                self.login(self.user.email, self.customer_password)
-        if error_code == 200:
-            for error in response['ArgumentErrors']:
-                raise ValidationError(
-                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
-                    code='argumnet_error'
-                )
-        if error_code != 0:
-            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (self.path, self.params, error_code, response['ErrorMessage']))
-            # Nathan, should I raise something here? or return some different response?
-            # Not super sure how to do error handling so Im just printing for now
-        return response
 
 
 class BookerAuthedRequest(BookerRequest):
@@ -101,7 +79,7 @@ class BookerClient(object):
                   'client_secret': settings.BOOKER_API_SECRET,
                   'grant_type': 'client_credentials'}
         response = BookerRequest('/access_token', None, params).get()
-        self.token = response['access_token']
+        self.token = response.json()['access_token']
         if setting is None:
             setting = self.get_settings_object()
         setting.access_token = self.token
@@ -118,13 +96,15 @@ class BookerCustomerClient(BookerClient):
         """
         Returns treatments for a spa/location
         """
-        return BookerRequest('/treatments', self.token).post()
+        response = BookerRequest('/treatments', self.token).post()
+        return self.process_response(response)
 
     def get_packages(self):
         """
         Returns packages for a spa/location
         """
-        return BookerRequest('/series', self.token).post()
+        response = BookerRequest('/series', self.token).post()
+        return self.process_response(response)
 
     def create_user(self, email, password, fname, lname, phone):
         """
@@ -137,7 +117,8 @@ class BookerCustomerClient(BookerClient):
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        return BookerRequest('/customer/account', self.token, params).post()
+        response = BookerRequest('/customer/account', self.token, params).post()
+        return self.process_response(response)
 
     def login(self, email, password):
         """
@@ -149,6 +130,7 @@ class BookerCustomerClient(BookerClient):
                   'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET}
         response = BookerRequest('/customer/login', self.token, params).post()
+        response = self.process_response(response)
         self.customer_token = response['access_token']
         return response['access_token']
 
@@ -157,7 +139,8 @@ class BookerCustomerClient(BookerClient):
         Logout the currently logged in user
         This doesn't seem to work
         """
-        return BookerRequest('/logout', self.customer_token, None).get()
+        response = BookerAuthedRequest('/logout', self.customer_token, None).get()
+        return self.process_response(response)
 
     def update_password(self, email, old_password, new_password):
         """
@@ -167,11 +150,11 @@ class BookerCustomerClient(BookerClient):
                   'Email': email,
                   'NewPassword': new_password,
                   'OldPassword': old_password,
-                  'access_token': self.customer_token,
                   'CustomerID': self.customer_id
                   }
 
-        return BookerRequest('/customer/password', self.token, params).post()
+        response = BookerAuthedRequest('/customer/password', self.customer_token, params).post()
+        return self.process_response(response)
 
     def delete_customer(self):
         """
@@ -179,7 +162,8 @@ class BookerCustomerClient(BookerClient):
         This doesn't seem to work
         """
         params = {'CustomerID': self.customer.id}
-        return BookerRequest('/customer/%s' % self.customer.id, self.token, params).delete()
+        response = BookerRequest('/customer/%s' % self.customer.id, self.token, params).delete()
+        return self.process_response(response)
 
     def get_availability(self, treatment_id, start_date, end_date):
         actual_product = {'IsPackage': False,
@@ -190,7 +174,8 @@ class BookerCustomerClient(BookerClient):
                   'Itineraries': actual_product,
                   'LocationID': self.location_id}
 
-        return BookerRequest('/availability/multiservice', self.token, params).get()
+        response = BookerRequest('/availability/multiservice', self.token, params).get()
+        return self.process_response(response)
 
     def get_treatement_categories(self):
         """
@@ -198,7 +183,32 @@ class BookerCustomerClient(BookerClient):
         Doesn't seem to work.
         """
         params = {'LocationID': self.location_id}
-        return BookerRequest('/treatment_categories', self.token, params).get()
+        response = BookerRequest('/treatment_categories', self.token, params).get()
+        return self.process_response(response)
+
+    def process_response(self, response):
+        print 'response is %s' % response
+        error_code = response.json().get('ErrorCode', 0)
+        if error_code == 1000:
+            print 'loading token'
+            self.load_token()
+
+            if response.request.needs_user_token:
+                self.login(self.user.email, self.customer_password)
+            else:
+                self.load_token()
+        if error_code == 200:
+            for error in response['ArgumentErrors']:
+                raise ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argumnet_error'
+                )
+        if error_code != 0:
+            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
+                  (self.path, self.params, error_code, response['ErrorMessage']))
+            # Nathan, should I raise something here? or return some different response?
+            # Not super sure how to do error handling so Im just printing for now
+        return response.json()
 
 
 class BookerMerchantClient(BookerClient):

@@ -88,10 +88,10 @@
 
                         <div class="uk-width-medium-1-2 uk-width-large-2-5">
                             <div class="uk-panel uk-panel-box" data-uk-scrollspy="{cls:'uk-animation-slide-bottom', repeat: true}">
-                                <h1 class="uk-article-title">Blowouts</h1>
-                                <p class="uk-article-lead">The look that put us on the map.</p>
-                                <p class="uk-margin-bottom">The Blohaute is our top-seller, and the perfect style for any occasion. First date. Office party. Girl’s night on the town.</p>
-                                <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book a Blowout</a>
+                                <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
+                                <p class="uk-article-lead">{{treatment.list_tagline}}</p>
+                                <p class="uk-margin-bottom">{{treatment.description}}</p>
+                                <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book a {{treatment.name}}</a>
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
 
                             </div>

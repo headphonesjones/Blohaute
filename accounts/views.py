@@ -90,7 +90,7 @@ def login(request):
 def profile_view(request):
     password_form = PasswordUpdateForm(user=request.user, prefix='password')
     client = request.session['client']
-    upcoming = client.get_upcoming()
+    appointments = client.get_appointments()
 
     if request.method == 'GET':
         pass
@@ -118,7 +118,7 @@ def profile_view(request):
     context = {
         'user': request.user,
         'password_form': password_form,
-        'upcoming': upcoming
+        'appointments': appointments
     }
     return render(request, 'welcome.html', context)
 

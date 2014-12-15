@@ -122,7 +122,13 @@ class AvailableTimeSlot(object):
         return hash(self.pretty_time)
 
 
-class UpcomingAppointment(object):
+class AppointmentResult(object):
+    def __init__(self):
+        self.upcoming = []
+        self.past = []
+
+
+class Appointment(object):
     appointment_id = None
     time = None
     date = None
@@ -137,7 +143,7 @@ class UpcomingAppointment(object):
         self.treatment = Treatment.objects.filter(booker_id=service_id)
 
     def __str__(self):
-        return self.treatment + " at " + self.appt_time + " on " + self.date
+        return self.treatment + " at " + self.time + " on " + self.date
 
 
 class BookerCustomerClient(BookerClient):
@@ -260,24 +266,28 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/customer/%s' % self.customer_id, self.token, params).delete()
         return self.process_response(response)
 
-    def get_upcoming(self):
+    def get_appointments(self):
         params = {
             'CustomerID': self.customer_id,
             'LocationID': self.location_id
         }
         response = BookerAuthedRequest('/appointments', self.customer_token, params).post()
-        upcoming = self.process_response(response)
-        result = []
-        for itinerary in upcoming['Results']:
+        appointment_results = self.process_response(response)
+        result = AppointmentResult()
+        for itinerary in appointment_results['Results']:
             for appointment in itinerary['AppointmentTreatments']:
-                if itinerary['Status']['ID'] == 2:
+                if itinerary['Status']['ID'] != 6:
                     appointment_id = appointment['AppointmentID']
                     start_time = self.parse_date(appointment['StartDateTime'])
-                    result.append(UpcomingAppointment(appointment_id,
-                                                      self.parse_as_time(start_time),
-                                                      self.parse_as_date(start_time),
-                                                      appointment['Treatment']['ID'],
-                                                      appointment['Treatment']['Name']))
+                    appointment_result = Appointment(appointment_id,
+                                                     self.parse_as_time(start_time),
+                                                     self.parse_as_date(start_time),
+                                                     appointment['Treatment']['ID'],
+                                                     appointment['Treatment']['Name'])
+                    if datetime.now() - start_time > timedelta(minutes=5):
+                        result.past.append(appointment_result)
+                    else:
+                        result.upcoming.append(appointment_result)
 
         return result
 
@@ -285,9 +295,7 @@ class BookerCustomerClient(BookerClient):
         params = {
             'ID': appointment_id
         }
-        print('params for delete %s' % appointment_id)
         response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
-        print(response)
         return self.process_response(response)
 
     # def reschedule_appointment(self):
@@ -407,7 +415,7 @@ class BookerCustomerClient(BookerClient):
 
     def process_response(self, response):
         formatted_response = response.json()
-        print 'response is %s' % formatted_response
+        # print 'response is %s' % formatted_response
         error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
 

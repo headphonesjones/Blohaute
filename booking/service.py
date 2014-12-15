@@ -130,6 +130,30 @@ class BookerCustomerClient(BookerClient):
     customer = None
     customer_id = None
 
+    def parse_as_time(self, date_time):
+        return date_time.strftime("%I:").lstrip('0') + \
+               date_time.strftime("%M") + \
+               date_time.strftime(" %p")
+
+    def parse_as_date(self, date_time):
+        return date_time.strftime("%Y-%m-%d")
+
+    def format_date_for_booker_json(self, start_date):
+        return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
+
+    def date_range(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
     def get_services(self):
         """
         Returns treatments for a spa/location
@@ -224,7 +248,19 @@ class BookerCustomerClient(BookerClient):
             'LocationID': self.location_id
         }
         response = BookerAuthedRequest('/appointments', self.token, params).post()
-        return self.process_response(response)
+        upcoming = self.process_response(response)
+        result = []
+        for itinerary in upcoming['Results']:
+            for appointment in itinerary['AppointmentTreatments']:
+                if itinerary['Status']['ID'] == 2:
+                    appointment_id = appointment['AppointmentID']
+                    result.append({
+                        'appointment_id': appointment_id,
+                        'time': self.parse_as_time(self.parse_date(appointment['StartDateTime'])),
+                        'date': self.parse_as_date(self.parse_date(appointment['StartDateTime'])),
+                        'service_name': appointment['Treatment']['Name']})
+
+        return result
 
     def cancel_appointment(self, appointment_id):
         params = {
@@ -233,22 +269,7 @@ class BookerCustomerClient(BookerClient):
         response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
         return self.process_response(response)
 
-
-    def format_date_for_booker_json(self, start_date):
-        return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
-
-    def date_range(self, start_date, end_date):
-        for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
+    # def reschedule_appointment(self):
 
     def get_availability(self, treatments_requested, start_date, end_date):
         treatments = []
@@ -298,9 +319,7 @@ class BookerCustomerClient(BookerClient):
             # multi = []
             itin_time = self.parse_date(itinerary_option['StartDateTime'])
             avail_time_slot.raw_time = itin_time
-            avail_time_slot.pretty_time = itin_time.strftime("%I:").lstrip('0') + \
-                                          itin_time.strftime("%M") + \
-                                          itin_time.strftime(" %p")
+            avail_time_slot.pretty_time = self.parse_as_time(itin_time)
             print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
             emp_list = set()
             for time_slot in itinerary_option['TreatmentTimeSlots']:

@@ -10,7 +10,7 @@
                                 <div class="bh-product-overlay">
                                     <a href="{% url 'treatment_detail' treatment.slug %}"></a>
                                     <img class="bh-product-overlay-img" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
-                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute braids">
+                                    <img class="bh-product-overlay-img-hover" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
                                     <div class="bh-product-overlay-content">
                                         <div class="uk-button-group uk-width-1-1">
                                             <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button uk-button-large uk-width-8-10">View {{treatment.name}} Services</a>

@@ -78,8 +78,7 @@
                                 <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
                                 <p class="uk-article-lead">{{treatment.list_tagline}}</p>
                                 <p class="uk-margin-bottom">{{treatment.description}}</p>
-                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}<ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}
-<br />
+                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}<ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}<br />
                                 <form method="POST">
                                     {% csrf_token %}
                                     <input name="treatment" type="hidden" value={{treatment.pk}} />

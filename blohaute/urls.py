@@ -11,7 +11,6 @@ urlpatterns = patterns(
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),
     
     url(r'^contact/', contact_view, name='contact'),
-    url(r'^upcoming/', upcoming_view, name='upcoming'),
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),
     

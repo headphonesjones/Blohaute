@@ -123,6 +123,15 @@ def profile_view(request):
     return render(request, 'welcome.html', context)
 
 
+@login_required
+@csrf_protect
+def cancel_view(request):
+    client = request.session['client']
+    print(request.POST)
+    client.cancel_appointment(request.POST['appointment_id'])
+    return HttpResponseRedirect(reverse('welcome'))
+
+
 class UserDelete(DeleteView):
     model = User
     success_url = reverse_lazy('home')

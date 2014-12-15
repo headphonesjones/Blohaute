@@ -38,51 +38,25 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'treatment_detail' 'blowouts' %}">
-                                                        <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'blowouts' %}">Blowout</a><br>
-                                                </td>
-                                                <td class="uk-text-center">
-                                                    12/19<br />
-                                                    10:30am
-                                                </td>
-                                                <td class="uk-text-center"><a href="{% url 'reschedule' %}"><i class="uk-icon-calendar"></i></a><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="uk-icon-times"></i></a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <a href="{% url 'treatment_detail' 'braids' %}">
-                                                        <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'braids' %}">Braid</a><br>
-                                                </td>
-                                                <td class="uk-text-center">
-                                                    12/17<br />
-                                                    3:15pm
-                                                </td>
-                                                <td class="uk-text-center"><a href="{% url 'reschedule' %}"><i class="uk-icon-calendar"></i></a><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="uk-icon-times"></i></a></td>
-                                            </tr>
-                                             <tr>
-                                                <td>
-                                                    <a href=""{% url 'treatment_detail' 'upstyles' %}"">
-                                                        <img src="{% static 'images/upstyle-small.jpg' %}" width="100" height="75" alt="Product Image">
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'upstyles' %}">Upstyle</a><br>
-                                                </td>
-                                                <td class="uk-text-center">
-                                                    10/11<br />
-                                                    1:40pm
-                                                </td>
-                                                <td class="uk-text-center"><a href="{% url 'reschedule' %}"><i class="uk-icon-calendar"></i></a><a href="#">&nbsp;&nbsp;&nbsp;&nbsp;<i class="uk-icon-times"></i></a></td>
-                                            </tr>
+                                            {% if upcoming %}
+                                                {% for appt in upcoming %}
+                                                <tr>
+                                                    <td>
+                                                        <a href="{% url 'treatment_detail' 'blowouts' %}">
+                                                            <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'blowouts' %}">{{ appt.treatment_name }}</a><br>
+                                                    </td>
+                                                    <td class="uk-text-center">
+                                                        {{ appt.date }}<br />
+                                                        {{ appt.time }}
+                                                    </td>
+                                                    <td class="uk-text-center"><a href="{% url 'reschedule' %}"><i class="uk-icon-calendar"></i></a><form class="uk-form" method="post" action=" {% url 'cancel' %}">{% csrf_token %}<input type="hidden" name="appointment_id" value="{{ appt.appointment_id }}">&nbsp;&nbsp;&nbsp;&nbsp;<button><i class="uk-icon-times"></i></button></form></td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% endif %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -160,38 +134,6 @@
                                         </li>
                                     </ul>
                                 </div>
-								<!-- NOT NEEDED -- FOR REVIEW WRITING 
-                                <div class="uk-width-1-1">
-                                    <h3>Write a review</h3>
-                                    <form class="uk-form uk-form-stacked">
-                                        <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                            <div class="uk-width-medium-1-2">
-                                                <label class="uk-form-label" for="form-singleproduct-name">Name</label>
-                                                <input type="text" placeholder="Enter your first name..." id="form-singleproduct-name" class="uk-width-1-1 uk-form-large">
-                                            </div>
-                                            <div class="uk-width-medium-1-2">
-                                                <label class="uk-form-label" for="form-singleproduct-mail">E-Mail</label>
-                                                <input type="text" placeholder="E-Mail address" id="form-singleproduct-mail" class="uk-width-1-1 uk-form-large">
-                                            </div>
-                                            <div class="uk-width-1-1">
-                                                <label class="uk-form-label" for="form-singleproduct-review">Review</label>
-                                                <textarea rows="6" placeholder="Enter you review..." id="form-singleproduct-review" class="uk-width-1-1 uk-form-large"></textarea>
-                                            </div>
-                                            <div class="uk-width-1-1 uk-clearfix">
-                                                <div class="uk-float-left">
-                                                    Rate the product:
-                                                    <i class="uk-icon-star uk-text-primary"></i>
-                                                    <i class="uk-icon-star uk-text-primary"></i>
-                                                    <i class="uk-icon-star uk-text-primary"></i>
-                                                    <i class="uk-icon-star"></i>
-                                                    <i class="uk-icon-star"></i>
-                                                </div>
-                                                <button class="uk-button bh-button uk-float-right">Submit</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                -->
                             </div>
                         </li>
                     </ul>
@@ -265,7 +207,7 @@
 		            
 	                -->
 	        		<label for="profile_time_picker">Choose A Date:</label><br /> 
-				    <input type="text" id="profile_time_picker" id="profile_date_picker" data-uk-timepicker="{format:'12h'}"><br />
+				    <input type="text" id="profile_time_picker" data-uk-timepicker="{format:'12h'}"><br />
 				    <label for="profile_date_picker">Choose A Time:</label><br />
 				    <input type="text" id="profile_date_picker" data-uk-datepicker="{format:'MM.DD.YYYY'}">
 	            </form>

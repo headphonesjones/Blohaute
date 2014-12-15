@@ -3,6 +3,8 @@ from django.template.defaultfilters import floatformat
 from localflavor.us.forms import USZipCodeField, USPhoneNumberField, USStateField
 from booking.models import Package, Membership, Treatment
 from booking.fields import CreditCardField, ExpiryDateField, VerificationValueField
+
+
 class QuickBookForm(forms.Form):
     treatment = forms.ModelChoiceField(queryset=Treatment.objects.all(),
                                        widget=forms.HiddenInput())

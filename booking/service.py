@@ -2,7 +2,7 @@ import json
 from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
-from booking.models import Setting
+from booking.models import Setting, Treatment
 from datetime import timedelta, datetime
 import calendar
 import time
@@ -104,22 +104,40 @@ class BookerClient(object):
 
 
 class AvailableTimeSlot(object):
-        single_employee_slots = []
-        multiple_employee_slots = []
-        raw_time = None
-        pretty_time = ''
+    single_employee_slots = []
+    multiple_employee_slots = []
+    raw_time = None
+    pretty_time = ''
 
-        def __init__(self):
-            self.single_employee_slots = []
-            self.multiple_employee_slots = []
-            self.raw_time = None
-            self.pretty_time = ''
+    def __init__(self):
+        self.single_employee_slots = []
+        self.multiple_employee_slots = []
+        self.raw_time = None
+        self.pretty_time = ''
 
-        def __eq__(self, other):
-            return self.pretty_time == other.pretty_time
+    def __eq__(self, other):
+        return self.pretty_time == other.pretty_time
 
-        def __hash__(self):
-            return hash(self.pretty_time)
+    def __hash__(self):
+        return hash(self.pretty_time)
+
+
+class UpcomingAppointment(object):
+    appointment_id = None
+    time = None
+    date = None
+    treatment = None
+
+    def __init__(self, appointment_id, appt_time, date, service_id, service_name):
+        self.appointment_id = appointment_id
+        self.date = date
+        self.time = appt_time
+        self.treatment_id = service_id
+        self.treatment_name = service_name
+        self.treatment = Treatment.objects.filter(booker_id=service_id)
+
+    def __str__(self):
+        return self.treatment + " at " + self.appt_time + " on " + self.date
 
 
 class BookerCustomerClient(BookerClient):
@@ -201,15 +219,13 @@ class BookerCustomerClient(BookerClient):
                   'client_secret': settings.BOOKER_API_SECRET}
         response = BookerRequest('/customer/login', self.token, params).post()
         response = self.process_response(response)
-        if (response['access_token']):
+        if response['access_token']:
             self.customer_token = response['access_token']
             self.customer_password = password
             self.customer = response['Customer']['Customer']
             self.customer_id = response['Customer']['CustomerID']
         else:
-            raise ValidationError(
-                response['error']
-                )
+            raise ValidationError(response['error'])
 
         return response['access_token']
 
@@ -249,18 +265,19 @@ class BookerCustomerClient(BookerClient):
             'CustomerID': self.customer_id,
             'LocationID': self.location_id
         }
-        response = BookerAuthedRequest('/appointments', self.token, params).post()
+        response = BookerAuthedRequest('/appointments', self.customer_token, params).post()
         upcoming = self.process_response(response)
         result = []
         for itinerary in upcoming['Results']:
             for appointment in itinerary['AppointmentTreatments']:
                 if itinerary['Status']['ID'] == 2:
                     appointment_id = appointment['AppointmentID']
-                    result.append({
-                        'appointment_id': appointment_id,
-                        'time': self.parse_as_time(self.parse_date(appointment['StartDateTime'])),
-                        'date': self.parse_as_date(self.parse_date(appointment['StartDateTime'])),
-                        'service_name': appointment['Treatment']['Name']})
+                    start_time = self.parse_date(appointment['StartDateTime'])
+                    result.append(UpcomingAppointment(appointment_id,
+                                                      self.parse_as_time(start_time),
+                                                      self.parse_as_date(start_time),
+                                                      appointment['Treatment']['ID'],
+                                                      appointment['Treatment']['Name']))
 
         return result
 
@@ -268,7 +285,9 @@ class BookerCustomerClient(BookerClient):
         params = {
             'ID': appointment_id
         }
+        print('params for delete %s' % appointment_id)
         response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
+        print(response)
         return self.process_response(response)
 
     # def reschedule_appointment(self):
@@ -280,8 +299,8 @@ class BookerCustomerClient(BookerClient):
                 treatments.append({'TreatmentID': treatment['treatment_id']})
 
         itinerary = [{
-                'IsPackage': False,
-                'Treatments': treatments}]
+                         'IsPackage': False,
+                         'Treatments': treatments}]
 
         params = {'StartDateTime': self.format_date_for_booker_json(start_date),
                   'EndDateTime': self.format_date_for_booker_json(end_date),
@@ -329,14 +348,16 @@ class BookerCustomerClient(BookerClient):
             print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
             if len(emp_list) == 1:
                 avail_time_slot.single_employee_slots.append(itinerary_option)
-            elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
+            elif len(
+                    emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
                 avail_time_slot.multiple_employee_slots.append(itinerary_option)
             # avail_time_slot.single_employee_slots = singles
             # avail_time_slot.multiple_employee_slots = multi
             times.append(avail_time_slot)
         return times
 
-    def book_appointment(self, itinerary, address, city, state, zipcode, ccnum, name_on_card, expyear, expmonth, cccode, billingzip):
+    def book_appointment(self, itinerary, address, city, state, zipcode, ccnum, name_on_card, expyear, expmonth, cccode,
+                         billingzip):
         adjusted_customer = self.customer
         print(adjusted_customer)
         if adjusted_customer is None:
@@ -362,7 +383,8 @@ class BookerCustomerClient(BookerClient):
                     'CreditCard': {
                         'BillingZip': billingzip,
                         'NameOnCard': name_on_card,
-                        'ExpirationDate': self.format_date_for_booker_json(datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
+                        'ExpirationDate': self.format_date_for_booker_json(
+                            datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
                         'Number': ccnum,
                         'SecurityCode': cccode,
                         'Type': {
@@ -382,7 +404,7 @@ class BookerCustomerClient(BookerClient):
         print(params)
 
         return BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
-        
+
     def process_response(self, response):
         formatted_response = response.json()
         print 'response is %s' % formatted_response
@@ -415,7 +437,8 @@ class BookerCustomerClient(BookerClient):
                 )
         if error_code != 0:
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (response.original_request.path, response.original_request.params, error_code, formatted_response['ErrorMessage']))
+                  (response.original_request.path, response.original_request.params, error_code,
+                   formatted_response['ErrorMessage']))
             # Nathan, should I raise something here? or return some different response?
             # Not super sure how to do error handling so Im just printing for now
         return formatted_response

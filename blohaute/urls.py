@@ -11,13 +11,6 @@ urlpatterns = patterns(
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),
     
-    
-    #to be rempved
-    url(r'^old_blowouts/', TemplateView.as_view(template_name="blowouts.html"), name='blowouts'),
-    url(r'^old_braids/', TemplateView.as_view(template_name="braids.html"), name='braids'),
-    url(r'^old_upstyles/', TemplateView.as_view(template_name="upstyles.html"), name='upstyles'),
-    
-
     url(r'^contact/', TemplateView.as_view(template_name="contact.html"), name='contact'),
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),

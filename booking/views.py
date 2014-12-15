@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from booking.forms import AddToCartForm, QuickBookForm, ContactForm
+from booking.forms import AddToCartForm, QuickBookForm, ContactForm, CheckoutForm, CouponForm
 from booking.models import Treatment
 from accounts.forms import AuthenticationRememberMeForm
 
@@ -60,43 +60,44 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
-# def unavailable_days(request):
-#     client = request.session['client']
-#     unavailable_days = client.get_unavailable_days_in_range()
-#
-#     response = "beforeShowDay: function(date) {" \
-#                "    var day = date.getDate(); " \
-#                "    var month = date.getMonth(); " \
-#                "    var year = date.getFullYear();" \
-#                "    var full = year + \"-\" + month + \"-\" + day;"
-#                "    if ((day == 27 || day == 26) && date.getMonth()+1 == 9 && date.getFullYear() == 2014) { " \
-#                "return {0: false}} else {return {0: true}}}"
-#     return HttpResponse(response)
+def process_remember_me(request):
+    remember_me_form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+
 
 @csrf_protect
 def checkout(request):
-    form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+    print("post is %r" % request.method)
+    # if request.method == 'GET':
+    coupon_form = CouponForm(prefix='coupon')
+    remember_me_form = AuthenticationRememberMeForm(prefix='login')
 
     if request.method == 'POST':
-        if ('login-password') in request.POST:
-
-            if form.is_valid():
-                if not form.cleaned_data.get('remember_me'):
+        if 'login-password' in request.POST:
+            remember_me_form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+            if remember_me_form.is_valid():
+                if not remember_me_form.cleaned_data.get('remember_me'):
                     request.session.set_expiry(0)
 
-                user = form.get_user()
+                user = remember_me_form.get_user()
                 client = request.session['client']
                 try:
-                    client.login(user.email, request.POST['password'])
+                    client.login(user.email, remember_me_form.cleaned_data.get('password'))
                     client.user = user
-                    auth_login(request, form.get_user())
+                    auth_login(request, remember_me_form.get_user())
                     return HttpResponseRedirect(reverse('welcome'))
 
                 except ValidationError as e:
-                    form.add_error(None, e)
+                    remember_me_form.add_error(None, e)
 
+        if 'coupon-coupon_code' in request.POST:
+            coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
+            if coupon_form.is_valid():
+                coupon = coupon_form.cleaned_data.get('coupon_code')
+                client = request.session['client']
+                print('coupon is %s' % coupon)
+                # find out if its good or not and do stuff?  Get and print value?  Whatever
 
-    return render(request, 'checkout.html', {'login_form': form})
+    return render(request, 'checkout.html', {'coupon_form': coupon_form, 'login_form': remember_me_form})
 
 
 def contact_view(request):
@@ -108,8 +109,7 @@ def contact_view(request):
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            #send email
-            send_mail('New Message recieved from %s' % form.cleaned_data['name'],
+            send_mail('New Message received from %s' % form.cleaned_data['name'],
                       form.cleaned_data['message'], 'contact@blohaute.com',
                       ['ajsporinsky@gmail.com'], fail_silently=True)
 

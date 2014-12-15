@@ -45,6 +45,10 @@ class AddToCartForm(forms.Form):
         return Package.objects.filter(treatment=self.treatment).get(pk=package)
 
 
+class CouponForm(forms.Form):
+    coupon_code = forms.CharField()
+
+
 class CheckoutForm(forms.Form):
     #appointment location
     company_name = forms.CharField(required=False)
@@ -58,9 +62,9 @@ class CheckoutForm(forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
     billing_address = forms.CharField()
-    city = forms.CharField()
-    state = USStateField()
-    zip_code = USZipCodeField()
+    billing_city = forms.CharField()
+    billing_state = USStateField()
+    billing_zip_code = USZipCodeField()
     email_address = forms.EmailField()
     phone_number = USPhoneNumberField()
     create_account = forms.BooleanField(initial=False, required=False)
@@ -68,6 +72,7 @@ class CheckoutForm(forms.Form):
     card_number = CreditCardField(required=True)
     expiry_date = ExpiryDateField(required=True)
     card_code = VerificationValueField(required=True)
+
 
 class ContactForm(forms.Form):
     name = forms.CharField()

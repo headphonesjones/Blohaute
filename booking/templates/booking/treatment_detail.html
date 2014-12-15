@@ -83,12 +83,6 @@
                                 {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}
                                 <ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}
                             </p>
-                            <div>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                            </div>
                             <hr>
                             <p>{{treatment.description}}</p>
                             <hr>
@@ -129,6 +123,99 @@
             </div>
 
             <div class="uk-width-1-1">
+<<<<<<< HEAD
+                <div class="uk-panel uk-panel-header">
+                    <div class="uk-panel-title">There’s more looks where that came from.</div>
+                    <div class="slick-slider" data-uk-check-display>
+                        <div>
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'braids' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute braids">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/braid-1.jpg' %}" width="720" height="540" alt="Blohaute braids">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">View Braid Services</a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Braids</a></h3>                              
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">Advanced Braids $50</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="uk-panel">
+                            <!--
+                                <div class="uk-panel-badge uk-badge uk-badge-danger">Holiday Discounts</div>
+                                -->
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'blowouts' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute blowouts">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/blowout-1.jpg' %}" width="720" height="540" alt="Blohaute blowouts">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'blowouts' %}" class="uk-button uk-button-large uk-width-8-10">View Blowout Services</a>
+                                            <a href="{% url 'blowouts' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Blowouts</a></h3>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">
+                                    <del>$85</del><br class="uk-hidden-large">
+                                    <ins>$50</ins>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="uk-panel">
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'upstyles' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyles">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/upstyle-1.jpg' %}" width="720" height="540" alt="Blohaute Upstyles">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'upstyles' %}" class="uk-button uk-button-large uk-width-8-10">View Upstyle Services</a>
+                                            <a href="{% url 'upstyles' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Upstyles</a></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="uk-panel">
+                            <!--
+                                <div class="uk-panel-badge uk-badge">Going Quick</div>
+                                -->
+                                <div class="bh-product-overlay">
+                                    <a href="{% url 'braids' %}"></a>
+                                    <img class="bh-product-overlay-img" src="{% static 'images/keratin-treatment.jpg' %}" width="720" height="540" alt="Blohaute Keratin Treatment">
+                                    <img class="bh-product-overlay-img-hover" src="{% static 'images/keratin-treatment.jpg' %}" width="720" height="540" alt="Blohaute Keratin Treatment">
+                                    <div class="bh-product-overlay-content">
+                                        <div class="uk-button-group uk-width-1-1">
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-8-10">Keratin Treatment</a>
+                                            <a href="{% url 'braids' %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-float-left uk-margin-top">
+                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">Call or Email to Book</a></h3>
+                                </div>
+                                <span class="uk-float-right uk-margin-top uk-text-large">$85</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+=======
                 <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#shop-single-details'}">
                     <li class="uk-width-1-2 uk-active"><a href="#">Description</a></li>
                     <li class="uk-width-1-2 uk-disabled"><a href="#">Reviews</a></li>
@@ -246,6 +333,7 @@
             </div>
 
             {% treatment_slider %}
+>>>>>>> 558e3b595ca9532fb13945466bc7a979c8b7ff08
 
         </div>
     </div>

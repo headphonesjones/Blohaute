@@ -33,6 +33,12 @@ class Treatment(models.Model):
         if self.list_image and hasattr(self.list_image, 'url'):
             return self.list_image.url
 
+    @property
+    def thumb_image_url(self):
+        print self.thumb_image
+        if self.thumb_image and hasattr(self.list_image, 'url'):
+            return self.thumb_image.url
+
 
 class TreatmentImage(models.Model):
     treatment = models.ForeignKey(Treatment, related_name="images")

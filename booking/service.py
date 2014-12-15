@@ -119,6 +119,7 @@ class BookerCustomerClient(BookerClient):
     customer_password = None
     user = None
     customer = None
+    customer_id = None
 
     def get_services(self):
         """
@@ -169,6 +170,7 @@ class BookerCustomerClient(BookerClient):
         response = self.process_response(response)
         self.customer_token = response['access_token']
         self.customer = response['Customer']['Customer']
+        self.customer_id = response['Customer']['CustomerID']
         print response
         print("customer is %r" % self.customer)
         return response['access_token']
@@ -200,8 +202,17 @@ class BookerCustomerClient(BookerClient):
         This doesn't seem to work
         """
         params = {'CustomerID': self.customer.booker_id}
-        response = BookerRequest('/customer/%s' % self.customer.booker_id, self.token, params).delete()
+        response = BookerRequest('/customer/%s' % self.customer_id, self.token, params).delete()
         return self.process_response(response)
+
+    def get_upcoming(self):
+        params = {
+            'CustomerID': self.customer_id,
+            'LocationID': self.location_id
+        }
+        response = BookerRequest('/appointments', self.token, params).post()
+        return self.process_response(response)
+
 
     def format_date_for_booker_json(self, start_date):
         return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)

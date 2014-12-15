@@ -115,6 +115,13 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/series', self.token).post()
         return self.process_response(response)
 
+    def get_employees(self):
+        """
+        Returns packages for a spa/location
+        """
+        response = BookerRequest('/employees', self.token, {'LocationID': self.location_id}).post()
+        return self.process_response(response)
+
     def create_user(self, email, password, fname, lname, phone):
         """
         Create a new user account and customer
@@ -177,8 +184,18 @@ class BookerCustomerClient(BookerClient):
     def format_date_for_booker_json(self, start_date):
         return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
 
-    def test(self, treatments_requested):
-        return self.get_availability(treatments_requested, datetime.now(), datetime.now() + timedelta(days=2))
+    def date_range(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
 
     def get_availability(self, treatments_requested, start_date, end_date):
         treatments = []
@@ -196,45 +213,62 @@ class BookerCustomerClient(BookerClient):
                   'LocationID': self.location_id}
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
+        # print(response)
         return self.process_response(response)
 
-    def date_range(self, start_date, end_date):
-        for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
-
-    def get_unavailable_days_in_range(self, treatments_requested, start_date, end_date):
-        days = []
+    def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
+        end_date = start_date + timedelta(weeks=number_of_weeks)
+        days = set()
         for single_date in self.date_range(start_date, end_date + timedelta(days=1)):
-            days.append(single_date.strftime("%Y-%m-%d"))
-        days = set(days)
+            days.add(single_date.strftime("%Y-%m-%d"))
 
-        response = self.get_availability(treatments_requested, start_date, end_date)
-        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
-            print(date_key)
-            days.remove(date_key)
+        current_date = start_date
+        for i in range(0, number_of_weeks):
+            end_date = current_date + timedelta(weeks=1)
+            response = self.get_availability(treatments_requested, current_date, end_date)
+            for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+                date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
+                days.discard(date_key)
+            current_date = end_date
         return days
+
+    class AvailableTimeSlot(object):
+        single_employee_slots = []
+        multiple_employee_slots = []
+        raw_time = None
+        pretty_time = ''
+
+        def __eq__(self, other):
+            return self.pretty_time == other.pretty_time
+
+        def __hash__(self):
+            return hash(self.pretty_time)
 
     def get_available_times_for_day(self, treatments_requested, start_date):
         times = []
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         response = self.get_availability(treatments_requested, start_date, end_date)
-        for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            for timeslot in slot['TreatmentTimeSlots']:
-                # print(timeslot)
-                times.append(self.parse_date(timeslot['StartDateTime']).strftime("%I:%M %p"))
-        # for single_date in self.daterange(start_date, end_date):
-        return set(times)
+
+        print(response)
+        # When more than one employee, that 0 below goes away and we iterate
+        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            avail_time_slot = self.AvailableTimeSlot()
+            itin_time = self.parse_date(itinerary_option['StartDateTime'])
+            avail_time_slot.raw_time = itin_time
+            avail_time_slot.pretty_time = itin_time.strftime("%I:").lstrip('0') + \
+                                          itin_time.strftime("%M") + \
+                                          itin_time.strftime(" %p")
+            emp_list = set()
+            for time_slot in itinerary_option['TreatmentTimeSlots']:
+                emp_list.add(time_slot['EmployeeID'])
+            print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
+            if len(emp_list) == 1:
+                avail_time_slot.single_employee_slots.append(itinerary_option)
+            elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
+                avail_time_slot.multiple_employee_slots.append(itinerary_option)
+            times.append(avail_time_slot)
+        return times
 
     def book_appointment(self):
         # adjusted_customer = self.customer

@@ -103,6 +103,8 @@ def login(request):
 @login_required
 def profile_view(request):
     password_form = PasswordUpdateForm(user=request.user, prefix='password')
+    client = request.session['client']
+    upcoming = client.get_upcoming()
 
     if request.method == 'GET':
         pass
@@ -114,8 +116,6 @@ def profile_view(request):
                                                data=request.POST)
 
             if password_form.is_valid():
-                client = request.session['client']
-
                 try:  # try to update password on API
                     client.update_password(
                         request.user.email,
@@ -132,7 +132,8 @@ def profile_view(request):
 
     context = {
         'user': request.user,
-        'password_form': password_form
+        'password_form': password_form,
+        'upcoming': upcoming
     }
     return render(request, 'welcome.html', context)
 

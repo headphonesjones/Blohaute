@@ -83,12 +83,6 @@
                                 {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}
                                 <ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}
                             </p>
-                            <div>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                                <i class="uk-icon-star uk-text-primary"></i>
-                            </div>
                             <hr>
                             <p>{{treatment.description}}</p>
                             <hr>

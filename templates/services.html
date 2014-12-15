@@ -82,7 +82,10 @@
                                     {% csrf_token %}
                                     <input name="treatment" type="hidden" value={{treatment.pk}} />
                                     <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
-                                </form><br />
+                                </form>
+                                <br />
+                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}
+                                <ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
                             </div>
                         </div>
@@ -100,6 +103,8 @@
                                     <input name="treatment" type="hidden" value={{treatment.pk}} />
                                     <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
                                 </form><br />
+                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}
+                                <ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
 
                             </div>

@@ -45,6 +45,15 @@ class BookerRequest(Request):
         self.params = None
         return self.send()
 
+    def put(self):
+        self.method = 'PUT'
+        if self.token:
+            self.params['access_token'] = self.token
+        self.data = json.dumps(self.params)
+        self.original_params = self.params
+        self.params = None
+        return self.send()
+
     def get(self):
         self.method = 'GET'
         if self.token:
@@ -210,7 +219,14 @@ class BookerCustomerClient(BookerClient):
             'CustomerID': self.customer_id,
             'LocationID': self.location_id
         }
-        response = BookerRequest('/appointments', self.token, params).post()
+        response = BookerAuthedRequest('/appointments', self.token, params).post()
+        return self.process_response(response)
+
+    def cancel_appointment(self, appointment_id):
+        params = {
+            'ID': appointment_id
+        }
+        response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
         return self.process_response(response)
 
 
@@ -340,7 +356,7 @@ class BookerCustomerClient(BookerClient):
 
         print(params)
 
-        return BookerRequest('/appointment/create', self.customer_token, params).post()
+        return BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
         
     def process_response(self, response):
         print 'response is %s' % response

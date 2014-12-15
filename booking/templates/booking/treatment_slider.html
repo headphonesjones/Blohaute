@@ -1,30 +1,31 @@
 {% load staticfiles %}
 
 <div class="uk-width-1-1">
-                <div class="uk-panel uk-panel-header">
-                    <div class="uk-panel-title">There’s more looks where that came from.</div>
-                    <div class="slick-slider" data-uk-check-display>
-                        {% for treatment in treatments %}
-                        <div>
-                            <div class="uk-panel">
-                                <div class="bh-product-overlay">
-                                    <a href="{% url 'treatment_detail' treatment.slug %}"></a>
-                                    <img class="bh-product-overlay-img" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
-                                    <img class="bh-product-overlay-img-hover" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
-                                    <div class="bh-product-overlay-content">
-                                        <div class="uk-button-group uk-width-1-1">
-                                            <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button uk-button-large uk-width-8-10">View {{treatment.name}} Services</a>
-                                            <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-float-left uk-margin-top">
-                                    <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">{{treatment.name}}</a></h3>                              
-                                </div>
-                                <span class="uk-float-right uk-margin-top uk-text-large">${{treatment.price|floatformat:"-2"}}</span>
+    <div class="uk-panel uk-panel-header">
+        <div class="uk-panel-title">There’s more looks where that came from.</div>
+        <div class="slick-slider" data-uk-check-display>
+            {% for treatment in treatments %}
+            <div>
+                <div class="uk-panel">
+                    <div class="bh-product-overlay">
+                        <a href="{% url 'treatment_detail' treatment.slug %}"></a>
+                        <img class="bh-product-overlay-img" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
+                        <img class="bh-product-overlay-img-hover" src="{{treatment.list_image_url}}" width="720" height="540" alt="Blohaute braids">
+                        <div class="bh-product-overlay-content">
+                            <div class="uk-button-group uk-width-1-1">
+                                <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button uk-button-large uk-width-8-10">View {{treatment.name}} Services</a>
+                                <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button uk-button-large uk-width-2-10"><i class="uk-icon-star"></i></a>
                             </div>
                         </div>
-                        {% endfor %}
-                        </div>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="uk-float-left uk-margin-top">
+                        <h3 class="uk-margin-small-bottom uk-link-reset"><a href="#">{{treatment.name}}</a></h3>                              
+                    </div>
+                    <span class="uk-float-right uk-margin-top uk-text-large">${{treatment.price|floatformat:"-2"}}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<br /><br /><br />

@@ -184,9 +184,8 @@
                         <div class="uk-panel uk-panel-space uk-text-center-small">
                             <p class="bh-text-uppercase">Services</p>
                             <ul class="uk-list">
-                                <li><a href="#">Blowouts</a></li>
-                                <li><a href="#">Braids</a></li>
-                                <li><a href="#">All Services</a></li>
+                                {% service_menu %}
+                                <a href="{% url 'book' %}">All Services</a>
                             </ul>
                         </div>
                     </div>
@@ -271,15 +270,7 @@
                     </form>
                     <ul class="uk-nav uk-nav-offcanvas">
                         <ul class="uk-nav-sub">
-                            <li>
-                                <a href="#oldurl">Book Blowouts</a>
-                            </li>
-                            <li>
-                                <a href="braids.html">Book Braids</a>
-                            </li>
-                            <li>
-                                <a href="upstyles.html">Book Upstyles</a>
-                            </li>
+                            {% service_menu %}
                         </ul>
                         <li class="uk-parent">
                             <a href="{% url 'home' %}">Home</a>

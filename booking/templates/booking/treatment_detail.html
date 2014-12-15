@@ -78,23 +78,23 @@
                                                 {% endfor %}
                                         </div>
                                         {% endif %}
-                                    {% if treatment.booker_id %}
-                                        <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US TO BOOK</button></a>
-                                    {% else %}
-                                        <div class="uk-width-1-1" data-uk-margin>
-                                             <label for="blowoutPackages"><b>{{treatment.name}} Packages</b></label><br />
+                                        {% if treatment.booker_id %}
+                                            <div class="uk-width-1-1" data-uk-margin>
+                                                 <label for="blowoutPackages"><b>{{treatment.name}} Packages</b></label><br />
 
-                                            {{add_to_cart_form.package}}
-                                        </div>
-                                        <br/>
-                                        {% if treatment.memberships.all %}
-                                        <div class="uk-width-1-1" data-uk-margin>
-                                             <label for="blowoutPackages"><b>{{treatement.name}} Memberships</b></label><br />
-                                            {{add_to_cart_form.membership}}
-                                        </div>
-                                        {% endif %}
-                                        <br />
-                                    {% endif %} 
+                                                {{add_to_cart_form.package}}
+                                            </div>
+                                            <br/>
+                                            {% if treatment.memberships.all %}
+                                            <div class="uk-width-1-1" data-uk-margin>
+                                                 <label for="blowoutPackages"><b>{{treatement.name}} Memberships</b></label><br />
+                                                {{add_to_cart_form.membership}}
+                                            </div>
+                                            {% endif %}
+                                            <br />
+                                        {% else %}
+                                            <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US</button></a>
+                                        {% endif %} 
                                         <br />
                                     <div class="uk-button-group">
                                         <button class="uk-button uk-button-primary uk-button-large">Add to cart</button>

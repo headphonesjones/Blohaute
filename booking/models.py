@@ -29,8 +29,9 @@ class Treatment(models.Model):
 
     @property
     def list_image_url(self):
+        print self.list_image
         if self.list_image and hasattr(self.list_image, 'url'):
-            return self.list_image.uul
+            return self.list_image.url
 
 
 class TreatmentImage(models.Model):

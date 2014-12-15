@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block page_title %}Reschedule Appointment{% endblock %}
+
+{% block content %}
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid uk-grid-divider" data-uk-grid-margin="">
+            <div class="uk-width-1-1">
+                    <h2 class="bh-headline-bottom-border"><span>Reschedule an Upcoming Appointment</span></h2>
+            </div>
+            <div class="uk-width-1-3">
+                <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
+                    <button class="uk-button">Available Services to Book <i class="uk-icon-caret-down"></i></button>
+                    <div style="" class="uk-dropdown">
+                        <ul class="uk-nav uk-nav-dropdown">
+                            <li class="uk-nav-header">Services</li>
+                            <li><a href="#">Blowout (2)</a></li>
+                            <li><a href="#">Braid (1)</a></li>
+                            <li><a href="#">Upstyles (1)</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <br />
+                <br />
+                <table class="uk-table uk-table-middle uk-text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="uk-text-center">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a href="{% url 'braids' %}">
+                                    <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
+                                </a>
+                            </td>
+                            <td>
+                                <a class="bh-text-uppercase uk-link-reset" href="{% url 'braids' %}">Blowout</a><br>
+                                <span class="uk-text-muted uk-text-small">No. 097744</span>
+                            </td>
+                            <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
+                            
+                        </tr>
+                    </tbody>
+                </table>                
+            </div>
+            <div class="uk-width-1-4">
+                <form class="uk-form">
+                    <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
+                        <button class="uk-button">Choose Your Stylist <i class="uk-icon-caret-down"></i></button>
+                        <div style="" class="uk-dropdown">
+                            <ul class="uk-nav uk-nav-dropdown">
+                                <li class="uk-nav-header">Stylists</li>
+                                <li><a href="#">No Preference</a></li>
+                                <li><a href="#">Amanda D.</a></li>
+                                <li><a href="#">Amanda L.</a></li>
+                                <li><a href="#">Morgan S.</a></li>
+                                <li><a href="#">Tara</a></li>
+                            </ul>
+                        </div>
+                    </div><br /><br />
+                    <!-- 
+                            var datepicker = $.UIkit.datepicker($('#profile_date_picker'), { format:'MM.DD.YYYY'}); 
+                            URL: http://getuikit.com/docs/addons_datepicker.html
+                    
+                    -->
+                    <label for="profile_time_picker">Choose A Date:</label><br /> 
+                    <input type="text" id="profile_time_picker" id="profile_date_picker" data-uk-timepicker="{format:'12h'}"><br />
+                    <label for="profile_date_picker">Choose A Time:</label><br />
+                    <input type="text" id="profile_date_picker" data-uk-datepicker="{format:'MM.DD.YYYY'}">
+                </form>
+            </div>
+            <div class="uk-width-1-3">
+                <h2 class="bh-headline-bottom-border"><span>Address for Services</span></h2>
+                <a href="">717 West Roscoe</a><br />
+                <a href="">Chicago, IL</a><br />
+                <a href="">60657</a><br /><br />
+                <button class="uk-button uk-button-success">Change Address</button><br /><br />
+                <button class="uk-button uk-button-success">Book Now <i class="uk-icon-calendar"></i></button>
+            </div>
+        </div>
+        <div class="uk-width-small-1-1">
+            <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-1-1">
+                <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#account-info-details'}">
+                    <li class="uk-active"><a href="">Change Password</a></li>
+                    <li><a href="">Billing Info</a></li>
+                    <li><a href="">Change Email</a></li>
+                    <li><a href="">Delete Account</a></li>
+                </ul>
+                <ul id="account-info-details" class="uk-switcher uk-margin">
+                    <li>
+                        {% include "registration/password_update.html" %} 
+                    </li>
+                    <li>
+                        <div class="uk-grid">
+                            <div class="uk-width-1-10">
+                                <i id="personal_info_home" class="uk-icon uk-icon-home"></i>
+                            </div>
+
+                            <div class="uk-width-9-10">
+                                <a href="">717 West Roscoe</a><br />
+                                <a href="">Chicago, IL</a><br />
+                                <a href="">60657</a><br /><br />
+                                <button class="uk-button uk-button-success">Change Address</button>
+                            </div>
+
+                        </div>
+                    </li>
+                    <li>
+                        <form class="uk-form uk-form">
+                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
+                                <div class="uk-width-large-1-1">
+                                    <label class="uk-form-label" for="form-contact-name">New Email Address</label>
+                                    <input type="email" placeholder="New Email" id="form-profile-email-change" class="uk-width-1-1 uk-form-large"><br /><br />
+                                    <button class="uk-button uk-button-success">Change Email</button>
+                                </div>
+                            </div>
+                        </form> 
+                    </li>
+                    <li>
+                        <div class="uk-grid">
+                            <div class="uk-width-1-1">
+                            <a href="{% url 'delete_user' %}" class="uk-button uk-button-danger">Delete Account</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br />
+{% endblock %}

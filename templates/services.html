@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
+{% block page_title %}Book{% endblock %}
+
 {% block content %}
 <div class="bh-position bh-position-light bh-position-title">
     <div class="uk-container uk-container-center">
@@ -109,7 +111,7 @@
                         </div>
                         <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
                             <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="{{treatment.list_image_url}}" width="800" height="400" alt="Collection Image" data-demo-style>
+                                <img class="bh-img-height-1-1 uk-float-right" src="{{treatment.list_image_url}}" width="800" height="400" alt="Collection Image" data-demo-style>                            
                             </div>
                         </div>
                     </div>

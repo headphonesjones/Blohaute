@@ -194,8 +194,8 @@
                         <div class="uk-panel uk-panel-space uk-text-center-small">
                             <p class="bh-text-uppercase">Company</p>
                             <ul class="uk-list uk-panel-space">
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Our Stylists</a></li>
+                                <li><a href="{% url 'about' %}">About Us</a></li>
+                                <li><a href="{% url 'stylists' %}">Our Stylists</a></li>
                                 <li><a href="#">Work with Us</a></li>
                             </ul>
                         </div>
@@ -206,7 +206,7 @@
                             <p class="bh-text-uppercase">Help</p>
                             <ul class="uk-list">
                                 <li><a href="#">FAQ</a></li>
-                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="{% url 'contact' %}">Contact Us</a></li>
                             </ul>
                         </div>
                     </div>

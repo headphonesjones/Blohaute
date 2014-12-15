@@ -3,6 +3,29 @@ import json
 
 class IdCache:
     treatments_ids = {'Updo': 1500556, 'Braid': 1500553, 'Blow Out': 1500539}
+    employees = {'Amanda I': 322953,
+                 'Amanda S/D': 319599,
+                 'Jessie Hitzeman': 319544,
+                 'Morgan': 319549,
+                 'Jesse Scheele': 322667,
+                 'April Telman': 322866}
+
+
+class AvailableTimeSlot(object):
+    single_employee_slots = []
+    multiple_employee_slots = []
+    pretty_time = ''
+
+    def __eq__(self, other):
+        return self.pretty_time == other.pretty_time
+
+    def __hash__(self):
+        return hash(self.pretty_time)
+
+    def __str__(self):
+        return "%s has %d single and %d multiple employee slots" % (self.pretty_time,
+                                                                    len(self.single_employee_slots),
+                                                                    len(self.multiple_employee_slots))
 
 
 class JSONSerializable:

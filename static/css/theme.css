@@ -9202,7 +9202,7 @@ a.bh-link-primary:focus {
 .bh-button-secondary {
   position: relative;
   z-index: 0;
-  border: 2px solid #D85076;
+  border: 2px solid #9e314e;
   background: rgba(255, 255, 255, 0) !important;
   color: #D85076;
   -webkit-transition: height 0.25s, color 0.25s;
@@ -9225,7 +9225,7 @@ a.bh-link-primary:focus {
 }
 .bh-button-secondary:hover,
 .bh-button-secondary:active {
-  border-color: #D85076;
+  border-color: #9e314e;
   color: #ffffff;
 }
 .bh-button-secondary:hover:after,

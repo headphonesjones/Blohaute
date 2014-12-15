@@ -92,17 +92,13 @@
                                             </div>
                                             {% endif %}
                                             <br />
-                                        {% else %}
-                                            <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US TO BOOK</button></a>
-                                        {% endif %} 
                                         <br />
-                                    {% if treatment.booker_id %}
                                     <div class="uk-button-group">
                                         <button class="uk-button uk-button-primary uk-button-large">Add to cart</button>
                                         <button class="uk-button uk-button-primary uk-button-large"><i class="uk-icon-star"></i></button>
                                     </div>
                                     {% else %}
-
+                                        <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US TO BOOK</button></a>
                                     {% endif %} 
                                 </div>
                             </form>

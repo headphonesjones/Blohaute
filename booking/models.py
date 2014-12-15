@@ -27,8 +27,10 @@ class Treatment(models.Model):
     def cart_description(self):
         return self.name
 
-    def primary_image(self):
-        return self.images.filter(primary_image=True).first()
+    @property
+    def list_image_url(self):
+        if self.list_image and hasattr(self.list_image, 'url'):
+            return self.list_image.uul
 
 
 class TreatmentImage(models.Model):

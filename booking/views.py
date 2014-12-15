@@ -1,12 +1,16 @@
 from django.contrib import messages
+from django.contrib.auth import login as auth_login
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.forms import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, QuickBookForm, ContactForm
 from booking.models import Treatment
+from accounts.forms import AuthenticationRememberMeForm
 
 
 class TreatmentList(ListView):
@@ -68,6 +72,31 @@ class TreatmentDetail(DetailView):
 #                "    if ((day == 27 || day == 26) && date.getMonth()+1 == 9 && date.getFullYear() == 2014) { " \
 #                "return {0: false}} else {return {0: true}}}"
 #     return HttpResponse(response)
+
+@csrf_protect
+def checkout(request):
+    form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+
+    if request.method == 'POST':
+        if ('login-password') in request.POST:
+
+            if form.is_valid():
+                if not form.cleaned_data.get('remember_me'):
+                    request.session.set_expiry(0)
+
+                user = form.get_user()
+                client = request.session['client']
+                try:
+                    client.login(user.email, request.POST['password'])
+                    client.user = user
+                    auth_login(request, form.get_user())
+                    return HttpResponseRedirect(reverse('welcome'))
+
+                except ValidationError as e:
+                    form.add_error(None, e)
+
+
+    return render(request, 'checkout.html', {'login_form': form})
 
 
 def contact_view(request):

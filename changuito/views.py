@@ -29,3 +29,5 @@ def update_quanity(request):
         else:
             print 'form invalid'
         return HttpResponseRedirect(reverse('cart'))
+
+

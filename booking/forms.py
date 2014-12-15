@@ -1,8 +1,8 @@
 from django import forms
-from booking.models import Package, Membership, Treatment
 from django.template.defaultfilters import floatformat
-
-
+from localflavor.us.forms import USZipCodeField, USPhoneNumberField, USStateField
+from booking.models import Package, Membership, Treatment
+from booking.fields import CreditCardField, ExpiryDateField, VerificationValueField
 class QuickBookForm(forms.Form):
     treatment = forms.ModelChoiceField(queryset=Treatment.objects.all(),
                                        widget=forms.HiddenInput())
@@ -42,6 +42,30 @@ class AddToCartForm(forms.Form):
 
         return Package.objects.filter(treatment=self.treatment).get(pk=package)
 
+
+class CheckoutForm(forms.Form):
+    #appointment location
+    company_name = forms.CharField(required=False)
+    address = forms.CharField()
+    city = forms.CharField()
+    state = USStateField()
+    zip_code = USZipCodeField()
+    notes = forms.CharField(widget=forms.Textarea(), required=False)
+
+    #billing Information
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    billing_address = forms.CharField()
+    city = forms.CharField()
+    state = USStateField()
+    zip_code = USZipCodeField()
+    email_address = forms.EmailField()
+    phone_number = USPhoneNumberField()
+    create_account = forms.BooleanField(initial=False, required=False)
+
+    card_number = CreditCardField(required=True)
+    expiry_date = ExpiryDateField(required=True)
+    card_code = VerificationValueField(required=True)
 
 class ContactForm(forms.Form):
     name = forms.CharField()

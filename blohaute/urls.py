@@ -1,8 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
-from booking.views import TreatmentList, TreatmentDetail, contact_view, upcoming_view
-from changuito.views import shopping_cart
+from booking.views import TreatmentList, TreatmentDetail, contact_view, upcoming_view, checkout
 
 urlpatterns = patterns(
     '',
@@ -17,7 +16,7 @@ urlpatterns = patterns(
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),
     
     url(r'^cart/', include('changuito.urls')),
-    url(r'^checkout/', TemplateView.as_view(template_name="checkout.html"), name='checkout'),
+    url(r'^checkout/', checkout, name='checkout'),
     url(r'^password_lost/', TemplateView.as_view(template_name="password.html"), name='password'),
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),

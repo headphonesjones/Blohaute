@@ -24,31 +24,58 @@
         <article class="uk-article">
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
+                    {% if request.user.is_authenticated %}
+                    <div class="uk-alert uk-margin-bottom-remove uk-alert-success">
+                        <i class="uk-icon-check uk-margin-right"></i>Welcome back!
+                    </div>
+
+                    {% else %}
                     <div class="uk-alert uk-margin-bottom-remove">
                         <i class="uk-icon-info-circle uk-margin-right"></i>Returning customer? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-login', animation: 'uk-animation-fade'}">Click here to login</a>
                     </div>
                     <div class="uk-panel uk-panel-space uk-hidden" id="checkout-login">
-                        <form class="uk-form">
+                         <form method="POST" class="uk-form" id="login-form">
+                            {% csrf_token %}
                             <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                <p>Qui animated corpse, cricket bat max brucks terribilem incessu zomby. The voodoo sacerdos flesh eater, suscitat mortuos comedere carnem virus. Zonbi tattered for solum oculi.</p>
-                                <div class="uk-width-medium-1-2">
-                                    <label class="uk-form-label" for="form-checkout-name">Username</label>
-                                    <input type="text" placeholder="Enter your username..." class="uk-form-large uk-width-1-1" id="form-checkout-name">
+                                {% if login_form.errors %}
+                                    <div class="uk-width-1-1">
+                                        <div class="uk-alert uk-alert-danger ">
+                                            {% if login_form.non_field_errors %}
+                                                {% for error in login_form.non_field_errors %}
+                                                    <p>{{error}}</p>
+                                                {% endfor %}
+                                            {% else %}
+                                                There was a problem signing in. Please check the form and make sure that everything is filled out correctly.
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="uk-width-1-1 uk-text-center">
+                                    <h3>I'm already a member</h3>
+                                    <p>Welcome back!</p>
                                 </div>
-                                <div class="uk-width-medium-1-2">
-                                    <label class="uk-form-label" for="form-checkout-password">Password</label>
-                                    <input type="text" placeholder="******" class="uk-form-large uk-width-1-1" id="form-checkout-password">
-                                </div>
+                                    <div class="uk-width-1-2">
+                                        {% include "registration/field_snippet.html" with field=login_form.username %}
+                                    </div>
+                                    <div class="uk-width-1-2">
+                                        {% include "registration/field_snippet.html" with field=login_form.password %}
+                                    </div>
                                 <div class="uk-width-1-1">
-                                    <button class="uk-button">Login</button>
-                                    <label class="uk-margin-left"><input type="checkbox"> Remember me</label>
-                                    <a class="uk-margin-left" href="#">Lost Password?</a>
+                                    <button class="uk-button uk-text-center">Login</button>
+                                        <label class="uk-margin-left">{{login_form.remember_me}} {{login_form.remember_me.label}}</label>
+
+
+                                    <a class="uk-margin-left" href="{% url 'password' %}">Lost Password?</a>
                                 </div>
                             </div>
                         </form>
-                    </div>
+                     </div>
                 </div>
+                  {% endif %}
 
+  
                 <div class="uk-width-1-1">
                     <div class="uk-alert uk-margin-bottom-remove">
                         <i class="uk-icon-info-circle uk-margin-right"></i>Have a Coupon? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-coupon', animation: 'uk-animation-fade'}">Click here to enter your code</a>
@@ -60,9 +87,11 @@
                         </form>
                     </div>
                 </div>
+                
+                
                 <div class="uk-width-medium-1-2">
                     <h2 class="bh-headline-bottom-border"><span>Location of Appointment</span></h2>
-                    <form class="uk-form uk-form-stacked">
+                    <div class="uk-form uk-form-stacked">
                         <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
 
                             <div class="uk-width-1-1">                                
@@ -91,7 +120,7 @@
                             </div>
 
                         </div>
-                    </form>
+                    </div>
                 </div>
                 {% if user.is_authenticated %}
                 <div class="uk-width-medium-1-2">
@@ -99,7 +128,7 @@
                 {% else %}
                 <div class="uk-width-medium-1-2">
                     <h2 class="bh-headline-bottom-border"><span>Billing Information</span></h2>
-                    <form class="uk-form uk-form-stacked">
+                    <div class="uk-form uk-form-stacked">
                         <button class="uk-button uk-button-success uk-margin-small-top" type="button"><i class="uk-icon-info-circle"></i> Same as appointment location? Click me</button><br><br>
                         <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
 
@@ -141,7 +170,7 @@
                                 <label><input type="checkbox" value="Create an Account" checked> Create an Account (allows rescheduling)</label>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             {% endif %}
             </div>

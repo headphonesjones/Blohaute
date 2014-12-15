@@ -58,6 +58,8 @@ INSTALLED_APPS = (
     'changuito',  # shopping cart
     'django_bleach',  # safe html sanitizing
     'django_extensions',
+    'localflavor',
+
     #project apps
     'accounts',
     'booking',
@@ -72,6 +74,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'changuito.middleware.CartMiddleware',
+    'booking.middleware.BookerMiddleware'
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

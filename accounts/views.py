@@ -13,7 +13,6 @@ from django.views.generic.edit import DeleteView
 
 from accounts.models import User
 from accounts.forms import RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm
-from booking.service import BookerCustomerClient
 
 
 @sensitive_post_parameters()
@@ -29,7 +28,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
 
-            client = BookerCustomerClient()
+            client = request.session['client']
             new_user = form.save(commit=False)
 
             try:  # create a user on the API
@@ -43,7 +42,7 @@ def register(request):
                               {'registration_form': form})
 
             # login to the api
-            access_token = client.login(new_user.email, request.POST['password1'])
+            client.login(new_user.email, request.POST['password1'])
 
             # authenticate and login the user locally
             new_user = authenticate(email=request.POST['email'],
@@ -51,8 +50,6 @@ def register(request):
             auth_login(request, new_user)
 
             # store the user password for the length of the session
-            request.session['client'] = client
-            client.customer_password = request.POST['password1']
             client.user = new_user
 
             messages.info(request, 'Thanks for registering. You are now logged in.')
@@ -67,34 +64,23 @@ def register(request):
 @csrf_protect
 @never_cache
 def login(request):
-    if request.method == 'GET':
-        form = AuthenticationRememberMeForm()
+    form = AuthenticationRememberMeForm(data=request.POST or None)
 
     if request.method == 'POST':
-        form = AuthenticationRememberMeForm(data=request.POST)
-        print form.is_valid()
         if form.is_valid():
             if not form.cleaned_data.get('remember_me'):
                 request.session.set_expiry(0)
 
-            auth_login(request, form.get_user())
-
             user = form.get_user()
-            client = BookerCustomerClient()
+            client = request.session['client']
             try:
                 client.login(user.email, request.POST['password'])
-                request.session['client'] = client
-                client.customer_password = request.POST['password']
                 client.user = user
+                auth_login(request, form.get_user())
+                return HttpResponseRedirect(reverse('welcome'))
+
             except ValidationError as e:
                 form.add_error(None, e)
-                auth_logout(request)
-                return render(request, 'registration/login_page.html', {'login_form': form})
-
-            return HttpResponseRedirect(reverse('welcome'))
-
-        else:  # form is invalid
-            return render(request, 'registration/login_page.html', {'login_form': form})
 
     return render(request, 'registration/login_page.html', {'login_form': form})
 
@@ -128,7 +114,6 @@ def profile_view(request):
                 password_form.save()
                 update_session_auth_hash(request, password_form.user)
                 messages.success(request, 'Password updated successfully.')
-                client.customer_password = password_form.cleaned_data['new_password1']
 
     context = {
         'user': request.user,

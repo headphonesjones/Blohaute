@@ -203,6 +203,7 @@ class BookerCustomerClient(BookerClient):
         response = self.process_response(response)
         if (response['access_token']):
             self.customer_token = response['access_token']
+            self.customer_password = password
             self.customer = response['Customer']['Customer']
             self.customer_id = response['Customer']['CustomerID']
         else:
@@ -231,6 +232,7 @@ class BookerCustomerClient(BookerClient):
                   'CustomerID': self.customer_id}
 
         response = BookerAuthedRequest('/customer/password', self.customer_token, params).post()
+        self.customer_password = new_password
         return self.process_response(response)
 
     def delete_customer(self):

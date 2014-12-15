@@ -41,3 +41,9 @@ class AddToCartForm(forms.Form):
             return self.treatment
 
         return Package.objects.filter(treatment=self.treatment).get(pk=package)
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea())

@@ -81,19 +81,16 @@ def login(request):
 
             user = form.get_user()
             client = BookerCustomerClient()
-            access_token = client.login(user.email, request.POST['password'])
-            request.session['client'] = client
-            client.customer_password = request.POST['password']
-            if access_token is None:
-
-                form.add_error(
-                    None, ValidationError('Invalid username or password', 'login_failure')
-                )
+            try:
+                client.login(user.email, request.POST['password'])
+                request.session['client'] = client
+                client.customer_password = request.POST['password']
+                client.user = user
+            except ValidationError as e:
+                form.add_error(None, e)
                 auth_logout(request)
                 return render(request, 'registration/login_page.html', {'login_form': form})
-            else:
-                user.save()
-                client.user = user
+
             return HttpResponseRedirect(reverse('welcome'))
 
         else:  # form is invalid

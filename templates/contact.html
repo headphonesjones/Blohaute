@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load widget_tweaks %}
 
 {% block page_title %}Contact{% endblock %}
 
@@ -19,20 +20,52 @@
                 <div class="uk-width-medium-2-3">
                     <div class="uk-panel">
                         <h3 class="uk-panel-title">Get in Touch</h3>
-                        <form class="uk-form uk-form-stacked">
+                        <form class="uk-form uk-form-stacked" method="POST">
+                            {% csrf_token %}
+                            {% if contact_form.errors %}
+                                <div class="uk-width-1-1">
+                                    <div class="uk-alert uk-alert-danger ">
+                                        {% if contact_form.non_field_errors %}
+                                            {% for error in contact_form.non_field_errors %}
+                                                <p>{{error}}</p>
+                                            {% endfor %}
+                                        {% else %}
+                                            There was a problem sending your message. Please check the form and make sure that everything is filled out correctly.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+
                             <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
                                 <div class="uk-width-medium-1-1">
-                                    <label class="uk-form-label" for="form-contact-name">Name</label>
-                                    <input type="text" placeholder="Enter your name..." id="form-contact-name" class="uk-width-1-1 uk-form-large">
+                                    <label class="uk-form-label" for="name">{{contact_form.name.label}}</label>
+                                    {% if contact_form.name.errors %}
+                                        {% render_field contact_form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                        {{contact_form.name.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1" %}
+                                    {% endif %}
                                 </div>
-                                <div class="uk-width-1-1">
-                                    <label class="uk-form-label" for="form-contact-mail">E-Mail</label>
-                                    <input type="text" placeholder="E-Mail address" id="form-contact-mail" class="uk-width-1-1 uk-form-large">
+                                <div class="uk-width-medium-1-1">
+                                    <label class="uk-form-label" for="email">{{contact_form.email.label}}</label>
+                                    {% if contact_form.email.errors %}
+                                        {% render_field contact_form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                        {{contact_form.email.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1" %}
+                                    {% endif %}
                                 </div>
-                                <div class="uk-width-1-1">
-                                    <label class="uk-form-label" for="form-contact-message">Message</label>
-                                    <textarea rows="6" placeholder="Enter your message..." id="form-contact-message" class="uk-width-1-1 uk-form-large"></textarea>
+                                <div class="uk-width-medium-1-1">
+                                    <label class="uk-form-label" for="message">{{contact_form.message.label}}</label>
+                                    {% if contact_form.message.errors %}
+                                        {% render_field contact_form.message placeholder="Enter your message..." class+="uk-width-1-1 uk-form-large uk-form-danger" rows="6" id="form-contact-message" %}
+                                        {{contact_form.message.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.message placeholder="Enter your message..." class+="uk-width-1-1 uk-form-large" rows="6"   id="form-contact-message" %}
+                                    {% endif %}
                                 </div>
+
                                 <div class="uk-width-1-1">
                                     <button class="uk-button bh-button">Send</button>
                                 </div>

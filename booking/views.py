@@ -1,8 +1,11 @@
+from django.contrib import messages
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from booking.forms import AddToCartForm, QuickBookForm
+from booking.forms import AddToCartForm, QuickBookForm, ContactForm
 from booking.models import Treatment
 
 
@@ -66,3 +69,22 @@ class TreatmentDetail(DetailView):
 #                "return {0: false}} else {return {0: true}}}"
 #     return HttpResponse(response)
 
+
+def contact_view(request):
+    if request.method == "GET":
+        form = ContactForm()
+
+        return render(request, 'contact.html', {'contact_form': form})
+
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            #send email
+            send_mail('New Message recieved from %s' % form.cleaned_data['name'],
+                      form.cleaned_data['message'], 'contact@blohaute.com',
+                      ['ajsporinsky@gmail.com'], fail_silently=True)
+
+            messages.success(request, 'Thank you. Your message has been sent successfully')
+            form = ContactForm()
+    return render(request, 'contact.html', {'contact_form': form})
+ 

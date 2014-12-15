@@ -168,11 +168,15 @@ class BookerCustomerClient(BookerClient):
                   'client_secret': settings.BOOKER_API_SECRET}
         response = BookerRequest('/customer/login', self.token, params).post()
         response = self.process_response(response)
-        self.customer_token = response['access_token']
-        self.customer = response['Customer']['Customer']
-        self.customer_id = response['Customer']['CustomerID']
-        print response
-        print("customer is %r" % self.customer)
+        if (response['access_token']):
+            self.customer_token = response['access_token']
+            self.customer = response['Customer']['Customer']
+            self.customer_id = response['Customer']['CustomerID']
+        else:
+            raise ValidationError(
+                response['error']
+                )
+
         return response['access_token']
 
     def logout(self):
@@ -343,8 +347,8 @@ class BookerCustomerClient(BookerClient):
         return BookerRequest('/appointment/create', self.customer_token, params).post()
         
     def process_response(self, response):
-        print 'response is %s' % response
         formatted_response = response.json()
+        print 'response is %s' % formatted_response
         error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
 

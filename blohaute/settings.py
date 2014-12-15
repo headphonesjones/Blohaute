@@ -117,3 +117,6 @@ try:
 except ImportError:
     pass
 
+EMAIL_HOST = "smtpout.secureserver.net"
+EMAIL_HOST_USER = "bookings@blohaute.com"
+EMAIL_HOST_PASSWORD = "Soltwisch22"

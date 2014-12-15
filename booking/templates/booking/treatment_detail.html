@@ -68,6 +68,7 @@
                             <hr>
                             <p>{{treatment.description}}</p>
                             <hr>
+                            {% if treatment.booker_id %}
                             <form class="uk-form uk-grid" method="post">
                                     {% csrf_token %}
                                 <div class="uk-width-1-1" data-uk-margin>
@@ -78,7 +79,6 @@
                                                 {% endfor %}
                                         </div>
                                         {% endif %}
-                                        {% if treatment.booker_id %}
                                             <div class="uk-width-1-1" data-uk-margin>
                                                  <label for="blowoutPackages"><b>{{treatment.name}} Packages</b></label><br />
 
@@ -92,9 +92,7 @@
                                             </div>
                                             {% endif %}
                                             <br />
-                                        {% else %}
-                                            <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US</button></a>
-                                        {% endif %} 
+
                                         <br />
                                     <div class="uk-button-group">
                                         <button class="uk-button uk-button-primary uk-button-large">Add to cart</button>
@@ -102,7 +100,9 @@
                                     </div>
                                 </div>
                             </form>
-
+                            {% else %}
+                                <a href="{% url 'contact' %}"><button class="uk-button uk-button-primary uk-float-right">CONTACT US</button></a>
+                            {% endif %} 
                         </div>
 
                     </div>

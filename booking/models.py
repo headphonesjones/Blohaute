@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.humanize.templatetags.humanize import apnumber
 from django.template.defaultfilters import floatformat
-from django_bleach.models import BleachField
 
 
 class Setting(models.Model):
@@ -17,7 +16,6 @@ class Treatment(models.Model):
     list_image = models.ImageField(upload_to='treatment_images')
     thumb_image = models.ImageField(upload_to='thumbnail_images')
     description = models.TextField(blank=True)
-    full_description = BleachField(blank=True)
     price = models.DecimalField(default=0.00, max_digits=10, decimal_places=2)
     original_price = models.DecimalField(default=0.00, max_digits=10, decimal_places=2, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -29,8 +27,11 @@ class Treatment(models.Model):
     def cart_description(self):
         return self.name
 
-    def primary_image(self):
-        return self.images.filter(primary_image=True).first()
+    @property
+    def list_image_url(self):
+        print self.list_image
+        if self.list_image and hasattr(self.list_image, 'url'):
+            return self.list_image.url
 
 
 class TreatmentImage(models.Model):

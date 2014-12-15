@@ -69,7 +69,7 @@
 
                         <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
                             <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="http://photos-g.ak.instagram.com/hphotos-ak-xfp1/10785115_330395787165902_1167866336_n.jpg" width="800" height="400" alt="Collection Image" data-demo-style>
+                                <img class="bh-img-height-1-1 uk-float-right" src="{{treatment.list_image_url}}" width="800" height="400" alt="Collection Image" data-demo-style>
                             </div>
                         </div>
 
@@ -78,11 +78,13 @@
                                 <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
                                 <p class="uk-article-lead">{{treatment.list_tagline}}</p>
                                 <p class="uk-margin-bottom">{{treatment.description}}</p>
+                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}<ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}<br />
                                 <form method="POST">
                                     {% csrf_token %}
                                     <input name="treatment" type="hidden" value={{treatment.pk}} />
                                     <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
-                                </form><br />
+                                </form>
+                                <br />
                                 <a href="{% url 'treatment_detail' treatment.slug %}" class="uk-button bh-button-secondary">More Options</a>
                             </div>
                         </div>
@@ -95,6 +97,7 @@
                                 <h1 class="uk-article-title">{{treatment.plural_name}}</h1>
                                 <p class="uk-article-lead">{{treatment.list_tagline}}</p>
                                 <p class="uk-margin-bottom">{{treatment.description}}</p>
+                                {% if treatment.original_price %}<del>${{treatment.original_price|floatformat:"-2"}}</del>{% endif %}<ins id="blowout_price">${{treatment.price|floatformat:"-2"}}</ins> Single {{treatment.name}}<br />
                                 <form method="POST">
                                     {% csrf_token %}
                                     <input name="treatment" type="hidden" value={{treatment.pk}} />
@@ -106,51 +109,12 @@
                         </div>
                         <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
                             <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="{% static 'images/blowout1.jpg' %}" width="800" height="400" alt="Collection Image" data-demo-style>                            
+                                <img class="bh-img-height-1-1 uk-float-right" src="{{treatment.list_image_url}}" width="800" height="400" alt="Collection Image" data-demo-style>                            
                             </div>
                         </div>
                     </div>
                     {% endif %}
-                    {% endfor %}
-
-           
-<!-- 
-                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
-
-                        <div class="uk-width-medium-1-2 uk-width-large-2-5">
-                            <div class="uk-panel uk-panel-box" data-uk-scrollspy="{cls:'uk-animation-slide-bottom', repeat: true}">
-                                <h1 class="uk-article-title">Upstyles</h1>
-                                <p class="uk-article-lead">Turn heads.</p>
-                                <p class="uk-margin-bottom">Blohaute loves upstyles and our stylists are able to hit any look you want. Ask and you shall receive</p>
-                                <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book an Upstyle</a>
-                            </div>
-                        </div>
-
-                        <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
-                            <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="{% static 'images/upstyle1.jpg' %}" width="800" height="400" alt="Collection Image" data-demo-style>
-                               
-                            </div>
-                        </div>
-                    </div>
- --><!--                     <div class="uk-grid" data-uk-grid-margin data-uk-grid-match>
-
-                        <div class="uk-width-medium-1-2 uk-width-large-3-5 bh-grid-img-cover">
-                            <div class="uk-overlay bh-overlay-content-blank uk-clearfix">
-                                <img class="bh-img-height-1-1 uk-float-right" src="http://www.aajproperty.com/blog/wp-content/uploads/2014/08/Permanent-Hair-Straightening.jpg" width="800" height="400" alt="Collection Image" data-demo-style>
-                             
-                            </div>
-                        </div>
-
-                        <div class="uk-width-medium-1-2 uk-width-large-2-5">
-                            <div class="uk-panel uk-panel-box" data-uk-scrollspy="{cls:'uk-animation-slide-bottom', repeat: true}">
-                                <h1 class="uk-article-title">Brazilian Keratin Treatment</h1>
-                                <p class="uk-article-lead">Call or Email to Book</p>
-                                <p class="uk-margin-bottom">A braid works for any occasion and we do them all. From your standard french braid to the more complex braiding styles, we are trained to braid anything you can dream up.</p>
-                                <a href="{% url 'contact' %}" class="uk-button bh-button-secondary">Book a Braid</a>
-                            </div>
-                        </div>
- -->                    </div>
+                    {% endfor %}</div>
                 </article>
             <hr class="uk-grid-divider">
         </article>

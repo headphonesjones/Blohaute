@@ -87,4 +87,8 @@ def contact_view(request):
             messages.success(request, 'Thank you. Your message has been sent successfully')
             form = ContactForm()
     return render(request, 'contact.html', {'contact_form': form})
- 
+
+
+def upcoming_view(request):
+    client = request.session['client']
+    return HttpResponse({'upcoming': client.get_upcoming()})

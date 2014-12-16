@@ -118,6 +118,13 @@ nav > div > ul > li > .active{
   margin-left: 10px;
 }
 
+#place-order-button{
+  width: 40%;
+  height: 50px;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
 
 
 

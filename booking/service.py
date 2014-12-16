@@ -190,12 +190,21 @@ class BookerCustomerClient(BookerClient):
         """
         Returns packages for a spa/location
         """
-        response = BookerRequest('/series', self.token).post()
-        return self.process_response(response)
+        params = {'LocationID': self.location_id}
+        response = BookerRequest('/series', self.token, params).post()
+        return self.process_response(response)['Results']
+
+    def get_memberships(self):
+        """
+        Returns memberships for a spa/location
+        """
+        params = {'LocationID': self.location_id}
+        response = BookerRequest('/memberships', self.token, params).post()
+        return self.process_response(response)['Results']
 
     def get_employees(self):
         """
-        Returns packages for a spa/location
+        Returns employees for a spa/location
         """
         response = BookerRequest('/employees', self.token, {'LocationID': self.location_id}).post()
         return self.process_response(response)

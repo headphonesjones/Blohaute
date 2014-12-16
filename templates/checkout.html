@@ -260,52 +260,6 @@
             <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
 
                 <div class="uk-width-1-1">
-                    <h2 class="bh-headline-bottom-border"><span>Your order</span></h2>
-                    <div class="uk-overflow-container">
-                        <table class="uk-table uk-table-middle uk-text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Description</th>
-                                    <th class="uk-text-center">Size</th>
-                                    <th class="uk-text-center">Quantity</th>
-                                    <th class="uk-text-center">Total</th>
-                                    <th class="uk-text-center">Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <a href="shop-singleproduct.html">
-                                            <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Workboots</a><br>
-                                        <span class="uk-text-muted uk-text-small">No. 0977450240002</span>
-                                    </td>
-                                    <td class="uk-text-center">-</td>
-                                    <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                    <td class="uk-text-center">$119.90</td>
-                                    <td class="uk-text-center"><i class="uk-icon-times"></i></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <a href="shop-singleproduct.html">
-                                            <img src="http://placehold.it/100x75&text=demo" width="100" height="75" alt="Product Image">
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a class="bh-text-uppercase uk-link-reset" href="shop-singleproduct.html">Wayfarer Glasses</a><br>
-                                        <span class="uk-text-muted uk-text-small">No. 0977450240003</span>
-                                    </td>
-                                    <td class="uk-text-center">-</td>
-                                    <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                                    <td class="uk-text-center">$89.90</td>
-                                    <td class="uk-text-center"><i class="uk-icon-times"></i></td>
-                                </tr>
-                            </tbody>
-                        </table>
                         <div class="uk-grid">
                             <div class="uk-width-medium-1-2">
                                 <h2 class="bh-headline-bottom-border"><span>Select payment method</span></h2>
@@ -325,20 +279,45 @@
                                     <label><input class="uk-margin-right" type="radio" name="shop-payment"> Paypal</label><br>
                                     <p>Qui animated corpse, cricket bat max brucks terribilem incessu zomby. The voodoo sacerdos flesh eater, suscitat mortuos comedere carnem virus. Zonbi tattered for solum oculi.</p>
                                 </div>     
-                            </div>                      
-                            <div class="uk-width-medium-1-2">
-                                <div class="uk-panel uk-panel-space">
-                                    <span class="uk-float-left">Cart Subtotal</span>
-                                    <span class="uk-float-right">$209.80</span>
-                                    <br>
-                                    <hr>
-                                    <span class="uk-float-left">Order Total Price</span>
-                                    <span class="uk-float-right">$209.80</span>
-                                    <br />
-                                    <hr />
-                                    <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i><br />Also stylists do not carry cash on so we can not break large bills</span>
-                                </div>
-                            </div>
+                            </div>    
+                                            <div uk-width-medium-1-2">
+                    <div class="uk-panel uk-panel-box uk-panel-header">
+                        <h3 class="uk-panel-title">Order Summary</h3>
+
+                         <table class="uk-table uk-table-middle uk-text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="uk-text-center">Quantity</th>
+                                    <th class="uk-text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart %}
+                                <tr>
+                                    <td>
+                                        {{ item.product.cart_description }}<br>
+                                    </td>
+                                    <td class="uk-text-center">
+                                    {{item.quantity}}
+                                    </td>
+                                    <td class="uk-text-center">${{ item.total_price|floatformat:"-2" }} {{ item.product.price_units }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan=2><b>Order Total Price</b></td>
+                                    <td class="uk-text-center"><b>${{cart.cart.total_price|floatformat:"-2"}}</b></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                        <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i><br />Also stylists do not carry cash on so we can not break large bills</span>
+
+                    </div>
+                </div>
+                  
+
                         </div>
                     </div>
                 </div>

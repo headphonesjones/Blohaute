@@ -120,7 +120,7 @@
                         </div>
                     </div>
                 </div>
-               <div class="uk-width-medium-1-2">
+                <div class="uk-width-medium-1-2">
                     <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>
                     <div class="uk-panel" id="booking-datepicker">Pick Date
                     </div>
@@ -129,36 +129,36 @@
                     {% render_field checkout_form.time class+="uk-form-large uk-width-1-2" %}
 {#                    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">#}
                 </div>
-            </div>
-            <div class="uk-width-medium-1-2">
-                <h2 class="bh-headline-bottom-border"><span>Payment</span></h2>
-                <div class="uk-grid">
-                    <div class="uk-width-1-2">
-                        <label class="uk-form-label" for="card-number">{{checkout_form.card_number.label}}</label>
-                        {% if checkout_form.card_number.errors %}
-                            {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-3 uk-form-danger" %}
-                        {% else %}
-                            {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-1" %}
-                        {% endif %}
-                        {{checkout_form.card_number.errors}}
-                    </div>
-                    <div class="uk-width-1-4">
-                        <label class="uk-form-label" for="expiry_date">{{checkout_form.expiry_date.label}}</label>
-                        {% if checkout_form.expiry_date.errors %}
-                            {% render_field checkout_form.expiry_date class+="" %}
-                        {% else %}
-                            {% render_field checkout_form.expiry_date class+="" %}
-                        {% endif %}
-                        {{checkout_form.expiry_date.errors}}
-                    </div>
-                    <div class="uk-width-1-4">
-                        <label class="uk-form-label" for="card_code">{{checkout_form.card_code.label}}</label>
-                        {% if checkout_form.card_code.errors %}
-                            {% render_field checkout_form.card_code class+="uk-form-large" %}
-                        {% else %}
-                            {% render_field checkout_form.card_code class+="uk-form-large uk-width-1-1" %}
-                        {% endif %}
-                        {{checkout_form.card_code.errors}}
+                <div class="uk-width-medium-1-2">
+                    <h2 class="bh-headline-bottom-border"><span>Payment</span></h2>
+                    <div class="uk-grid">
+                        <div class="uk-width-1-2">
+                            <label class="uk-form-label" for="card-number">{{checkout_form.card_number.label}}</label>
+                            {% if checkout_form.card_number.errors %}
+                                {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-3 uk-form-danger" %}
+                            {% else %}
+                                {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+                            {{checkout_form.card_number.errors}}
+                        </div>
+                        <div class="uk-width-1-4">
+                            <label class="uk-form-label" for="expiry_date">{{checkout_form.expiry_date.label}}</label>
+                            {% if checkout_form.expiry_date.errors %}
+                                {% render_field checkout_form.expiry_date class+="" %}
+                            {% else %}
+                                {% render_field checkout_form.expiry_date class+="" %}
+                            {% endif %}
+                            {{checkout_form.expiry_date.errors}}
+                        </div>
+                        <div class="uk-width-1-4">
+                            <label class="uk-form-label" for="card_code">{{checkout_form.card_code.label}}</label>
+                            {% if checkout_form.card_code.errors %}
+                                {% render_field checkout_form.card_code class+="uk-form-large" %}
+                            {% else %}
+                                {% render_field checkout_form.card_code class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+                            {{checkout_form.card_code.errors}}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -427,10 +427,10 @@ class BookerCustomerClient(BookerClient):
                 new_request = BookerRequest(response.original_request.path, self.token)
             new_request.method = response.original_request.method
             if new_request.method == 'GET':
-                new_request.params = response.original_request.params
+                new_request.params = response.original_request.params or {}
                 return self.process_response(new_request.get())
             else:
-                new_request.params = response.original_request.params
+                new_request.params = response.original_request.params or {}
                 if new_request.token:
                     new_request.params['access_token'] = self.token
                 new_request.data = json.dumps(new_request.params)

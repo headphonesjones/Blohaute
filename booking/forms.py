@@ -73,6 +73,9 @@ class CheckoutForm(forms.Form):
     expiry_date = ExpiryDateField(required=True)
     card_code = VerificationValueField(required=True)
 
+    date = forms.HiddenInput()
+    time = forms.CharField(widget=forms.Select())
+
 
 class ContactForm(forms.Form):
     name = forms.CharField()

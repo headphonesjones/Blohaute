@@ -78,7 +78,7 @@
 
 
             <form>
-                <div class="uk-width-medium-1-2">
+                <div class="uk-width-medium-1-1">
                     <h2 class="bh-headline-bottom-border"><span>Location of Appointment</span></h2>
                     <div class="uk-form uk-form-stacked">
                         <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
@@ -120,93 +120,6 @@
                         </div>
                     </div>
                 </div>
-                {% if user.is_authenticated %}
-                <div class="uk-width-medium-1-2">
-                </div>
-                {% else %}
-                <div class="uk-width-medium-1-2">
-                    <h2 class="bh-headline-bottom-border"><span>Billing Information</span></h2>
-                    <div class="uk-form uk-form-stacked">
-                        <button class="uk-button uk-button-success uk-margin-small-top" type="button"><i class="uk-icon-info-circle"></i> Same as appointment location? Click me</button><br><br>
-                        <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
-
-                            <div class="uk-width-1-2">
-                                <label class="uk-form-label" for="first_name">{{checkout_form.first_name.label}}</label>
-                                {% if checkout_form.first_name.errors %}
-                                    {% render_field checkout_form.first_name class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.first_name class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.first_name.errors}}
-                            </div>
-
-                            <div class="uk-width-1-2">
-                                <label class="uk-form-label" for="last_name">{{checkout_form.last_name.label}}</label>
-                                {% if checkout_form.last_name.errors %}
-                                    {% render_field checkout_form.last_name class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.last_name class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.last_name.errors}}
-                            </div>
-
-                            <div class="uk-width-1-1">
-                                 <label class="uk-form-label" for="billing_address">{{checkout_form.billing_address.label}}</label>
-                                {% if checkout_form.billing_address.errors %}
-                                    {% render_field checkout_form.billing_address class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.billing_address class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.billing_address.errors}}
-                            </div>
-
-                            <div class="uk-width-1-2">
-                                <label class="uk-form-label" for="billing_city">{{checkout_form.billing_city.label}}</label>
-                                {% if checkout_form.billing_city.errors %}
-                                    {% render_field checkout_form.billing_city class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.billing_city class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.billing_city.errors}}
-                            </div>
-
-                            <div class="uk-width-1-2">
-                                <label class="uk-form-label" for="billing_zip_code">{{checkout_form.billing_zip_code.label}}</label>
-                                {% if checkout_form.billing_zip_code.errors %}
-                                    {% render_field checkout_form.billing_zip_code class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.billing_zip_code class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.billing_zip_code.errors}}
-                            </div>
-
-                            <div class="uk-width-1-1">
-                                <label class="uk-form-label" for="email_address">{{checkout_form.email_address.label}}</label>
-                                {% if checkout_form.email_address.errors %}
-                                    {% render_field checkout_form.email_address class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.email_address class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.email_address.errors}}
-                            </div>
-
-                            <div class="uk-width-1-1">
-                                <label class="uk-form-label" for="phone_number">{{checkout_form.phone_number.label}}</label>
-                                {% if checkout_form.phone_number.errors %}
-                                    {% render_field checkout_form.phone_number class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.phone_number class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.phone_number.errors}}
-                            </div>
-                            <div class="uk-form-row">
-                                <label><input type="checkbox" value="Create an Account" checked> Create an Account (allows rescheduling)</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-            </div>
             <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                 <div class="uk-width-medium-1-2">
                     <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>

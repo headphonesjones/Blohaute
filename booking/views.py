@@ -66,6 +66,9 @@ def process_remember_me(request):
 
 @csrf_protect
 def checkout(request):
+    if request.cart.isEmpty():
+        return HttpResponseRedirect(reverse('cart'))  # if there's nothing in the cart, go back to it
+
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout")

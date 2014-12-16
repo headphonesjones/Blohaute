@@ -350,10 +350,13 @@
 
 <script>
 $(document).ready(function() {
-var $input = $("#id_checkout-date").pickadate();
-var picker = $input.pickadate('picker')
 
+    $("#id_checkout-date").pickadate({
+        disable: {{ unavailable_days }}
+    });
+{#    var picker = $input.pickadate('picker');#}
 });
+
 
 //     $(function() {
 // {#        $("#booking-datepicker").datepicker({#}

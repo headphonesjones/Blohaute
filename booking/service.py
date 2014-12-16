@@ -30,7 +30,7 @@ class BookerRequest(Request):
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
-        print(self.data)
+        # print(self.data)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self
@@ -303,8 +303,9 @@ class BookerCustomerClient(BookerClient):
     def get_availability(self, treatments_requested, start_date, end_date):
         treatments = []
         for treatment in treatments_requested:
-            for i in range(0, treatment['quantity']):
-                treatments.append({'TreatmentID': treatment['treatment_id']})
+            if isinstance(treatment.product, Treatment):
+                for i in range(0, treatment.quantity):
+                    treatments.append({'TreatmentID': treatment.product.booker_id})
 
         itinerary = [{
                          'IsPackage': False,
@@ -333,7 +334,13 @@ class BookerCustomerClient(BookerClient):
                 date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
                 days.discard(date_key)
             current_date = end_date
-        return days
+        result = []
+        for day in days:
+            result.append(day)
+        return result
+
+    def get_unavailable_warm_period(self, treatments_requested):
+        return self.get_unavailable_days_in_range(treatments_requested, datetime.now(), 3)
 
     def get_available_times_for_day(self, treatments_requested, start_date):
         times = []

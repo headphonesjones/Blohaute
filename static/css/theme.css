@@ -121,12 +121,7 @@ nav > div > ul > li > .active{
 #place-order-button{
   width: 40% !important;
   height: 65px !important;
-  margin-left: 30% !important;
-  margin-right: 30% !important;
   margin-top: 30px !important;
-}
-#place-order-button:hover{
-  background-color: #d94f77 !important;
 }
 
 

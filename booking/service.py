@@ -257,6 +257,20 @@ class BookerCustomerClient(BookerClient):
         self.customer_password = new_password
         return self.process_response(response)
 
+    def update_email(self, email):
+        """
+        updates email on a customer
+        """
+        params = {'LocationID': self.location_id,
+                  'Email': email,
+                  'FirstName': self.user.first_name,
+                  'LastName': self.user.last_name,
+                  'HomePhone': self.user.phone_number,
+                  'Address': self.customer['Address'],
+                  'CustomerID': self.customer_id}
+        response = BookerAuthedRequest('/customer/%s' % self.customer_id, self.customer_token, params).put()
+        return self.process_response(response)
+
     def delete_customer(self):
         """
         Delete a customer

@@ -38,7 +38,7 @@ class RegistrationForm(forms.ModelForm):
                 code='existing_account'
             )
         return self.cleaned_data.get('email')
-        
+
     def clean_password1(self):
         # clean the new password to match API requirements
         password1 = self.cleaned_data.get('password1')
@@ -120,7 +120,6 @@ class PasswordUpdateForm(PasswordChangeForm):
     new_password2 = forms.CharField(label=_("New password confirmation"),
                                     widget=forms.PasswordInput(attrs={'placeholder': _('New Password Confirmation')}))
 
-
     def clean_newpassword1(self):
         # clean the new password to match API requirements
         password1 = self.cleaned_data.get('new_password1')
@@ -137,3 +136,20 @@ class PasswordUpdateForm(PasswordChangeForm):
         if all(c.isalpha() == first_isalpha for c in password1):
             raise forms.ValidationError("The new password must contain at least one letter and at "
                                         "least one digit or punctuation character.")
+
+
+class EmailUpdateForm(forms.Form):
+    error_messages = {
+        'existing_account': _('An account with this email address already exists.')
+    }
+
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'New Email Address'}))
+
+    def clean_email(self):
+        users = User.objects.filter(email=self.cleaned_data.get('email')).count()
+        if users > 0:
+            raise forms.ValidationError(
+                self.error_messages['existing_account'],
+                code='existing_account'
+            )
+        return self.cleaned_data.get('email')

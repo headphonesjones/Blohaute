@@ -311,8 +311,7 @@
                                 <h2 class="bh-headline-bottom-border"><span>Select payment method</span></h2>
                                 <div class="uk-panel">
                                     <label>Previously Saved Card</label><br>
-                                    {% render_field checkout_form.time class+="uk-form-large uk-width-1-1" %}
-                                    <p>Please note that charges do not go through until the DAY OF your appointment. This is to allow you to cancel and reschedule freely. PLEASE NOTE ALL TIPS MUST BE IN CASH.</p>
+                                    {% render_field checkout_form.time class+="uk-form-large uk-width-1-2" %}
                                 </div>
                                 <hr>
                                 <div class="uk-panel">
@@ -322,7 +321,7 @@
                                     <input class="uk-margin-right" type="checkbox" name="save-new-card">
                                 </div>
                                 <hr>
-                                 
+                                <p>Please note that charges do not go through until the DAY OF your appointment. This is to allow you to cancel and reschedule freely. PLEASE NOTE ALL TIPS MUST BE IN CASH.</p>
                             </div>                      
                             <div class="uk-width-medium-1-2">
                                 <div class="uk-panel uk-panel-space">

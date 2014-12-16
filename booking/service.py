@@ -437,7 +437,7 @@ class BookerCustomerClient(BookerClient):
                 new_request.params = response.original_request.params or {}
                 return self.process_response(new_request.get())
             else:
-                new_request.params = response.original_request.params or {}
+                new_request.params = response.original_request.original_params or {}
                 if new_request.token:
                     new_request.params['access_token'] = self.token
                 new_request.data = json.dumps(new_request.params)

@@ -89,7 +89,7 @@ def checkout(request):
         print(day)
         day = datetime.strptime(day, "%Y-%m-%d")
         date_array.append(day.year)
-        date_array.append(day.month)
+        date_array.append(day.month-1)
         date_array.append(day.day)
         result.append(date_array)
         date_array = []

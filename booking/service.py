@@ -307,9 +307,8 @@ class BookerCustomerClient(BookerClient):
                 for i in range(0, treatment.quantity):
                     treatments.append({'TreatmentID': treatment.product.booker_id})
 
-        itinerary = [{
-                         'IsPackage': False,
-                         'Treatments': treatments}]
+        itinerary = [{'IsPackage': False,
+                      'Treatments': treatments}]
 
         params = {'StartDateTime': self.format_date_for_booker_json(start_date),
                   'EndDateTime': self.format_date_for_booker_json(end_date),
@@ -344,6 +343,7 @@ class BookerCustomerClient(BookerClient):
 
     def get_available_times_for_day(self, treatments_requested, start_date):
         times = []
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         response = self.get_availability(treatments_requested, start_date, end_date)

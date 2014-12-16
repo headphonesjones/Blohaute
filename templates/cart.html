@@ -37,8 +37,8 @@
                                 {% for item in cart %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'treatment_detail' treatment.slug %}">
-                                            <img src="{{treatment.thumb_image_url}}" width="100" height="75" alt="{{treatment.name}} Cart Item">
+                                        <a href="{% url 'treatment_detail' item.product.slug %}">
+                                            <img src="{{item.product.thumb_image_url}}" width="100" height="75" alt="{{item.product.name}} Cart Item">
                                         </a>
                                     </td>
                                     <td>

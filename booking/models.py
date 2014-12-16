@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.humanize.templatetags.humanize import apnumber
 from django.template.defaultfilters import floatformat
+from adminsortable.models import Sortable
 
 
 class Setting(models.Model):
     access_token = models.CharField(max_length=255)
 
 
-class Treatment(models.Model):
+class Treatment(Sortable):
     name = models.CharField(max_length=255)
     plural_name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=50, unique=True)
@@ -20,6 +21,9 @@ class Treatment(models.Model):
     original_price = models.DecimalField(default=0.00, max_digits=10, decimal_places=2, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta(Sortable.Meta):
+        pass
 
     def __unicode__(self):
         return self.name

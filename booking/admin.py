@@ -1,4 +1,5 @@
 from django.contrib import admin
+from adminsortable.admin import SortableAdmin
 from booking.models import Treatment, Package, Membership, TreatmentImage
 
 
@@ -14,7 +15,7 @@ class TreatmentImageInline(admin.StackedInline):
     model = TreatmentImage
 
 
-class TreatmentAdmin(admin.ModelAdmin):
+class TreatmentAdmin(SortableAdmin):
     model = Treatment
     inlines = [
         TreatmentImageInline,

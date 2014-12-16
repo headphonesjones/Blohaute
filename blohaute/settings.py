@@ -59,7 +59,7 @@ INSTALLED_APPS = (
     'django_bleach',  # safe html sanitizing
     'django_extensions',
     'localflavor',
-
+    'adminsortable',
     #project apps
     'accounts',
     'booking',

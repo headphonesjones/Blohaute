@@ -66,10 +66,9 @@ def process_remember_me(request):
 
 @csrf_protect
 def checkout(request):
-    print("post is %r" % request.method)
-    # if request.method == 'GET':
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
+    checkout_form = CheckoutForm(prefix="checkout")
 
     if request.method == 'POST':
         if 'login-password' in request.POST:
@@ -84,7 +83,7 @@ def checkout(request):
                     client.login(user.email, remember_me_form.cleaned_data.get('password'))
                     client.user = user
                     auth_login(request, remember_me_form.get_user())
-                    return HttpResponseRedirect(reverse('welcome'))
+                    return HttpResponseRedirect(reverse('welcome'))  # change this to o ther logic
 
                 except ValidationError as e:
                     remember_me_form.add_error(None, e)
@@ -97,7 +96,12 @@ def checkout(request):
                 print('coupon is %s' % coupon)
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
-    return render(request, 'checkout.html', {'coupon_form': coupon_form, 'login_form': remember_me_form})
+        if 'checkout-first_name' in request.POST:
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout')
+            if checkout_form.is_valid():
+                pass
+
+    return render(request, 'checkout.html', {'coupon_form': coupon_form, 'login_form': remember_me_form, 'checkout_form': checkout_form})
 
 
 def contact_view(request):

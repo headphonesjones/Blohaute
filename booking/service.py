@@ -393,7 +393,7 @@ class BookerCustomerClient(BookerClient):
                 'PaymentItem': {
                     'Amount': {
                         'Amount': 0,
-                        'CurrencyCode': ''
+                        'CurrencyCode': 'USD'
                     },
                     'CreditCard': {
                         'BillingZip': billingzip,
@@ -404,12 +404,12 @@ class BookerCustomerClient(BookerClient):
                         'SecurityCode': cccode,
                         'Type': {
                             'ID': 1,
-                            'Name': ''
+                            # 'Name': ''
                         }
                     },
-                    "Method": {
-                        "ID": 1,
-                        "Name": ""
+                    'Method': {
+                        'ID': 1,
+                        # "Name": ""
                     }
                 }
             },

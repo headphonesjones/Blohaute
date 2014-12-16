@@ -347,3 +347,27 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extrajs %}
+<script>
+    $(function() {
+{#        $("#booking-datepicker").datepicker({#}
+{#            minDate: 0,#}
+{#            dateFormat: 'yyyy-mm-dd',#}
+{#            beforeShowDay: function(date) {#}
+{#                var day = date.getDate();#}
+{#                var month = date.getMonth()+1;#}
+{#                var year = date.getFullYear();#}
+{#                var date_string = year+"-"+month+"-"+day;#}
+{##}
+{#                var bad_days = {{ unavailable_days|safe }};#}
+{#                if (bad_days.contains(date_string)) {#}
+{#                    return {0: false}#}
+{#                } else {#}
+{#                    return {0: true}#}
+{#                }#}
+{#            }#}
+{#        });#}
+    });
+</script>
+{% endblock %}

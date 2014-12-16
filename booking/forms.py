@@ -73,7 +73,7 @@ class CheckoutForm(forms.Form):
     expiry_date = ExpiryDateField(required=True)
     card_code = VerificationValueField(required=True, label="CVV Code")
 
-    date = forms.DateField(widget=forms.HiddenInput())
+    date = forms.DateField()
     time = forms.CharField(widget=forms.Select())
 
 

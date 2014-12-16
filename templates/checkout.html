@@ -251,6 +251,7 @@
                     <div class="uk-panel" id="booking-datepicker">Pick Date
                     </div>
                     {% render_field checkout_form.date %}
+
                     {% render_field checkout_form.time class+="uk-form-large uk-width-1-2" %}
 {#                    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">#}
                 </div>
@@ -347,26 +348,44 @@
 </div>
 {% endblock %}
 
+{% block extracss %}
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.date.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.time.css' %}">
+{% endblock %}
+
 {% block extrajs %}
+<script src="{% static 'js/pickadate/picker.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.date.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.time.js' %}"></script>
+<script src="{% static 'js/pickadate/legacy.js' %}"></script>
+
+
 <script>
-    $(function() {
-{#        $("#booking-datepicker").datepicker({#}
-{#            minDate: 0,#}
-{#            dateFormat: 'yyyy-mm-dd',#}
-{#            beforeShowDay: function(date) {#}
-{#                var day = date.getDate();#}
-{#                var month = date.getMonth()+1;#}
-{#                var year = date.getFullYear();#}
-{#                var date_string = year+"-"+month+"-"+day;#}
-{##}
-{#                var bad_days = {{ unavailable_days|safe }};#}
-{#                if (bad_days.contains(date_string)) {#}
-{#                    return {0: false}#}
-{#                } else {#}
-{#                    return {0: true}#}
-{#                }#}
-{#            }#}
-{#        });#}
-    });
+$(document).ready(function() {
+var $input = $("#id_checkout-date").pickadate();
+var picker = $input.pickadate('picker')
+
+});
+
+//     $(function() {
+// {#        $("#booking-datepicker").datepicker({#}
+// {#            minDate: 0,#}
+// {#            dateFormat: 'yyyy-mm-dd',#}
+// {#            beforeShowDay: function(date) {#}
+// {#                var day = date.getDate();#}
+// {#                var month = date.getMonth()+1;#}
+// {#                var year = date.getFullYear();#}
+// {#                var date_string = year+"-"+month+"-"+day;#}
+// {##}
+// {#                var bad_days = {{ unavailable_days|safe }};#}
+// {#                if (bad_days.contains(date_string)) {#}
+// {#                    return {0: false}#}
+// {#                } else {#}
+// {#                    return {0: true}#}
+// {#                }#}
+// {#            }#}
+// {#        });#}
+//     });
 </script>
 {% endblock %}

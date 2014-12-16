@@ -248,13 +248,13 @@
                 <div class="uk-width-medium-1-2">
                         <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>
                         <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
-                    <div class="uk-panel" id="booking-datepicker">qw
+                    <div class="uk-panel" id="booking-datepicker">Pick Date
                     </div>
                     {% render_field checkout_form.date %}
                     {% render_field checkout_form.time class+="uk-form-large uk-width-1-1" %}
 {#                    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">#}
                 </div>
-                <div class="uk-width-medium-1-2">qwssw
+                <div class="uk-width-medium-1-2">Pick Time
                 </div>
             </div>
             <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
@@ -311,20 +311,18 @@
                                 <h2 class="bh-headline-bottom-border"><span>Select payment method</span></h2>
                                 <div class="uk-panel">
                                     <label><input class="uk-margin-right" type="radio" name="shop-payment">Previously Saved Card</label><br>
+                                    {% render_field checkout_form.time class+="uk-form-large uk-width-1-1" %}<br /><br />
                                     <p>Please note that charges do not go through until the DAY OF your appointment. This is to allow you to cancel and reschedule freely. PLEASE NOTE ALL TIPS MUST BE IN CASH.</p>
                                 </div>
                                 <hr>
                                 <div class="uk-panel">
-                                    <label><input class="uk-margin-right" type="radio" name="shop-payment"> Cheque Payment</label><br>
-                                    <button class="uk-button uk-button-primary">Place order</button>
-                                    <label for="save-new-card">Save card?</label>
+                                    <label><input class="uk-margin-right" type="radio" name="shop-payment">Add New Card</label><br /><br />
+                                    <button class="uk-button uk-button-success">Add Card</button><br />
+                                    &nbsp;&nbsp;<label for="save-new-card">Save card?</label>
                                     <input class="uk-margin-right" type="checkbox" name="save-new-card">
                                 </div>
                                 <hr>
-                                <div class="uk-panel">
-                                    <label><input class="uk-margin-right" type="radio" name="shop-payment"> Paypal</label><br>
-                                    <p>Qui animated corpse, cricket bat max brucks terribilem incessu zomby. The voodoo sacerdos flesh eater, suscitat mortuos comedere carnem virus. Zonbi tattered for solum oculi.</p>
-                                </div>     
+                                 
                             </div>                      
                             <div class="uk-width-medium-1-2">
                                 <div class="uk-panel uk-panel-space">

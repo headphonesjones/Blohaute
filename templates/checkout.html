@@ -136,25 +136,34 @@ $(document).ready(function() {
             $.ajax({
                 type: 'POST',
                 url: '/timesforday',
+                dataType: 'json',
                 data: {
                     date: $("#id_checkout-date_hidden").val()
                 },
                 success: function(data){
-                    alert(data);
-                    $('#id_checkout-time').pickatime({
-                        formatSubmit: 'HH:i',
-                        disable: data
-                    });
+                    console.log(data);
+                    console.log(timePicker);
+                    timePicker.set('disable', data);
+                    //timePicker.set('enable', [[5,30], [6,30]]);
+
+                    // $('#id_checkout-time').pickatime({
+                    //     formatSubmit: 'HH:i',
+                    //     disable: data
+                    // });
                 }
 
             });
         }
     });
 
-    $('#id_checkout-time').pickatime({
+    var timeInput = $('#id_checkout-time').pickatime({
         formatSubmit: 'HH:i',
         hiddenName: true
     });
+
+    var timePicker = timeInput.pickatime('picker');
+    timePicker.set('disable', true); //start with all times disabled
+
 });
 
 </script>

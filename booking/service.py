@@ -103,23 +103,23 @@ class BookerClient(object):
         setting.save()
 
 
-class AvailableTimeSlot(object):
-    single_employee_slots = []
-    multiple_employee_slots = []
-    raw_time = None
-    pretty_time = ''
-
-    def __init__(self):
-        self.single_employee_slots = []
-        self.multiple_employee_slots = []
-        self.raw_time = None
-        self.pretty_time = ''
-
-    def __eq__(self, other):
-        return self.pretty_time == other.pretty_time
-
-    def __hash__(self):
-        return hash(self.pretty_time)
+# class AvailableTimeSlot(object):
+#     single_employee_slots = []
+#     multiple_employee_slots = []
+#     raw_time = None
+#     pretty_time = ''
+#
+#     def __init__(self):
+#         self.single_employee_slots = []
+#         self.multiple_employee_slots = []
+#         self.raw_time = None
+#         self.pretty_time = ''
+#
+#     def __eq__(self, other):
+#         return self.pretty_time == other.pretty_time
+#
+#     def __hash__(self):
+#         return hash(self.pretty_time)
 
 
 class AppointmentResult(object):
@@ -155,9 +155,7 @@ class BookerCustomerClient(BookerClient):
     customer_id = None
 
     def parse_as_time(self, date_time):
-        return date_time.strftime("%I:").lstrip('0') + \
-               date_time.strftime("%M") + \
-               date_time.strftime(" %p")
+        return date_time.strftime("%H:%M")
 
     def parse_as_date(self, date_time):
         return date_time.strftime("%Y-%m-%d")
@@ -373,25 +371,20 @@ class BookerCustomerClient(BookerClient):
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            avail_time_slot = AvailableTimeSlot()
-            # singles = []
-            # multi = []
-            itin_time = self.parse_date(itinerary_option['StartDateTime'])
-            avail_time_slot.raw_time = itin_time
-            avail_time_slot.pretty_time = self.parse_as_time(itin_time)
-            print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
+            # avail_time_slot = AvailableTimeSlot()
+            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            # avail_time_slot.raw_time = itin_time
+            # avail_time_slot.pretty_time = self.parse_as_time(itin_time)
+            # print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
             emp_list = set()
             for time_slot in itinerary_option['TreatmentTimeSlots']:
                 emp_list.add(time_slot['EmployeeID'])
-            print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
+            # print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
             if len(emp_list) == 1:
-                avail_time_slot.single_employee_slots.append(itinerary_option)
-            elif len(
-                    emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
-                avail_time_slot.multiple_employee_slots.append(itinerary_option)
-            # avail_time_slot.single_employee_slots = singles
-            # avail_time_slot.multiple_employee_slots = multi
-            times.append(avail_time_slot)
+                # avail_time_slot.single_employee_slots.append(itinerary_option)
+                times.append(itin_time)
+            # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
+            #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
         return times
 
     def book_appointment(self, itinerary, address, city, state, zipcode, ccnum, name_on_card, expyear, expmonth, cccode,

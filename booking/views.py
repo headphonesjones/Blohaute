@@ -62,8 +62,31 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
-def process_remember_me(request):
-    remember_me_form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+def available_times_for_day(request):
+    time_slots = ['true']
+    if request.cart.is_empty():
+        return HttpResponseRedirect(reverse('cart'))  # if there's nothing in the cart, go back to it
+
+    services_requested = get_services_from_cart(request)
+    client = request.session['client']
+    available_times = client.get_unavailable_days_in_range(services_requested, request.date)
+    for time in available_times:
+        if len(time.single_employee_slots) > 0:
+            time_array = []
+            time = time.strptime(time, '%H%M')
+            time_array.append(time.hour)
+            time_array.append(time.minute)
+            time_slots.append(time_array)
+
+    return HttpResponse(time_slots)
+
+
+def get_services_from_cart(request):
+    services_requested = []
+    for item in request.cart:
+        if isinstance(item.product, Treatment):
+            services_requested.append(item)
+    return services_requested
 
 
 @csrf_protect
@@ -75,14 +98,10 @@ def checkout(request):
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout")
 
-    services_requested = []
-    for item in request.cart:
-        if isinstance(item.product, Treatment):
-            services_requested.append(item)
+    services_requested = get_services_from_cart(request)
 
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
-    print('unav: %s' % unavailable_days)
     result = []
     date_array = []
     for day in unavailable_days:

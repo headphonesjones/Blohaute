@@ -12,7 +12,8 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.edit import DeleteView
 
 from accounts.models import User
-from accounts.forms import RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm
+from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
+                            EmailUpdateForm)
 
 
 @sensitive_post_parameters()
@@ -33,8 +34,8 @@ def register(request):
 
             try:  # create a user on the API
                 new_user.booker_id = client.create_user(new_user.email, request.POST['password1'],
-                                                 new_user.first_name, new_user.last_name,
-                                                 new_user.phone_number)['CustomerID']
+                                                        new_user.first_name, new_user.last_name,
+                                                        new_user.phone_number)['CustomerID']
                 new_user.save()
             except ValidationError as error:
                 form.add_error(None, error)
@@ -89,6 +90,7 @@ def login(request):
 @login_required
 def profile_view(request):
     password_form = PasswordUpdateForm(user=request.user, prefix='password')
+    email_form = EmailUpdateForm(prefix='update_email')
     client = request.session['client']
     appointments = client.get_appointments()
 
@@ -107,17 +109,31 @@ def profile_view(request):
                         request.user.email,
                         password_form.cleaned_data['old_password'],
                         password_form.cleaned_data['new_password1'])
+                    password_form.save()
+                    update_session_auth_hash(request, password_form.user)
+                    messages.success(request, 'Password updated successfully.')
 
                 except ValidationError as error:
                     password_form.add_error(None, error)
 
-                password_form.save()
-                update_session_auth_hash(request, password_form.user)
-                messages.success(request, 'Password updated successfully.')
-
+        if 'update_email-email' in request.POST:
+            email_form = EmailUpdateForm(request.POST, prefix='update_email')
+            if email_form.is_valid():
+                try:
+                    client.update_email(email_form.cleaned_data['email'])
+                    request.user.email = email_form.cleaned_data['email']
+                    request.user.save()
+                    messages.success(request, "Your account has been successfully updated.")
+                except ValidationError as error:
+                    messages.error(request, "There was a problem updating your account. Please check the form and try again.")
+                    email_form.add_error(None, error)
+            else:
+                messages.error(request, "There was a problem updating your account. Please check the form and try again.")
+ 
     context = {
         'user': request.user,
         'password_form': password_form,
+        'email_form': email_form,
         'appointments': appointments
     }
     return render(request, 'welcome.html', context)

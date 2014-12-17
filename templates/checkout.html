@@ -25,7 +25,7 @@
         <article class="uk-article">
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                    {% if request.user.is_authenticated %}
+                    {% if user.is_authenticated %}
                     <div class="uk-alert uk-margin-bottom-remove uk-alert-success">
                         <i class="uk-icon-check uk-margin-right"></i>Welcome back!
                     </div>
@@ -263,29 +263,11 @@
 
 <script>
 $(document).ready(function() {
-var $input = $("#id_checkout-date").pickadate();
-var picker = $input.pickadate('picker')
 
+    $("#id_checkout-date").pickadate({
+        disable: {{ unavailable_days }}
+    });
 });
 
-//     $(function() {
-// {#        $("#booking-datepicker").datepicker({#}
-// {#            minDate: 0,#}
-// {#            dateFormat: 'yyyy-mm-dd',#}
-// {#            beforeShowDay: function(date) {#}
-// {#                var day = date.getDate();#}
-// {#                var month = date.getMonth()+1;#}
-// {#                var year = date.getFullYear();#}
-// {#                var date_string = year+"-"+month+"-"+day;#}
-// {##}
-// {#                var bad_days = {{ unavailable_days|safe }};#}
-// {#                if (bad_days.contains(date_string)) {#}
-// {#                    return {0: false}#}
-// {#                } else {#}
-// {#                    return {0: true}#}
-// {#                }#}
-// {#            }#}
-// {#        });#}
-//     });
 </script>
 {% endblock %}

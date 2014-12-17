@@ -391,9 +391,11 @@ class BookerCustomerClient(BookerClient):
             for time_slot in itinerary_option['TreatmentTimeSlots']:
                 emp_list.add(time_slot['EmployeeID'])
             # print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
-            if len(emp_list) == 1:
+
+            # if len(emp_list) == 1:
+
                 # avail_time_slot.single_employee_slots.append(itinerary_option)
-                times.append(itin_time)
+            times.append(itin_time)
             # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
             #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
         return times

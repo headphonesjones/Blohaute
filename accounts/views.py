@@ -93,6 +93,7 @@ def profile_view(request):
     email_form = EmailUpdateForm(prefix='update_email')
     client = request.session['client']
     appointments = client.get_appointments()
+    series = client.get_customer_series()
 
     if request.method == 'GET':
         pass

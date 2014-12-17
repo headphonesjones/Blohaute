@@ -127,6 +127,23 @@ class Appointment(object):
         return self.treatment + " at " + self.time + " on " + self.date
 
 
+class CustomerSeries(object):
+    series_id = None
+    name = None
+    quantity = None
+    remaining = None
+    expiration = None
+    redeemable_items = None
+
+    def __init__(self, series_id, name, quantity, remaining, expiration, redeemable):
+        self.series_id = series_id
+        self.name = name
+        self.quantity = quantity
+        self.remaining = remaining
+        self.expiration = expiration
+        self.redeemable_items = redeemable
+
+
 class BookerCustomerClient(BookerClient):
     CREDIT_CARD_TYPES = {4: 2,  # visa
                          3: 1,  # american express
@@ -191,6 +208,29 @@ class BookerCustomerClient(BookerClient):
         params = {'LocationID': self.location_id}
         response = BookerRequest('/memberships', self.token, params).post()
         return self.process_response(response)['Results']
+
+    def get_series(self):
+        params = {'LocationID': self.location_id}
+        response = BookerRequest('/series', self.token, params).post()
+        return self.process_response(response)['Results']
+
+    def get_customer_series(self, treatment_id=None):
+        series_list = []
+        params = {
+            'LocationID': self.location_id,
+            'CustomerID': self.customer_id
+        }
+        if treatment_id is not None:
+            params['TreatmentID'] = treatment_id
+        response = BookerAuthedRequest('/customer/series', self.customer_token, params).post()
+        customer_series = self.process_response(response)['Results']
+        for series in customer_series:
+            print(series)
+            series_list.append(CustomerSeries(series['SeriesID'], series['Series']['Name'],
+                           series['QuantityRemaining'], series['QuantityOriginal'],
+                           series['ExpirationDate'], series['SeriesRedeemableItems']))
+
+        return series_list
 
     def get_employees(self):
         """

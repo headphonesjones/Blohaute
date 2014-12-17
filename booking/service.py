@@ -147,6 +147,12 @@ class Appointment(object):
 
 
 class BookerCustomerClient(BookerClient):
+    CREDIT_CARD_TYPES = {4: 2,  # visa
+                         3: 1,  # american express
+                         2: 4,  # discover
+                         5: 3   # mastercard
+                         }
+
     location_id = 29033  # From get location call, we should cache this for now
     customer_token = None
     customer_password = None
@@ -175,6 +181,11 @@ class BookerCustomerClient(BookerClient):
 
         dt = datetime.utcfromtimestamp(timepart + hours * 3600)
         return dt
+
+    def credit_card_type(self, credit_card_number):
+        first_character = int(credit_card_number[0])
+        card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
+        return card_type
 
     def get_services(self):
         """

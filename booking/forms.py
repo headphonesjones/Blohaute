@@ -74,7 +74,7 @@ class CheckoutForm(forms.Form):
     card_code = VerificationValueField(required=True, label="CVV Code")
 
     date = forms.DateField()
-    time = forms.CharField(widget=forms.Select())
+    time = forms.CharField()
 
 
 class ContactForm(forms.Form):

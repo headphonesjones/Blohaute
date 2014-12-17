@@ -63,22 +63,18 @@ class TreatmentDetail(DetailView):
 
 
 def available_times_for_day(request):
-    time_slots = ['true']
+    time_slots = []
     if request.cart.is_empty():
         return HttpResponseRedirect(reverse('cart'))  # if there's nothing in the cart, go back to it
-
     services_requested = get_services_from_cart(request)
     client = request.session['client']
-    available_times = client.get_unavailable_days_in_range(services_requested, request.date)
+    available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
     for time in available_times:
-        if len(time.single_employee_slots) > 0:
-            time_array = []
-            time = time.strptime(time, '%H%M')
-            time_array.append(time.hour)
-            time_array.append(time.minute)
-            time_slots.append(time_array)
-
-    return HttpResponse(time_slots)
+        time_parts = time.split(":")
+        time_parts = map(int, time_parts)
+        time_array = [time_parts[0], time_parts[1]]
+        time_slots.append(time_array)
+    return HttpResponse(json.dumps(time_slots))
 
 
 def get_services_from_cart(request):

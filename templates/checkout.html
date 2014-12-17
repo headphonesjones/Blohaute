@@ -140,15 +140,18 @@ $(document).ready(function() {
                 data: {
                     date: $("#id_checkout-date_hidden").val()
                 },
-                success: function(data){
+                success: function(data) {
                     timePicker.set('disable', data);
+                }
             });
         }
     });
 
     var timeInput = $('#id_checkout-time').pickatime({
         formatSubmit: 'HH:i',
-        hiddenName: true
+        hiddenName: true,
+        min: [7, 0],
+        max: [20, 0]
     });
 
     var timePicker = timeInput.pickatime('picker');

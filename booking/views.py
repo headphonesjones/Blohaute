@@ -103,7 +103,7 @@ def checkout(request):
         print(day)
         day = datetime.strptime(day, "%Y-%m-%d")
         date_array.append(day.year)
-        date_array.append(day.month-1)
+        date_array.append(day.month - 1)
         date_array.append(day.day)
         result.append(date_array)
         date_array = []
@@ -140,23 +140,19 @@ def checkout(request):
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
-
-                client.book_appointment(itinerary,
-                                        data['first_name'],
-                                        data['last_name'],
-                                        data['address'],
-                                        data['city'],
-                                        data['state'],
-                                        data['zip_code'],
-                                        data['email_address'],
-                                        data['phone_number'],
-                                        data['card_number'],
-                                        data['name_on_card'],
-                                        data['expiry_date'].year,
-                                        data['expiry_date'].month,
-                                        data['card_code'],
-                                        data['billing_zip_code'],
-                                        data['notes'])
+                itinerary = client.get_itinerary_for_slot(services_requested, data['date'], data['time'])
+                print("itin is %s" % itinerary)
+                appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                                                      data['city'], data['state'], data['zip_code'],
+                                                      data['email_address'], data['phone_number'], data['card_number'],
+                                                      data['name_on_card'], data['expiry_date'].year,
+                                                      data['expiry_date'].month, data['card_code'],
+                                                      data['billing_zip_code'], data['notes'])
+                print("appt result is: %s" % appointment)
+                print("success?:  %s" % appointment['IsSuccess'])
+                if appointment['IsSuccess']:
+                    print("sucessful booking")
+                    return HttpResponseRedirect(reverse('welcome'))
 
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,

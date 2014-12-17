@@ -103,25 +103,6 @@ class BookerClient(object):
         setting.save()
 
 
-# class AvailableTimeSlot(object):
-#     single_employee_slots = []
-#     multiple_employee_slots = []
-#     raw_time = None
-#     pretty_time = ''
-#
-#     def __init__(self):
-#         self.single_employee_slots = []
-#         self.multiple_employee_slots = []
-#         self.raw_time = None
-#         self.pretty_time = ''
-#
-#     def __eq__(self, other):
-#         return self.pretty_time == other.pretty_time
-#
-#     def __hash__(self):
-#         return hash(self.pretty_time)
-
-
 class AppointmentResult(object):
     def __init__(self):
         self.upcoming = []
@@ -400,20 +381,45 @@ class BookerCustomerClient(BookerClient):
             #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
         return times
 
-    def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode, email, phone, ccnum, name_on_card, expyear, expmonth, cccode,
-                         billingzip, notes):
+    def get_itinerary_for_slot(self, treatments_requested, date, time_string):
+        time_string = time_string.split(" ")[0]
+        new_time = map(int, time_string.split(":"))
+        print("time %s" % new_time)
+        start_date = datetime(date.year, date.month, date.day, new_time[0]-1, new_time[1], 0, 0)
+        print(start_date)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatments_requested, start_date, end_date)
+
+        # When more than one employee, that 0 below goes away and we iterate
+        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            # avail_time_slot = AvailableTimeSlot()
+            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            if time_string == itin_time:
+                # emp_list = set()
+                # for time_slot in itinerary_option['TreatmentTimeSlots']:
+                #     emp_list.add(time_slot['EmployeeID'])
+                return itinerary_option
+                # break
+            else:
+                print("nope %s vs %s" % (new_time, itin_time))
+        return None
+
+    def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
+                         email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
         if self.customer:
             adjusted_customer = self.customer.copy()
         else:
-            adjusted_customer = {'LocationID': self.location_id,
-                  'Email': email,
-                  'FirstName': first_name,
-                  'LastName': last_name,
-                  'HomePhone': phone,
-                  }
+            adjusted_customer = {
+                'LocationID': self.location_id,
+                'Email': email,
+                'FirstName': first_name,
+                'LastName': last_name,
+                'HomePhone': phone
+            }
 
         adjusted_customer['Address'] = {
             'Street1': address,
+            # 'Street2': notes,
             'City': city,
             'State': state,
             'Zip': zipcode
@@ -422,7 +428,7 @@ class BookerCustomerClient(BookerClient):
         adjusted_customer.pop('GUID')
         params = {
             'LocationID': self.location_id,
-            'ItineraryTimeSlotList': itinerary,
+            'ItineraryTimeSlotList': [itinerary],
             'AppointmentPayment': {
                 'CouponCode': '',
                 'PaymentItem': {
@@ -438,13 +444,11 @@ class BookerCustomerClient(BookerClient):
                         'Number': ccnum,
                         'SecurityCode': cccode,
                         'Type': {
-                            'ID': 1,
-                            # 'Name': ''
+                            'ID': self.credit_card_type(ccnum),
                         }
                     },
                     'Method': {
                         'ID': 1,
-                        # "Name": ""
                     }
                 }
             },
@@ -452,21 +456,21 @@ class BookerCustomerClient(BookerClient):
             'Notes': notes
         }
 
-        print(params)
+        # print(params)
 
-        return BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
+        response = BookerRequest('/appointment/create', self.customer_token, params).post()
+        print("book response %s" % response)
+        return self.process_response(response)
 
     def process_response(self, response):
         formatted_response = response.json()
-        # print 'response is %s' % formatted_response
         error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
-
+            self.load_token()
             if response.needs_user_token:
                 self.login(self.user.email, self.customer_password)
-                new_request = BookerAuthedRequest(response.original_request.path, self.token)
+                new_request = BookerAuthedRequest(response.original_request.path, self.customer_token)
             else:
-                self.load_token()
                 new_request = BookerRequest(response.original_request.path, self.token)
             new_request.method = response.original_request.method
             if new_request.method == 'GET':
@@ -490,8 +494,6 @@ class BookerCustomerClient(BookerClient):
             print("Request to %s with params %s Failed with ErrorCode %s: %s" %
                   (response.original_request.path, response.original_request.params, error_code,
                    formatted_response['ErrorMessage']))
-            # Nathan, should I raise something here? or return some different response?
-            # Not super sure how to do error handling so Im just printing for now
         return formatted_response
 
 
@@ -499,4 +501,4 @@ class BookerMerchantClient(BookerClient):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
 
     def get_locations(self):
-        return self.post('/locations', {})
+        return BookerRequest('/locations', self.token).post()

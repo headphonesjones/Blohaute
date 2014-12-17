@@ -128,7 +128,32 @@
 $(document).ready(function() {
 
     $("#id_checkout-date").pickadate({
-        disable: {{ unavailable_days }}
+        disable: {{ unavailable_days }},
+        format: 'ddd mmmm d yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true,
+        onSet: function(context) {
+            $.ajax({
+                type: 'POST',
+                url: '/timesforday',
+                data: {
+                    date: $("#id_checkout-date_hidden").val()
+                },
+                success: function(data){
+                    alert(data);
+                    $('#id_checkout-time').pickatime({
+                        formatSubmit: 'HH:i',
+                        disable: data
+                    });
+                }
+
+            });
+        }
+    });
+
+    $('#id_checkout-time').pickatime({
+        formatSubmit: 'HH:i',
+        hiddenName: true
     });
 });
 

@@ -71,7 +71,7 @@ class CheckoutForm(forms.Form):
     create_account = forms.BooleanField(initial=False, required=False)
 
     date = forms.DateField()
-    time = forms.CharField(widget=forms.Select())
+    time = forms.CharField()
 
 
 class ContactForm(forms.Form):

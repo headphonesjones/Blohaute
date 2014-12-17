@@ -76,165 +76,28 @@
                 </div>
                   {% endif %}
 
+            {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
 
-            <form>
-                <div class="uk-width-medium-1-1">
-                    <h2 class="bh-headline-bottom-border"><span>Location of Appointment</span></h2>
-                    <div class="uk-form uk-form-stacked">
-                        <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
-                            <div class="uk-width-1-1">
-                                <label class="uk-form-label" for="address">{{checkout_form.address.label}}</label>
-                                {% if checkout_form.address.errors %}
-                                    {% render_field checkout_form.address class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.address class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.address.errors}}
-                            </div>
-
-                            <div class="uk-width-1-2">
-                                 <label class="uk-form-label" for="city">{{checkout_form.city.label}}</label>
-                                {% if checkout_form.city.errors %}
-                                    {% render_field checkout_form.city class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.city class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.city.errors}}
-                            </div>
-
-                            <div class="uk-width-1-2">
-                                <label class="uk-form-label" for="zip_code">{{checkout_form.zip_code.label}}</label>
-                                {% if checkout_form.zip_code.errors %}
-                                    {% render_field checkout_form.zip_code class+="uk-form-large uk-width-1-1 uk-form-danger" %}
-                                {% else %}
-                                    {% render_field checkout_form.zip_code class+="uk-form-large uk-width-1-1" %}
-                                {% endif %}
-                                {{checkout_form.zip_code.errors}}
-                            </div>
-
-                            <div class="uk-width-1-1">
-                                <label class="uk-form-label" for="shop-checkout-note">Other Notes</label>
-                                <textarea rows="5" class="uk-form-large uk-width-1-1" placeholder="Notes about your order, special notes regarding your appointment" id="shop-checkout-note"></textarea>
-                            </div>
-
-                        </div>
+            <form method="POST" class="uk-form">
+                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_location.html' %}
+                    </div>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_schedule.html' %}
                     </div>
                 </div>
-            <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
-                <div class="uk-width-medium-1-2">
-                    <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>
-                    <div class="uk-panel" id="booking-datepicker">Pick Date
-                    </div>
-                    {% render_field checkout_form.date %}
 
-                    {% render_field checkout_form.time class+="uk-form-large uk-width-1-2" %}
-{#                    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">#}
-                </div>
-                <div class="uk-width-medium-1-2">
-                    <h2 class="bh-headline-bottom-border"><span>Payment</span></h2>
-                    <div class="uk-grid">
-                        <div class="uk-width-1-2">
-                            <label class="uk-form-label" for="card-number">{{checkout_form.card_number.label}}</label>
-                            {% if checkout_form.card_number.errors %}
-                                {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-3 uk-form-danger" %}
-                            {% else %}
-                                {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-1" %}
-                            {% endif %}
-                            {{checkout_form.card_number.errors}}
-                        </div>
-                        <div class="uk-width-1-4">
-                            <label class="uk-form-label" for="expiry_date">{{checkout_form.expiry_date.label}}</label>
-                            {% if checkout_form.expiry_date.errors %}
-                                {% render_field checkout_form.expiry_date class+="" %}
-                            {% else %}
-                                {% render_field checkout_form.expiry_date class+="" %}
-                            {% endif %}
-                            {{checkout_form.expiry_date.errors}}
-                        </div>
-                        <div class="uk-width-1-4">
-                            <label class="uk-form-label" for="card_code">{{checkout_form.card_code.label}}</label>
-                            {% if checkout_form.card_code.errors %}
-                                {% render_field checkout_form.card_code class+="uk-form-large" %}
-                            {% else %}
-                                {% render_field checkout_form.card_code class+="uk-form-large uk-width-1-1" %}
-                            {% endif %}
-                            {{checkout_form.card_code.errors}}
-                        </div>
+                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_payment.html' %}
+                    </div>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/order_summary.html' %}
                     </div>
                 </div>
-            </div>
-            <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
-                <div class="uk-width-medium-1-1">
-                    <div class="uk-panel uk-panel-box uk-panel-header">
-                        <h3 class="uk-panel-title">Order Summary</h3>
-                        <div class="uk-width-1-1">
-                            <div class="uk-alert uk-margin-bottom-remove">
-                                <i class="uk-icon-info-circle uk-margin-right"></i>Have a Coupon? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-coupon', animation: 'uk-animation-fade'}">Click here to enter your code</a>
-                            </div>
-                            <div class="uk-panel uk-panel-space uk-hidden" id="checkout-coupon">
-                                <form class="uk-form" id="coupon-form" method="POST">
-                                    {% csrf_token %}
-                                    {% if coupon_form.errors %}
-                                        <div class="uk-width-1-1">
-                                            <div class="uk-alert uk-alert-danger ">
-                                                {% if coupon_form.non_field_errors %}
-                                                    {% for error in coupon_form.non_field_errors %}
-                                                        <p>{{error}}</p>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    There was a problem checking your coupon. Please check the form and make sure that everything is filled out correctly.
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                    <label class="uk-form-label" for="coupon_code">{{coupon_form.coupon_code.label}}</label>
-                                    {% if coupon_form.coupon_code.errors %}
-                                        {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2 uk-form-danger" %}
-                                        {{coupon_form.coupon_code.errors}}
-                                    {% else %}
-                                        {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2" %}
-                                    {% endif %}
-                                    <button class="uk-button">Apply Coupon</button>
-                                </form>
-                            </div>
-                        </div>
-                         <table class="uk-table uk-table-middle uk-text-nowrap">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th class="uk-text-center">Quantity</th>
-                                    <th class="uk-text-center">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in cart %}
-                                <tr>
-                                    <td>
-                                        {{ item.product.cart_description }}<br>
-                                    </td>
-                                    <td class="uk-text-center">
-                                    {{item.quantity}}
-                                    </td>
-                                    <td class="uk-text-center">${{ item.total_price|floatformat:"-2" }} {{ item.product.price_units }}</td>
-                                </tr>
-                                {% endfor %}
-                                <tr>
-                                    <td colspan=2><b>Order Total Price</b></td>
-                                    <td class="uk-text-center"><b>${{cart.cart.total_price|floatformat:"-2"}}</b></td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-
-                        <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i><br />Also stylists do not carry cash on them so they can not break large bills</span>
-
-                        <div class="uk-width-1-1">
-                            <button class="uk-button uk-button-primary" id="place-order-button">Place order</button>
-                        </div>
-
-                    </div>
-                </div>
-            </form>      
+            </form>   
+            {% endwith %}   
 
                         </div>
                     </div>

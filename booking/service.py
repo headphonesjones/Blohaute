@@ -398,12 +398,17 @@ class BookerCustomerClient(BookerClient):
             #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
         return times
 
-    def book_appointment(self, itinerary, address, city, state, zipcode, ccnum, name_on_card, expyear, expmonth, cccode,
-                         billingzip):
-        adjusted_customer = self.customer
-        print(adjusted_customer)
-        if adjusted_customer is None:
-            print("Null customer")
+    def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode, email, phone, ccnum, name_on_card, expyear, expmonth, cccode,
+                         billingzip, notes):
+        if self.customer:
+            adjusted_customer = self.customer.copy()
+        else:
+            adjusted_customer = {'LocationID': self.location_id,
+                  'Email': email,
+                  'FirstName': first_name,
+                  'LastName': last_name,
+                  'HomePhone': phone,
+                  }
 
         adjusted_customer['Address'] = {
             'Street1': address,
@@ -411,6 +416,7 @@ class BookerCustomerClient(BookerClient):
             'State': state,
             'Zip': zipcode
         }
+        
         adjusted_customer.pop('GUID')
         params = {
             'LocationID': self.location_id,
@@ -440,7 +446,8 @@ class BookerCustomerClient(BookerClient):
                     }
                 }
             },
-            'Customer': adjusted_customer
+            'Customer': adjusted_customer,
+            'Notes': notes
         }
 
         print(params)

@@ -1,0 +1,58 @@
+{% load widget_tweaks %}
+
+<h2 class="bh-headline-bottom-border"><span>Location of Appointment</span></h2>
+<div class="uk-form uk-form-stacked">
+    <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
+        <div class="uk-width-1-2">
+            <label class="uk-form-label" for="first_name">{{checkout_form.first_name.label}}</label>
+                {% render_field checkout_form.first_name class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.first_name.errors}}
+        </div>
+        <div class="uk-width-1-2">
+            <label class="uk-form-label" for="first_name">{{checkout_form.last_name.label}}</label>
+                {% render_field checkout_form.last_name class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.last_name.errors}}
+        </div>
+
+        <div class="uk-width-1-2">
+            <label class="uk-form-label" for="email_address">{{checkout_form.email_address.label}}</label>
+                {% render_field checkout_form.email_address class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.email_address.errors}}
+        </div>
+        <div class="uk-width-1-2">
+            <label class="uk-form-label" for="phone_number">{{checkout_form.phone_number.label}}</label>
+                {% render_field checkout_form.phone_number class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.phone_number.errors}}
+        </div>
+
+        <div class="uk-width-1-1">
+            <label class="uk-form-label" for="address">{{checkout_form.address.label}}</label>
+                {% render_field checkout_form.address class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.address.errors}}
+        </div>
+
+        <div class="uk-width-5-10">
+             <label class="uk-form-label" for="city">{{checkout_form.city.label}}</label>
+                {% render_field checkout_form.city class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.city.errors}}
+        </div>
+
+        <div class="uk-width-2-10">
+             <label class="uk-form-label" for="city">{{checkout_form.state.label}}</label>
+                {% render_field checkout_form.state class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.state.errors}}
+        </div>
+
+        <div class="uk-width-3-10">
+            <label class="uk-form-label" for="zip_code">{{checkout_form.zip_code.label}}</label>
+                {% render_field checkout_form.zip_code class+="uk-form-large uk-width-1-1" %}
+            {{checkout_form.zip_code.errors}}
+        </div>
+
+        <div class="uk-width-1-1">
+            <label class="uk-form-label" for="shop-checkout-note">{{checkout_form.notes.label}}</label>
+            {% render_field checkout_form.notes class+="uk-form-large uk-width-1-1" placeholder="Notes about your order, special notes regarding your appointment" %}
+            {{checkout_form.notes.errors}}
+        </div>
+    </div>
+</div>

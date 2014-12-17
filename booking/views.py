@@ -92,7 +92,7 @@ def get_services_from_cart(request):
 @csrf_protect
 def checkout(request):
     if request.cart.is_empty():
-        return HttpResponseRedirect(reverse('cart'))  # if there's nothing in the cart, go back to it
+        return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go back to it
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
@@ -123,7 +123,6 @@ def checkout(request):
                     request.session.set_expiry(0)
 
                 user = remember_me_form.get_user()
-                client = request.session['client']
                 try:
                     client.login(user.email, remember_me_form.cleaned_data.get('password'))
                     client.user = user
@@ -144,7 +143,25 @@ def checkout(request):
         if 'checkout-first_name' in request.POST:
             checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout')
             if checkout_form.is_valid():
-                pass
+
+                data = checkout_form.cleaned_data
+
+                client.book_appointment(itinerary,
+                                        data['first_name'],
+                                        data['last_name'],
+                                        data['address'],
+                                        data['city'],
+                                        data['state'],
+                                        data['zip_code'],
+                                        data['email_address'],
+                                        data['phone_number'],
+                                        data['card_number'],
+                                        data['name_on_card'],
+                                        data['expiry_date'].year,
+                                        data['expiry_date'].month,
+                                        data['card_code'],
+                                        data['billing_zip_code'],
+                                        data['notes'])
 
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,

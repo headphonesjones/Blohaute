@@ -2,7 +2,7 @@ import json
 
 
 class IdCache:
-    treatments_ids = {'Updo': 1500556, 'Braid': 1500553, 'Blow Out': 1500539}
+    TREATMENT_IDS = {'Updo': 1500556, 'Braid': 1500553, 'Blow Out': 1500539}
     employees = {'Amanda I': 322953,
                  'Amanda S/D': 319599,
                  'Jessie Hitzeman': 319544,

@@ -132,6 +132,15 @@ $(document).ready(function() {
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
+        beforeSend: function() {
+                console.log("beforeSend fired");
+                $( "body" ).append( "<div id="loading-container"><img src="" id="spinning-loader" alt="loading" /></div>" );
+        },
+        complete: function() {
+                console.log("complete fired");
+                $( "#loading-container" ).remove();
+                $( "#spinning-loader" ).remove();
+        },
         onSet: function(context) {
             $.ajax({
                 type: 'POST',

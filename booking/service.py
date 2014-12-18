@@ -493,7 +493,6 @@ class BookerCustomerClient(BookerClient):
             }
         }
 
-
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
         if self.customer:
@@ -541,7 +540,7 @@ class BookerCustomerClient(BookerClient):
             'CustomerFirstName': self.customer['FirstName'],
             'CustomerLastName': self.customer['LastName'],
             'CustomerPhone': self.customer['HomePhone'],
-            # 'CustomerPhone': self.customer.phone_number,
+            # 'CustomerPhone': self.user.phone_number,
             'CustomerEmail': self.customer['Email'],
             # 'CustomerEmail': self.user.email,
             'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,

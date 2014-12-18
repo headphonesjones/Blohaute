@@ -3,13 +3,14 @@
 <h2 class="bh-headline-bottom-border"><span>Location of Appointment</span></h2>
 <div class="uk-form uk-form-stacked">
     <div class="uk-grid" data-uk-margin="{cls:'uk-margin-small-top'}">
+        {% if not user.is_authenticated %}
         <div class="uk-width-1-2">
             <label class="uk-form-label" for="first_name">{{checkout_form.first_name.label}}</label>
                 {% render_field checkout_form.first_name class+="uk-form-large uk-width-1-1" %}
             {{checkout_form.first_name.errors}}
         </div>
         <div class="uk-width-1-2">
-            <label class="uk-form-label" for="first_name">{{checkout_form.last_name.label}}</label>
+            <label class="uk-form-label" for="last_name">{{checkout_form.last_name.label}}</label>
                 {% render_field checkout_form.last_name class+="uk-form-large uk-width-1-1" %}
             {{checkout_form.last_name.errors}}
         </div>
@@ -24,10 +25,11 @@
                 {% render_field checkout_form.phone_number class+="uk-form-large uk-width-1-1" %}
             {{checkout_form.phone_number.errors}}
         </div>
+        {% endif %}
 
         <div class="uk-width-1-1">
             <label class="uk-form-label" for="address">{{checkout_form.address.label}}</label>
-                {% render_field checkout_form.address class+="uk-form-large uk-width-1-1" %}
+                {% render_field checkout_form.address class+="uk-form-large uk-width-1-1" val+="{{ user. }}" %}
             {{checkout_form.address.errors}}
         </div>
 

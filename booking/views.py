@@ -11,6 +11,7 @@ from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, QuickBookForm, ContactForm, CheckoutForm, CouponForm
 from booking.models import Treatment
 from accounts.forms import AuthenticationRememberMeForm
+from changuito.models import Cart
 import json
 
 
@@ -23,6 +24,7 @@ class TreatmentList(ListView):
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
+            cart.cart.mode = Cart.NORMAL
             return HttpResponseRedirect(reverse('cart'))
         print form.errors
         return super(TreatmentList, self).get(self, request, *args, **kwargs)
@@ -48,6 +50,7 @@ class TreatmentDetail(DetailView):
                 cart.add(package, package.price, 1)
             if membership:
                 cart.add(membership, membership.price, 1)
+            cart.cart.mode = Cart.NORMAL
 
             return HttpResponseRedirect(reverse('cart'))
 
@@ -93,6 +96,7 @@ def checkout(request):
     checkout_form = CheckoutForm(prefix="checkout")
 
     services_requested = get_services_from_cart(request)
+    print ("cart mode is %s" % request.cart.cart.mode)
 
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
@@ -149,6 +153,7 @@ def checkout(request):
                                              'checkout_form': checkout_form,
                                              'cart': request.cart,
                                              'unavailable_days': unavailable_days})
+
 
 def contact_view(request):
     if request.method == "GET":

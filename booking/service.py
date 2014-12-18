@@ -453,6 +453,43 @@ class BookerCustomerClient(BookerClient):
                 print("nope %s vs %s" % (new_time, itin_time))
         return None
 
+    def get_booker_credit_card_payment_item(self, billingzip, cccode, ccnum, expmonth, expyear, name_on_card):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CreditCard': {
+                'BillingZip': billingzip,
+                'NameOnCard': name_on_card,
+                'ExpirationDate': self.format_date_for_booker_json(
+                    datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
+                'Number': ccnum,
+                'SecurityCode': cccode,
+                'Type': {
+                    'ID': self.credit_card_type(ccnum),
+                }
+            },
+            'Method': {
+                'ID': 1,
+            }
+        }
+
+    def get_booker_series_payment_item(self, series_id):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CustomerSeries': {
+                'SeriesID': series_id
+            },
+            'Method': {
+                'ID': 5,
+            }
+        }
+
+
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
         if self.customer:
@@ -480,26 +517,8 @@ class BookerCustomerClient(BookerClient):
             'ItineraryTimeSlotList': [itinerary],
             'AppointmentPayment': {
                 'CouponCode': '',
-                'PaymentItem': {
-                    'Amount': {
-                        'Amount': 0,
-                        'CurrencyCode': 'USD'
-                    },
-                    'CreditCard': {
-                        'BillingZip': billingzip,
-                        'NameOnCard': name_on_card,
-                        'ExpirationDate': self.format_date_for_booker_json(
-                            datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
-                        'Number': ccnum,
-                        'SecurityCode': cccode,
-                        'Type': {
-                            'ID': self.credit_card_type(ccnum),
-                        }
-                    },
-                    'Method': {
-                        'ID': 1,
-                    }
-                }
+                'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
+                                                                        name_on_card)
             },
             'Customer': adjusted_customer,
             'Notes': notes
@@ -507,8 +526,25 @@ class BookerCustomerClient(BookerClient):
 
         # print(params)
 
-        response = BookerRequest('/appointment/create', self.customer_token, params).post()
+        response = BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
         print("book response %s" % response)
+        return self.process_response(response)
+
+    def buy_series(self, series_id, ccnum, name_on_card, expyear, expmonth, cccode, billingzip):
+        params = {
+            'LocationID': self.location_id,
+            'CustomerID': self.customer_id,
+            'CustomerFirstName': self.customer['FirstName'],
+            'CustomerLastName': self.customer['LastName'],
+            'CustomerPhone': self.customer['HomePhone'],
+            # 'CustomerPhone': self.customer.phone_number,
+            'CustomerEmail': self.customer['Email'],
+            # 'CustomerEmail': self.user.email,
+            'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
+                                                                    name_on_card),
+            'SeriesID': series_id
+        }
+        response = BookerAuthedRequest('/series/purchase', self.customer_token, params).post()
         return self.process_response(response)
 
     def process_response(self, response):

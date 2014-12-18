@@ -1,4 +1,4 @@
-e{% extends "base.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 
 {% block page_title %}Profile{% endblock %}
@@ -38,82 +38,31 @@ e{% extends "base.html" %}
                     <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
             </div>
             <div class="uk-width-1-3">
-            <!-- FIGURE THIS OUT: http://getuikit.com/docs/addons_datepicker.html -->
-        		<div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
-                    <button class="uk-button">Available Services to Book <i class="uk-icon-caret-down"></i></button>
-                    <div style="" class="uk-dropdown">
-                        <ul class="uk-nav uk-nav-dropdown">
-                        	<li class="uk-nav-header">Services</li>
-                            {% if series %}
-                                {% for ser in series %}
-                                    <li><a href="#">{{ ser.name }} ({{ ser.remaining }})</a></li>
-                                {% endfor %}
-                            {% else %}
-                                <li>No unused services available</li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-                
-				<br />
-                <br />
-                <table class="uk-table uk-table-middle uk-text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th class="uk-text-center">Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <a href="{% url 'treatment_detail' 'braids' %}">
-                                    <img src="{% static 'images/braid_home_bw.jpg' %}" width="100" height="75" alt="Product Image">
-                                </a>
-                            </td>
-                            <td>
-                                <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'braids' %}">Blowout</a><br>
-                                <span class="uk-text-muted uk-text-small">No. 097744</span>
-                            </td>
-                            <td class="uk-text-center"><form class="uk-form"><input class="uk-form-width-mini" type="number" placeholder="1"></form></td>
-                            
-                        </tr>
-                    </tbody>
-                </table>                
-            </div>
-            <div class="uk-width-1-4">
-	            <form class="uk-form">
-	            	<div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
-	                    <button class="uk-button">Choose Your Stylist <i class="uk-icon-caret-down"></i></button>
-	                    <div style="" class="uk-dropdown">
-	                        <ul class="uk-nav uk-nav-dropdown">
-	                        	<li class="uk-nav-header">Stylists</li>
-	                        	<li><a href="#">No Preference</a></li>
-	                            <li><a href="#">Amanda D.</a></li>
-	                            <li><a href="#">Amanda L.</a></li>
-	                            <li><a href="#">Morgan S.</a></li>
-	                            <li><a href="#">Tara</a></li>
-	                        </ul>
-	                    </div>
-	                </div><br /><br />
-	                <!-- 
-	                		var datepicker = $.UIkit.datepicker($('#profile_date_picker'), { format:'MM.DD.YYYY'}); 
-		                    URL: http://getuikit.com/docs/addons_datepicker.html
-		            
-	                -->
-	        		<label for="profile_time_picker">Choose A Date:</label><br /> 
-				    <input type="text" id="profile_time_picker" data-uk-timepicker="{format:'12h'}"><br />
-				    <label for="profile_date_picker">Choose A Time:</label><br />
-				    <input type="text" id="profile_date_picker" data-uk-datepicker="{format:'MM.DD.YYYY'}">
-	            </form>
-            </div>
-            <div class="uk-width-1-3">
-        		<h2 class="bh-headline-bottom-border"><span>Address for Services</span></h2>
-                <a href="">717 West Roscoe</a><br />
-                <a href="">Chicago, IL</a><br />
-                <a href="">60657</a><br /><br />
-                <button class="uk-button uk-button-success">Change Address</button><br /><br />
-				<button class="uk-button uk-button-success">Book Now <i class="uk-icon-calendar"></i></button>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{service_formset.management_form}}
+
+                    <table class="uk-table uk-table-middle uk-text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th class="uk-text-center">Quantity</th>
+                                <th class="uk-text-center">Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in service_formset %}
+                                <tr>
+                                    <td><a href="{% url 'treatment_detail' form.treatment.slug %}">{{form.treatment}}</a></td>
+                                    <td>{{form.quantity}}{{form.quantity.errors}}</td>
+                                    <td>{{form.series.remaining}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>    
+                    <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
+
+                </form>            
             </div>
         </div>
         <div class="uk-width-small-1-1">

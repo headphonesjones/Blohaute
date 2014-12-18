@@ -134,6 +134,7 @@ class CustomerSeries(object):
     remaining = None
     expiration = None
     redeemable_items = None
+    treatment = None
 
     def __init__(self, series_id, name, quantity, remaining, expiration, redeemable):
         self.series_id = series_id
@@ -142,6 +143,8 @@ class CustomerSeries(object):
         self.remaining = remaining
         # self.expiration = expiration
         self.redeemable_items = redeemable
+        treatment_id = self.redeemable_items[0]['TreatmentID']
+        self.treatment = Treatment.objects.get(booker_id=treatment_id)
 
     def __str__(self):
         if self.expiration is None:

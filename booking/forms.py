@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.formsets import formset_factory
 from django.template.defaultfilters import floatformat
 from localflavor.us.forms import USZipCodeField, USPhoneNumberField, USStateField
 from booking.models import Package, Membership, Treatment
@@ -76,11 +77,42 @@ class CheckoutForm(forms.Form):
     time = forms.CharField()
 
 
+class SelectAvailableServiceForm(forms.Form):
+    series = None
+    treatment = None
+    treatment_id = forms.HiddenInput()
+    quantity = forms.IntegerField(min_value=0)
+
+    def __init__(self, *args, **kwargs):
+        super(SelectAvailableServiceForm, self).__init__(*args, **kwargs)
+        self.series = kwargs['initial'].get('series', None)
+        self.treatment = self.series.treatment
+        self.fields['quantity'] = forms.IntegerField(max_value=self.series.remaining, min_value=0) 
+
+#use the factory to create the base model for us
+BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra = 0)
+
+
+class AvailableServiceFormset(BaseAvailableServiceFormset):
+    series = None
+
+    def __init__(self, *args, **kwargs):
+        self.series = kwargs.pop('series')
+        kwargs['initial'] = [{'treatment_id': s.treatment.pk, 'quantity': 0, 'series': s} for s in self.series]
+        super(AvailableServiceFormset, self).__init__(*args, **kwargs)   
+
+    def _construct_form(self, *args, **kwargs):
+        # inject user in each form on the formset
+        #kwargs['user'] = self.user       
+        return super(AvailableServiceFormset, self)._construct_form(*args, **kwargs)
+
+
 class ScheduleServiceForm(forms.Form):
     address = forms.CharField()
     city = forms.CharField()
     state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
     zip_code = USZipCodeField()
+
     date = forms.DateField()
     time = forms.CharField()
 

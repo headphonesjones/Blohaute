@@ -53,7 +53,7 @@
                         <tbody>
                             {% for form in service_formset %}
                                 <tr>
-                                    <td><a href="{% url 'treatment_detail' form.treatment.slug %}">{{form.treatment}}</a></td>
+                                    <td><a href="{% url 'treatment_detail' form.treatment.slug %}">{{form.treatment.name}} {{form.treatment_id}}</a></td>
                                     <td>{{form.quantity}}{{form.quantity.errors}}</td>
                                     <td>{{form.series.remaining}}</td>
                                 </tr>

@@ -10,11 +10,12 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.edit import DeleteView
-
+from changuito.models import Cart
 from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
                             EmailUpdateForm)
-from booking.forms import SelectAvailableServiceForm, AvailableServiceFormset
+from booking.forms import AvailableServiceFormset
+from booking.models import Treatment
 
 
 @sensitive_post_parameters()
@@ -95,7 +96,7 @@ def profile_view(request):
     client = request.session['client']
     appointments = client.get_appointments()
     series = client.get_customer_series()
-    
+
     service_formset = AvailableServiceFormset(series=series, prefix="services", data=request.POST or None)
 
     if request.method == 'GET':
@@ -135,12 +136,23 @@ def profile_view(request):
                 messages.error(request, "There was a problem updating your account. Please check the form and try again.")
 
         if 'services-TOTAL_FORMS' in request.POST:
-            print 'found formset'
             if service_formset.is_valid():
-                print 'formset is valid'
+                cart = request.cart
+                cart.clear()
+                cart.cart.mode = Cart.SCHEDULE
+                schedule_items = []
+                for form in service_formset:
+                    quantity = form.cleaned_data['quantity']
+                    if quantity > 0:
+                        treatment = Treatment.objects.get(pk=form.cleaned_data['treatment_id'])
+                        schedule_items.append({'treatment': treatment, quantity: 'quantity', 'source': form.series})
+                        cart.add(treatment, treatment.price, quantity)
+
+                return HttpResponseRedirect(reverse('checkout'))
+
             else:
-                print 'formset invalid'
-                print service_formset.errors
+                messages.error(request, "There was a problem scheduling your appointment. Please check the form and try again.")
+
     context = {
         'user': request.user,
         'password_form': password_form,

@@ -80,7 +80,7 @@ class CheckoutForm(forms.Form):
 class SelectAvailableServiceForm(forms.Form):
     series = None
     treatment = None
-    treatment_id = forms.HiddenInput()
+    treatment_id = forms.IntegerField(widget=forms.HiddenInput())
     quantity = forms.IntegerField(min_value=0)
 
     def __init__(self, *args, **kwargs):

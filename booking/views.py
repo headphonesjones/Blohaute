@@ -150,7 +150,6 @@ def checkout(request):
                                              'cart': request.cart,
                                              'unavailable_days': unavailable_days})
 
-
 def contact_view(request):
     if request.method == "GET":
         form = ContactForm()

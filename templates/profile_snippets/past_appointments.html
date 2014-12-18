@@ -1,0 +1,46 @@
+<li>
+    <div class="uk-grid" data-uk-grid-margin>
+
+        <div class="uk-width-1-1">
+            <ul class="uk-comment-list uk-margin-top">
+                <li>
+                    <table class="uk-table uk-table-middle uk-text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th class="uk-text-center" id="profile-service-table-head">Service</th>
+                                <th class="uk-text-center">Date / Time</th>
+                                <th class="uk-text-center">Payment Processed</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+                            {% if appointments %}
+                                {% for appt in appointments.past %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'treatment_detail' 'blowouts' %}">
+                                            <img src="{% static 'images/blohaute-next.jpg' %}" width="100" height="75" alt="Product Image">
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'blowouts' %}">{{ appt.treatment_name }}</a><br>
+                                    </td>
+                                    <td class="uk-text-center">
+                                        {{ appt.date }}<br />
+                                        {{ appt.time }}
+                                    </td>
+                                    <td class="uk-text-center">
+                                        $119(hardcoded)
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </li>
+            </ul>
+        </div>
+    </div>
+</li>

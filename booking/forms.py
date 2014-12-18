@@ -33,7 +33,8 @@ class AddToCartForm(forms.Form):
     def clean(self):
         if (self.cleaned_data['package'] is None and self.cleaned_data['membership'] is None):
             print 'raising validation error'
-            raise forms.ValidationError('You must select either a package or a membership to add to the cart')
+            raise forms.ValidationError('You must select either a package or a \
+                                        membership to add to the cart')
 
     def clean_package(self):
         package = self.cleaned_data['package']
@@ -55,9 +56,10 @@ class CheckoutForm(forms.Form):
     last_name = forms.CharField()
     address = forms.CharField()
     city = forms.CharField()
-    state = USStateField(widget=forms.TextInput(attrs={'maxlength':2}))
+    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
     zip_code = USZipCodeField()
-    notes = forms.CharField(required=False, label="Other Notes", widget=forms.Textarea(attrs={'rows':3}))
+    notes = forms.CharField(required=False, label="Other Notes",
+                            widget=forms.Textarea(attrs={'rows': 3}))
 
     #billing Information
     name_on_card = forms.CharField(required=True)
@@ -70,6 +72,15 @@ class CheckoutForm(forms.Form):
     phone_number = USPhoneNumberField()
     create_account = forms.BooleanField(initial=False, required=False)
 
+    date = forms.DateField()
+    time = forms.CharField()
+
+
+class ScheduleServiceForm(forms.Form):
+    address = forms.CharField()
+    city = forms.CharField()
+    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
+    zip_code = USZipCodeField()
     date = forms.DateField()
     time = forms.CharField()
 

@@ -190,6 +190,10 @@ class BookerCustomerClient(BookerClient):
         card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
         return card_type
 
+    def get_server_information(self):
+        response = BookerRequest('/server_information', self.token, {}).get()
+        return self.process_response(response)
+
     def get_services(self):
         """
         Returns treatments for a spa/location

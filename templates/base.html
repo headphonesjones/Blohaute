@@ -7,7 +7,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Blohaute is Chicago’s premier hairstyle brand, employing the industry’s top stylists to bring you that elegant look in the comfort of your own home.">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta property="og:title" content="Blohaute: Chicago's Premier Haitstyle Brand"/>
+        <meta property="og:type" content="company"/>
+        <meta property="og:description" content="Employing the industry’s top stylists to bring you that elegant look in the comfort of your own home." />
+        <meta property="og:image" content="{% static 'images/fbg.jpg' %}"/>
+        <meta property="og:site_name" content="Blohaute"/>
         <title>Blohaute - {% block page_title %}{% endblock %}</title>
+
+        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}"/> 
 
         <!-- add-ons -->
         <link rel="stylesheet" href="{% static 'assets/shufflr/animate.css' %}">
@@ -17,6 +26,20 @@
         <link id="theme-css" rel="stylesheet" href="{% static 'css/theme.css' %}">
         <!--[if IE 9]><link rel="stylesheet" href="{% static 'css/ie9.css' %}"><![endif]-->
         {% block extracss %}{% endblock %}
+        <!-- For third-generation iPad with high-resolution Retina display: -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static 'images/apple-144.png' %}">
+
+        <!-- For iPhone with high-resolution Retina display: -->
+
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'images/apple-144.png' %}g">
+
+        <!-- For first- and second-generation iPad: -->
+
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'images/apple-72.png' %}">
+
+        <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+
+        <link rel="apple-touch-icon-precomposed" href="{% static 'images/apple-72.png' %}">
 
     </head>
 

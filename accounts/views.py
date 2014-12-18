@@ -135,7 +135,8 @@ def profile_view(request):
         'user': request.user,
         'password_form': password_form,
         'email_form': email_form,
-        'appointments': appointments
+        'appointments': appointments,
+        'series': series
     }
     return render(request, 'welcome.html', context)
 

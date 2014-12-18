@@ -140,8 +140,13 @@ class CustomerSeries(object):
         self.name = name
         self.quantity = quantity
         self.remaining = remaining
-        self.expiration = expiration
+        # self.expiration = expiration
         self.redeemable_items = redeemable
+
+    def __str__(self):
+        if self.expiration is None:
+            self.expiration = "Never"
+        return self.name + " " + str(self.remaining) + " of " + str(self.quantity)
 
 
 class BookerCustomerClient(BookerClient):

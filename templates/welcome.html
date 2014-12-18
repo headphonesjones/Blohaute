@@ -125,9 +125,13 @@
                     <div style="" class="uk-dropdown">
                         <ul class="uk-nav uk-nav-dropdown">
                         	<li class="uk-nav-header">Services</li>
-                            <li><a href="#">Blowout (2)</a></li>
-                            <li><a href="#">Braid (1)</a></li>
-                            <li><a href="#">Upstyles (1)</a></li>
+                            {% if series %}
+                                {% for ser in series %}
+                                    <li><a href="#">{{ ser.name }} ({{ ser.remaining }})</a></li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No unused services available</li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

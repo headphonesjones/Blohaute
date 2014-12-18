@@ -3,7 +3,7 @@ from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
 from booking.models import Setting, Treatment
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 import calendar
 import time
 
@@ -386,25 +386,23 @@ class BookerCustomerClient(BookerClient):
         Returns a list of python dates that are unavailable during the specified range
         """
         end_date = start_date + timedelta(weeks=number_of_weeks)
-        days = set()
-        for single_date in self.date_range(start_date, end_date + timedelta(days=1)):
-            days.add(single_date.strftime("%Y-%m-%d"))
+        days = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
 
         current_date = start_date
         for i in range(0, number_of_weeks):
             end_date = current_date + timedelta(weeks=1)
             response = self.get_availability(treatments_requested, current_date, end_date)
-            for slot in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-                date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
-                days.discard(date_key)
+            slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
+            dates_to_remove = [self.parse_date(slot['StartDateTime']).date() for slot in slots]
+            days = [day for day in days if day not in dates_to_remove]
             current_date = end_date
-        return [datetime.strptime(day, "%Y-%m-%d") for day in days]
+        return days
 
     def get_unavailable_warm_period(self, treatments_requested):
         """
         Returns a list of python dates that are unavailable during the warm periond
         """
-        return self.get_unavailable_days_in_range(treatments_requested, datetime.now(), 3)
+        return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
 
     def get_available_times_for_day(self, treatments_requested, start_date):
         times = []

@@ -11,7 +11,6 @@ from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, QuickBookForm, ContactForm, CheckoutForm, CouponForm
 from booking.models import Treatment
 from accounts.forms import AuthenticationRememberMeForm
-from datetime import datetime
 import json
 
 
@@ -87,7 +86,7 @@ def get_services_from_cart(request):
 @csrf_protect
 def checkout(request):
     if request.cart.is_empty():
-        return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go back to it
+        return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
@@ -97,10 +96,12 @@ def checkout(request):
 
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
+    unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
 
     if request.method == 'POST':
         if 'login-password' in request.POST:
-            remember_me_form = AuthenticationRememberMeForm(data=request.POST or None, prefix='login')
+            remember_me_form = AuthenticationRememberMeForm(data=request.POST or None,
+                                                            prefix='login')
             if remember_me_form.is_valid():
                 if not remember_me_form.cleaned_data.get('remember_me'):
                     request.session.set_expiry(0)
@@ -128,7 +129,8 @@ def checkout(request):
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
-                itinerary = client.get_itinerary_for_slot(services_requested, data['date'], data['time'])
+                itinerary = client.get_itinerary_for_slot(services_requested,
+                                                          data['date'], data['time'])
                 print("itin is %s" % itinerary)
                 appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
                                                       data['city'], data['state'], data['zip_code'],

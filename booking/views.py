@@ -97,18 +97,6 @@ def checkout(request):
 
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
-    result = []
-    date_array = []
-    for day in unavailable_days:
-        print(day)
-        day = datetime.strptime(day, "%Y-%m-%d")
-        date_array.append(day.year)
-        date_array.append(day.month - 1)
-        date_array.append(day.day)
-        result.append(date_array)
-        date_array = []
-
-    unavailable_days = result
 
     if request.method == 'POST':
         if 'login-password' in request.POST:

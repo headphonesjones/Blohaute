@@ -382,6 +382,9 @@ class BookerCustomerClient(BookerClient):
         return self.process_response(response)
 
     def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
+        """
+        Returns a list of python dates that are unavailable during the specified range
+        """
         end_date = start_date + timedelta(weeks=number_of_weeks)
         days = set()
         for single_date in self.date_range(start_date, end_date + timedelta(days=1)):
@@ -395,12 +398,12 @@ class BookerCustomerClient(BookerClient):
                 date_key = self.parse_date(slot['StartDateTime']).strftime("%Y-%m-%d")
                 days.discard(date_key)
             current_date = end_date
-        result = []
-        for day in days:
-            result.append(day)
-        return result
+        return [datetime.strptime(day, "%Y-%m-%d") for day in days]
 
     def get_unavailable_warm_period(self, treatments_requested):
+        """
+        Returns a list of python dates that are unavailable during the warm periond
+        """
         return self.get_unavailable_days_in_range(treatments_requested, datetime.now(), 3)
 
     def get_available_times_for_day(self, treatments_requested, start_date):

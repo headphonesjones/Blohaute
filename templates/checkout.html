@@ -134,7 +134,7 @@ $(document).ready(function() {
         hiddenName: true,
         beforeSend: function() {
                 console.log("beforeSend fired");
-                $( "body" ).append("<div id='loading-container'><img src='' id='spinning-loader' alt='loading' /></div>");
+                $( "body" ).append( '<div id="loading-container"><img src="{% static 'loading.gif' %}" id="spinning-loader" alt="loading" /></div>' );
         },
         complete: function() {
                 console.log("complete fired");

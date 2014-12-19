@@ -56,6 +56,7 @@ class Item(models.Model):
     # product as generic relation
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
+    series_id = models.IntegerField(default=None, null=True, blank=True)
 
     objects = ItemManager()
 

@@ -18,7 +18,6 @@ class Cart(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     creation_date = models.DateTimeField(verbose_name=_('creation date'), default=timezone.now)
     checked_out = models.BooleanField(default=False, verbose_name=_('checked out'))
-    series_id = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:
         verbose_name = _('cart')

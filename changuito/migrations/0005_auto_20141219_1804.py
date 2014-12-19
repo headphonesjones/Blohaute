@@ -11,14 +11,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveField(
+            model_name='cart',
+            name='series_id',
+        ),
         migrations.AddField(
             model_name='item',
-            name='series_id',
-            field=models.IntegerField(default=None, null=True, blank=True),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='cart',
             name='series_id',
             field=models.IntegerField(default=None, null=True, blank=True),
             preserve_default=True,

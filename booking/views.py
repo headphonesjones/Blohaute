@@ -24,7 +24,7 @@ class TreatmentList(ListView):
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
-            cart.cart.mode = Cart.NORMAL
+            # cart.cart.mode = Cart.NORMAL
             return HttpResponseRedirect(reverse('cart'))
         print form.errors
         return super(TreatmentList, self).get(self, request, *args, **kwargs)
@@ -50,7 +50,7 @@ class TreatmentDetail(DetailView):
                 cart.add(package, package.price, 1)
             if membership:
                 cart.add(membership, membership.price, 1)
-            cart.cart.mode = Cart.NORMAL
+            # cart.cart.mode = Cart.NORMAL
 
             return HttpResponseRedirect(reverse('cart'))
 

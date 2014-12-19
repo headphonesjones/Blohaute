@@ -15,13 +15,9 @@ except ImportError:
 
 
 class Cart(models.Model):
-    NORMAL = 1
-    SCHEDULE = 2
-    CART_MODE_CHOICES = ((NORMAL, 'Normal'), (SCHEDULE, 'Schedule'))
     user = models.ForeignKey(User, null=True, blank=True)
     creation_date = models.DateTimeField(verbose_name=_('creation date'), default=timezone.now)
     checked_out = models.BooleanField(default=False, verbose_name=_('checked out'))
-    # mode = models.IntegerField(choices=CART_MODE_CHOICES, default=SCHEDULE)
     series_id = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:

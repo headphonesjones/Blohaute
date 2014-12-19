@@ -160,7 +160,11 @@ nav > div > ul > li > .active{
   margin-top: 50px;
 }
 
-
+#id_checkout-time{
+  width: 100px;
+  height: 50px;
+  margin-left: 10px;
+}
 
 
 

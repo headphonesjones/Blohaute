@@ -168,6 +168,10 @@ $(document).ready(function() {
     timePicker.set('disable', true); //start with all times disabled
 
 });
+picker.open(false)
+$(document).on('click', function() {
+    picker.close()
+})
 
 </script>
 {% endblock %}

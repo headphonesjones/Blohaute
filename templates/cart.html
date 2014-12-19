@@ -126,7 +126,7 @@ $( document ).ready(function() {
 </script>
 <script>
 $("#checkout-button").click(function(){
-    $( "body" ).append( "<div id='loading-container'><img src='{% static 'loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
+    $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
 });
 </script>
 {% endblock %}

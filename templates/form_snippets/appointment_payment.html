@@ -1,6 +1,8 @@
 {% load widget_tweaks %}
 <h2 class="bh-headline-bottom-border"><span>Payment</span></h2>
 <div class="uk-grid">
+    {# If series available but not selected, add radio or drop down to be able to use one? #}
+    {# Same with memberships? #}
     <div class="uk-width-1-1">
         <label class="uk-form-label" for="card-number">{{checkout_form.name_on_card.label}}</label>
         {% render_field checkout_form.name_on_card class+="uk-form-large uk-width-1-1" %}

@@ -139,7 +139,7 @@ def profile_view(request):
             if service_formset.is_valid():
                 cart = request.cart
                 cart.clear()
-                cart.cart.mode = Cart.SCHEDULE
+                # cart.cart.mode = Cart.SCHEDULE
                 schedule_items = []
                 for form in service_formset:
                     quantity = form.cleaned_data['quantity']

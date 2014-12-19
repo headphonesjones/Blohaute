@@ -128,7 +128,7 @@ def checkout(request):
                 print('coupon is %s' % coupon)
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
-        if 'checkout-first_name' in request.POST:
+        if 'checkout-address' in request.POST:
             checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout')
             if checkout_form.is_valid():
 
@@ -136,6 +136,7 @@ def checkout(request):
                 itinerary = client.get_itinerary_for_slot(services_requested,
                                                           data['date'], data['time'])
                 print("itin is %s" % itinerary)
+                # get payment method
                 appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
                                                       data['city'], data['state'], data['zip_code'],
                                                       data['email_address'], data['phone_number'], data['card_number'],

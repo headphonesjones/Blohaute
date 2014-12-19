@@ -21,7 +21,8 @@ class Cart(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     creation_date = models.DateTimeField(verbose_name=_('creation date'), default=timezone.now)
     checked_out = models.BooleanField(default=False, verbose_name=_('checked out'))
-    mode = models.IntegerField(choices=CART_MODE_CHOICES, default=SCHEDULE)
+    # mode = models.IntegerField(choices=CART_MODE_CHOICES, default=SCHEDULE)
+    series_id = models.IntegerField()
 
     class Meta:
         verbose_name = _('cart')

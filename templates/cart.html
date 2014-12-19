@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-
+{% load treatment_slider %} 
 {% block page_title %}Cart{% endblock %}
 {% block content %}
 <div class="bh-position bh-position-light bh-position-title">
@@ -35,7 +35,6 @@
                                 </tr>
                                 <br /><br /><br />
                                 {% treatment_slider %}
-                                {% endblock %}
 
                                 {% else %}
                                 {% for item in cart %}

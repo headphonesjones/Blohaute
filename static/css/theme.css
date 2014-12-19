@@ -156,6 +156,10 @@ nav > div > ul > li > .active{
   z-index: 10;
 }
 
+#order-summary-container{
+  margin-top: 50px;
+}
+
 
 
 

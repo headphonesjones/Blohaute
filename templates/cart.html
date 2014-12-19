@@ -34,6 +34,7 @@
                                 <td colspan="6">There are no items in the shopping cart. Add items to your cart to book and schedule your appointment(s).</td>
                                 </tr>
                                 <br /><br /><br />
+                                {% treatment_slider %}
 
                                 {% else %}
                                 {% for item in cart %}
@@ -99,8 +100,7 @@
 
     </div>
 </div>
-{% endblock %}<br /><br />
-{% treatment_slider %}
+{% endblock %}
 
 {% block extrajs %}
 <script>

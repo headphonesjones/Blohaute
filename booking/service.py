@@ -75,7 +75,15 @@ class BookerAuthedRequest(BookerRequest):
 
 
 class BookerClient(object):
+    CREDIT_CARD_TYPES = {
+        4: 2,  # visa
+        3: 1,  # american express
+        2: 4,  # discover
+        5: 3   # mastercard
+    }
+
     token = None
+    location_id = 29033  # From get location call, we should cache this for now
 
     def __init__(self, token=None):
         if token is None:
@@ -101,6 +109,69 @@ class BookerClient(object):
             setting = self.get_settings_object()
         setting.access_token = self.token
         setting.save()
+
+    def parse_as_time(self, date_time):
+        return date_time.strftime("%H:%M")
+
+    def parse_as_date(self, date_time):
+        return date_time.strftime("%Y-%m-%d")
+
+    def format_date_for_booker_json(self, start_date):
+        return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
+
+    def date_range(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
+    def credit_card_type(self, credit_card_number):
+        first_character = int(credit_card_number[0])
+        card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
+        return card_type
+
+    def get_booker_credit_card_payment_item(self, billingzip, cccode, ccnum, expmonth, expyear, name_on_card):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CreditCard': {
+                'BillingZip': billingzip,
+                'NameOnCard': name_on_card,
+                'ExpirationDate': self.format_date_for_booker_json(
+                    datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
+                'Number': ccnum,
+                'SecurityCode': cccode,
+                'Type': {
+                    'ID': self.credit_card_type(ccnum),
+                }
+            },
+            'Method': {
+                'ID': 1,
+            }
+        }
+
+    def get_booker_series_payment_item(self, series_id):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CustomerSeries': {
+                'SeriesID': series_id
+            },
+            'Method': {
+                'ID': 5,
+            }
+        }
 
 
 class AppointmentResult(object):
@@ -153,45 +224,11 @@ class CustomerSeries(object):
 
 
 class BookerCustomerClient(BookerClient):
-    CREDIT_CARD_TYPES = {4: 2,  # visa
-                         3: 1,  # american express
-                         2: 4,  # discover
-                         5: 3   # mastercard
-                         }
-
-    location_id = 29033  # From get location call, we should cache this for now
     customer_token = None
     customer_password = None
     user = None
     customer = None
     customer_id = None
-
-    def parse_as_time(self, date_time):
-        return date_time.strftime("%H:%M")
-
-    def parse_as_date(self, date_time):
-        return date_time.strftime("%Y-%m-%d")
-
-    def format_date_for_booker_json(self, start_date):
-        return "/Date(%s)/" % int(time.mktime(start_date.timetuple()) * 1000)
-
-    def date_range(self, start_date, end_date):
-        for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
-
-    def credit_card_type(self, credit_card_number):
-        first_character = int(credit_card_number[0])
-        card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
-        return card_type
 
     def get_server_information(self):
         response = BookerRequest('/server_information', self.token, {}).get()
@@ -457,42 +494,6 @@ class BookerCustomerClient(BookerClient):
                 print("nope %s vs %s" % (new_time, itin_time))
         return None
 
-    def get_booker_credit_card_payment_item(self, billingzip, cccode, ccnum, expmonth, expyear, name_on_card):
-        return {
-            'Amount': {
-                'Amount': 0.0,
-                'CurrencyCode': 'USD'
-            },
-            'CreditCard': {
-                'BillingZip': billingzip,
-                'NameOnCard': name_on_card,
-                'ExpirationDate': self.format_date_for_booker_json(
-                    datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
-                'Number': ccnum,
-                'SecurityCode': cccode,
-                'Type': {
-                    'ID': self.credit_card_type(ccnum),
-                }
-            },
-            'Method': {
-                'ID': 1,
-            }
-        }
-
-    def get_booker_series_payment_item(self, series_id):
-        return {
-            'Amount': {
-                'Amount': 0.0,
-                'CurrencyCode': 'USD'
-            },
-            'CustomerSeries': {
-                'SeriesID': series_id
-            },
-            'Method': {
-                'ID': 5,
-            }
-        }
-
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
         if self.customer:
@@ -590,3 +591,89 @@ class BookerMerchantClient(BookerClient):
 
     def get_locations(self):
         return BookerRequest('/locations', self.token).post()
+
+    def book_appointment(self, itinerary, customer, first_name, last_name, address, city, state, zipcode,
+                         email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
+        if customer:
+            adjusted_customer = customer.copy()
+        else:
+            adjusted_customer = {
+                'LocationID': self.location_id,
+                'Email': email,
+                'FirstName': first_name,
+                'LastName': last_name,
+                'HomePhone': phone
+            }
+
+        adjusted_customer['Address'] = {
+            'Street1': address,
+            'City': city,
+            'State': state,
+            'Zip': zipcode
+        }
+
+        adjusted_customer.pop('GUID')
+        params = {
+            'LocationID': self.location_id,
+            'ResourceTypeID': 1,
+            'AppointmentTreatmentDTOs': [
+                {
+                    'TreatmentID': 0,
+                    'StartTime': 0,
+                    'RoomID': None,
+                    'EndTime': 0,
+                    'EmployeeID': 0
+                    # ,
+                    # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
+                    # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
+                }
+            ],
+            'AppointmentDate': date,  # Date needs to be itinerary start date
+            'AppointmentPayment': {
+                'CouponCode': '',
+                'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
+                                                                        name_on_card)
+            },
+            'Customer': adjusted_customer,
+            'Notes': notes
+        }
+
+        # print(params)
+
+        response = BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
+        print("book response %s" % response)
+        return self.process_response(response)
+
+    def process_response(self, response):
+        formatted_response = response.json()
+        error_code = formatted_response.get('ErrorCode', 0)
+        if error_code == 1000:
+            self.load_token()
+            # if response.needs_user_token:
+            #     self.login(self.user.email, self.customer_password)
+            #     new_request = BookerAuthedRequest(response.original_request.path, self.customer_token)
+            # else:
+            new_request = BookerRequest(response.original_request.path, self.token)
+            new_request.method = response.original_request.method
+            if new_request.method == 'GET':
+                new_request.params = response.original_request.params or {}
+                return self.process_response(new_request.get())
+            else:
+                new_request.params = response.original_request.original_params or {}
+                if new_request.token:
+                    new_request.params['access_token'] = self.token
+                new_request.data = json.dumps(new_request.params)
+                new_request.params = None
+                return self.process_response(new_request.send())
+
+        if error_code == 200:
+            for error in formatted_response['ArgumentErrors']:
+                raise ValidationError(
+                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
+                    code='argument_error'
+                )
+        if error_code != 0:
+            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
+                  (response.original_request.path, response.original_request.params, error_code,
+                   formatted_response['ErrorMessage']))
+        return formatted_response

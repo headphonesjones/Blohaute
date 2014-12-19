@@ -96,7 +96,6 @@ def checkout(request):
     checkout_form = CheckoutForm(prefix="checkout")
 
     services_requested = get_services_from_cart(request)
-    print ("cart mode is %s" % request.cart.cart.mode)
 
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)

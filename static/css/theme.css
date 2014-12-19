@@ -166,6 +166,11 @@ nav > div > ul > li > .active{
   margin-left: 10px;
 }
 
+#pick-time-text{
+  position: absolute;
+  bottom: 37px;
+  padding-left: 10px;
+}
 
 
 

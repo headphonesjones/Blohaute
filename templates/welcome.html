@@ -37,7 +37,7 @@
                     <h2 class="bh-headline-bottom-border"><span>Your Purchased Bookable Appointments to Schedule</span></h2>
                     <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-medium-1-2">
                 <form method="POST">
                     {% csrf_token %}
                     {{service_formset.management_form}}
@@ -62,7 +62,7 @@
                     </table>    
                 </form>            
             </div>
-            <div class="uk-widrg-1-2">
+            <div class="uk-width-medium-1-2">
                 {% include 'form_snippets/appointment_schedule.html' %}
                 <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
             </div>

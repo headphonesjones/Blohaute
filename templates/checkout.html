@@ -131,6 +131,7 @@ $(document).ready(function() {
     $("#id_checkout-date").pickadate({
         disable: {{ unavailable_days }},
         format: 'ddd mmmm d yyyy',
+        autofocus: true,
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
         beforeSend: function() {
@@ -169,10 +170,12 @@ $(document).ready(function() {
 
 });
 
-$("#id_checkout-date").open(true)
+/*
+$("#id_checkout-date").open(false)
 $(document).on('click', function() {
     $("#id_checkout-date").close()
 });
+*/
 
 </script>
 {% endblock %}

@@ -31,8 +31,7 @@ class BookerRequest(Request):
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
-        print(self.data)
-        print(self.url)
+        # print(self.data)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self
@@ -362,6 +361,17 @@ class BookerCustomerClient(BookerClient):
         response = BookerAuthedRequest(self.base_url, '/customer/%s' % self.customer_id, self.customer_token, params).put()
         return self.process_response(response)
 
+    def reset_password(self, email, first_name):
+        """
+        resets a forgotten customer password
+        """
+        params = {'FirstName': first_name,
+                  'LocationID': self.location_id,
+                  'Email': email}
+        response = BookerRequest('/forgot_password/custom', self.token, params).post()
+        print response.text
+        return self.process_response(response)
+       
     def delete_customer(self):
         """
         Delete a customer
@@ -372,6 +382,9 @@ class BookerCustomerClient(BookerClient):
         return self.process_response(response)
 
     def get_appointments(self):
+        """
+        get a list of currrent and past customer appointments for a specific location
+        """
         params = {
             'CustomerID': self.customer_id,
             'LocationID': self.location_id

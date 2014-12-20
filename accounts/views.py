@@ -95,7 +95,8 @@ def forgot_password(request):
             client = request.session['client']
             try:
                 client.reset_password(form.cleaned_data['email'], form.cleaned_data['first_name'])
-                return HttpResponseRedirect(reverse('reset_success'))
+                messages.success(request, 'Your password has been updated successfully. Please login to continue')
+                return HttpResponseRedirect(reverse('login'))
             except ValidationError as e:
                 form.add_error(None, e)
 

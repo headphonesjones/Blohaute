@@ -74,6 +74,10 @@ class BookerAuthedRequest(BookerRequest):
     needs_user_token = True
 
 
+class BookerMerchantRequest(BookerRequest):
+    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
+
+
 class BookerClient(object):
     CREDIT_CARD_TYPES = {
         4: 2,  # visa
@@ -109,6 +113,8 @@ class BookerClient(object):
             setting = self.get_settings_object()
         setting.access_token = self.token
         setting.save()
+
+        
 
     def parse_as_time(self, date_time):
         return date_time.strftime("%H:%M")
@@ -226,6 +232,7 @@ class CustomerSeries(object):
 class BookerCustomerClient(BookerClient):
     customer_token = None
     customer_password = None
+    merchant_token = None
     user = None
     customer = None
     customer_id = None
@@ -279,8 +286,8 @@ class BookerCustomerClient(BookerClient):
         for series in customer_series:
             print(series)
             series_list.append(CustomerSeries(series['SeriesID'], series['Series']['Name'],
-                           series['QuantityRemaining'], series['QuantityOriginal'],
-                           series['ExpirationDate'], series['SeriesRedeemableItems']))
+                               series['QuantityRemaining'], series['QuantityOriginal'],
+                               series['ExpirationDate'], series['SeriesRedeemableItems']))
 
         return series_list
 
@@ -372,7 +379,7 @@ class BookerCustomerClient(BookerClient):
         response = BookerRequest('/forgot_password/custom', self.token, params).post()
         print response.text
         return self.process_response(response)
-       
+
     def delete_customer(self):
         """
         Delete a customer
@@ -495,7 +502,7 @@ class BookerCustomerClient(BookerClient):
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
         print("time %s" % new_time)
-        start_date = datetime(date.year, date.month, date.day, new_time[0]-1, new_time[1], 0, 0)
+        start_date = datetime(date.year, date.month, date.day, new_time[0] - 1, new_time[1], 0, 0)
         print(start_date)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         response = self.get_availability(treatments_requested, start_date, end_date)
@@ -534,7 +541,7 @@ class BookerCustomerClient(BookerClient):
             'State': state,
             'Zip': zipcode
         }
-        
+
         adjusted_customer.pop('GUID')
         params = {
             'LocationID': self.location_id,

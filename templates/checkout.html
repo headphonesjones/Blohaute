@@ -133,6 +133,9 @@ $(document).ready(function() {
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
+        close: '',
+        today: '',
+        clear: '',
         beforeSend: function() {
                 console.log("beforeSend fired");
                 $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
@@ -163,7 +166,8 @@ $(document).ready(function() {
         formatSubmit: 'HH:i',
         hiddenName: true,
         min: [7, 0],
-        max: [20, 0]
+        max: [20, 0],
+        interval: 15
     });
 
     var timePicker = timeInput.pickatime('picker');

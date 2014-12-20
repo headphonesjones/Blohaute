@@ -89,13 +89,7 @@
                     </div>
                 </div>
             </form>   
-            {% endwith %}   
-
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-
-
+            {% endwith %}
             </div>
         </article>
 
@@ -121,7 +115,8 @@ $(document).ready(function() {
 
     var datesLoaded = false;
 
-    var datePicker = $("#id_checkout-date").pickadate({
+    var $idCheckout = $("#id_checkout-date");
+    var datePicker = $idCheckout.pickadate({
         disable: null,
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
@@ -143,13 +138,14 @@ $(document).ready(function() {
         onSet: function(context) {
             $('#appointment-loading').fadeIn();
 
-            if ($("#id_checkout-date_hidden").val()) {
+            var $idCheckoutHidden = $("#id_checkout-date_hidden");
+            if ($idCheckoutHidden.val()) {
                 $.ajax({
                     type: 'POST',
                     url: '{% url "timesforday" %}',
                     dataType: 'json',
                     data: {
-                        date: $("#id_checkout-date_hidden").val()
+                        date: $idCheckoutHidden.val()
                     },
                     success: function(data) {
                         timePicker.set('disable', data);
@@ -160,16 +156,17 @@ $(document).ready(function() {
                     }
                 });
             }
-        },
+        }
     });
     var picker = datePicker.pickadate('picker');
 
-    if ($("#id_checkout-date").val() != "") {
-        picker.set('select', $("#id_checkout-date").val(), { format: 'yyyy-mm-dd' })
+    if ($idCheckout.val() != "") {
+        picker.set('select', $idCheckout.val(), { format: 'yyyy-mm-dd' })
     }
     picker.open(false);
 
-    var timeInput = $('#id_checkout-time').pickatime({
+    var $idCheckoutTime = $('#id_checkout-time');
+    var timeInput = $idCheckoutTime.pickatime({
         formatSubmit: 'HH:i',
         hiddenName: true,
         min: [7, 0],
@@ -180,8 +177,8 @@ $(document).ready(function() {
     var timePicker = timeInput.pickatime('picker');
    // timePicker.set('disable', true); //start with all times disabled
 
-    if ($("#id_checkout-time").val() != "") {
-        timePicker.set('select', $("#id_checkout-time").val(), { format: 'HH:i' })
+    if ($idCheckoutTime.val() != "") {
+        timePicker.set('select', $idCheckoutTime.val(), { format: 'HH:i' })
     }
 
 
@@ -201,10 +198,10 @@ $(document).ready(function() {
     });
 
     //make time and date borders red if there are errors
-    if ($("#id_checkout-date").hasClass('uk-form-danger')) {
+    if ($idCheckout.hasClass('uk-form-danger')) {
         $("#id_checkout-date_root").find('.picker__holder').addClass('uk-form-danger');
     }
-    if ($("#id_checkout-time").hasClass('uk-form-danger')) {
+    if ($idCheckoutTime.hasClass('uk-form-danger')) {
         $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
     }
 });

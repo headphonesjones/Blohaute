@@ -621,7 +621,8 @@ class BookerMerchantClient(BookerClient):
                 'Email': email,
                 'FirstName': first_name,
                 'LastName': last_name,
-                'HomePhone': phone
+                'HomePhone': phone,
+                'SendEmail': True
             }
 
         adjusted_customer['Address'] = {

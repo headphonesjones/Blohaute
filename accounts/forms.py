@@ -11,7 +11,7 @@ class RegistrationForm(forms.ModelForm):
     error_messages = {
         'password_mismatch': _("The two password fields didn't match."),
         'password_length': _("The new password must be between 8 and 25 characters long."),
-        'phone_length': _("Phone number must be 10 digits and include the area code and phone nubmer."),
+        'phone_length': _("Phone number must be 10 digits and include the area code."),
         'existing_account': _('An account with this email address already exists.')
     }
 

@@ -9,14 +9,12 @@ urlpatterns = patterns(
     url(r'^account/', include('accounts.urls')),
     url(r'^$', TemplateView.as_view(template_name="index.html"), name='home'),
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),
-    
     url(r'^contact/', contact_view, name='contact'),
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),
     
     url(r'^cart/', include('changuito.urls')),
     url(r'^checkout/', checkout, name='checkout'),
-    url(r'^password_lost/', TemplateView.as_view(template_name="password.html"), name='password'),
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),

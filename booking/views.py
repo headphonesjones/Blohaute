@@ -153,7 +153,11 @@ def checkout(request):
                 print("success?:  %s" % appointment['IsSuccess'])
                 if appointment['IsSuccess']:
                     print("sucessful booking")
-                    return HttpResponseRedirect(reverse('welcome'))
+                    # return HttpResponseRedirect(reverse('welcome'))
+                    return render(request, 'thankyou.html', {})
+                else:
+                    pass
+                    # some kind of error reporting of the appointment booking failure reason then return to checkout below
 
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,

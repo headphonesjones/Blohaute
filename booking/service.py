@@ -30,6 +30,7 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
             if self.token is None:
                 self.load_token()
             if self.merchant_token is None:
+                print('logging in merchant')
                 self.login_merchant()
 
     def get_settings_object(self):

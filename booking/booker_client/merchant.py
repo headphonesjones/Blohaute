@@ -1,5 +1,5 @@
 from booking.booker_client.request import BookerMerchantRequest
-from booking.models import AppointmentResult, Appointment, CustomerSeries
+from booking.models import AppointmentResult, Appointment, CustomerSeries, Treatment
 from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
@@ -64,10 +64,10 @@ class BookerMerchantMixin(object):
 
         return result
 
-    def book_appointment(self, itinerary, customer, first_name, last_name, address, city, state, zipcode,
+    def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
-        if customer:
-            adjusted_customer = customer.copy()
+        if self.customer:
+            adjusted_customer = self.customer.copy()
         else:
             adjusted_customer = {
                 'LocationID': self.location_id,
@@ -85,23 +85,26 @@ class BookerMerchantMixin(object):
             'Zip': zipcode
         }
 
-        adjusted_customer.pop('GUID')
+        if 'GUID' in adjusted_customer:
+            adjusted_customer.pop('GUID')
+        print(itinerary)
+        first_treatment = itinerary['TreatmentTimeSlots'][0]
         params = {
             'LocationID': self.location_id,
             'ResourceTypeID': 1,
             'AppointmentTreatmentDTOs': [
                 {
-                    'TreatmentID': 0,
-                    'StartTime': 0,
-                    'RoomID': None,
-                    'EndTime': 0,
-                    'EmployeeID': 0
+                    'TreatmentID': first_treatment['TreatmentID'],
+                    'StartTime': itinerary['StartDateTime'],
+                    'RoomID': first_treatment['RoomID'],
+                    'EndTime': self.format_date_for_booker_json(self.parse_date(itinerary['StartDateTime']) + timedelta(minutes=first_treatment['Duration'])),
+                    'EmployeeID': first_treatment['EmployeeID']
                     # ,
                     # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
                     # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
                 }
             ],
-            'AppointmentDate': date,  # Date needs to be itinerary start date
+            'AppointmentDate': itinerary['StartDateTime'],  # Date needs to be itinerary start date
             'AppointmentPayment': {
                 'CouponCode': '',
                 'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
@@ -113,54 +116,123 @@ class BookerMerchantMixin(object):
 
         # print(params)
 
-        response = BookerMerchantRequest('/appointment/create', self.merchant_token, params).post()
+        response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
         print("book response %s" % response)
         return self.process_response(response)
 
-    # def get_availability(self, treatment, start_date, end_date):
-    #     # for treatment in treatments:
-    #     # if isinstance(treatment.product, Treatment):
-    #     params = {
-    #         'LocationID': self.location_id,
-    #         'ServiceID': treatment.booker_id,  # product.booker_id
-    #         'Quantity': 2,  # test if quantity would work and what it returns
-    #         'StartDateTime': self.format_date_for_booker_json(start_date),
-    #         'EndDateTime': self.format_date_for_booker_json(end_date),
-    #     }
-    #     request = BookerMerchantRequest('/availability/employee_room', self.merchant_token, params)
-    #     response = request.post()
-    #     print(response)
-    #     return self.process_response(response)
+    def get_availability(self, treatment, start_date, end_date):
+        # for treatment in treatments:
+        # if isinstance(treatment.product, Treatment):
+        # treatments = []
+        # print("treatment is %r" % treatment)
+        treatment = treatment[0].product
+        # if isinstance(treatment.product, Treatment):
+        #     for i in range(0, treatment.quantity):
+        #         treatments.append({'TreatmentID': treatment.product.booker_id})
+        # print(treatment)
+        params = {
+            'LocationID': self.location_id,
+            'ServiceID': treatment.booker_id,  # product.booker_id
+            'ServiceTypeID': 1,
+            'Quantity': 1,  # test if quantity would work and what it returns
+            'StartDateTime': self.format_date_for_booker_json(start_date),
+            'EndDateTime': self.format_date_for_booker_json(end_date),
+        }
+        # print(params)
+        request = BookerMerchantRequest('/availability/employee_room', self.merchant_token, params)
+        response = request.post()
+        print(response)
+        process_response = self.process_response(response)
+        # print("availability main method response %s" % process_response)
+        return process_response
+
+    def get_available_times_for_day(self, treatments_requested, start_date):
+        times = []
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatments_requested, start_date, end_date)
+        print("response from times per day %s" % response)
+
+        # When more than one employee, that 0 below goes away and we iterate
+        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            # avail_time_slot = AvailableTimeSlot()
+            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            # avail_time_slot.raw_time = itin_time
+            # avail_time_slot.pretty_time = self.parse_as_time(itin_time)
+            # print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
+            emp_list = set()
+            for time_slot in itinerary_option['TreatmentTimeSlots']:
+                emp_list.add(time_slot['EmployeeID'])
+            # print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
+
+            # if len(emp_list) == 1:
+
+                # avail_time_slot.single_employee_slots.append(itinerary_option)
+            times.append(itin_time)
+            # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
+            #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
+        print("times from avail per day: %s" % times)
+        return times
 
     def get_available_slots_for_day(self, treatment, date):
         start_date = datetime.strptime(date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         availability = self.get_availability(treatment, start_date, end_date)
-        print("processed is :  %r" % availability)
+        print("processed slots per day is is :  %r" % availability)
 
         times = set()
         for slot in availability['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             times.add(self.parse_as_time(self.parse_date(slot['StartDateTime'])))
             # for tslot in slot['TreatmentTimeSlots']:
                 # print(tslot['EmployeeID'])
-        print(times)
+
+        print("times in slots per day %s" % times)
         return list(times)
+
+    def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
+        """
+        Returns a list of python dates that are unavailable during the specified range
+        """
+        end_date = start_date + timedelta(weeks=number_of_weeks)
+        days = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+
+        current_date = start_date
+        for i in range(0, number_of_weeks):
+            end_date = current_date + timedelta(weeks=1)
+            response = self.get_availability(treatments_requested, current_date, end_date)
+            print("days in range response is %s" % response)
+            slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
+            dates_to_remove = [self.parse_date(slot['StartDateTime']).date() for slot in slots]
+            days = [day for day in days if day not in dates_to_remove]
+            current_date = end_date
+        print("days unavail is %s" % days)
+        return days
+
+    def get_unavailable_warm_period(self, treatments_requested):
+        """
+        Returns a list of python dates that are unavailable during the warm periond
+        """
+        return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
 
     def get_itinerary_for_slot(self, treatments_requested, date, time_string):
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
         print("time %s" % new_time)
         start_date = datetime(date.year, date.month, date.day, new_time[0] - 1, new_time[1], 0, 0)
-        print(start_date)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        print("start %r and end %r" % (start_date, end_date))
         response = self.get_availability(treatments_requested, start_date, end_date)
+        print("slot availability response was %r" % response)
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             # avail_time_slot = AvailableTimeSlot()
             itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            print(itin_time)
             if time_string == itin_time:
+                print("match")
                 # emp_list = set()
                 # for time_slot in itinerary_option['TreatmentTimeSlots']:
                 #     emp_list.add(time_slot['EmployeeID'])
@@ -181,12 +253,13 @@ class BookerMerchantMixin(object):
                   'client_secret': settings.BOOKER_API_SECRET}
         response = BookerMerchantRequest('/accountlogin', self.token, params)
         response = response.post()
-        print("response is %r" % response)
+        print("merchant login response is %r" % response)
         response = self.process_response(response)
         if response['access_token']:
             self.merchant_token = response['access_token']
             setting = self.get_settings_object()
             setting.merchant_access_token = self.merchant_token
+            print("merch token is %s" % self.merchant_token)
             setting.save()
         else:
             raise ValidationError(response['error'])

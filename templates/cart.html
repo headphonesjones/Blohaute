@@ -129,9 +129,10 @@ $( document ).ready(function() {
 });
 </script>
 <script>
-$('#appointment-loading').fadeOut();
+$('#appointment-loading').hide();
 
 $("#checkout-button").click(function(){
+    $('#appointment-loading').show();
     $('#cart-table').css({position: 'relative'});
     var spinner = new Spinner().spin();
     $(spinner.el).appendTo(document.getElementById('appointment-loading'));

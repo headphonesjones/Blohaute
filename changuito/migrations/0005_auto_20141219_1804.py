@@ -7,14 +7,18 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('changuito', '0003_auto_20141218_2318'),
+        ('changuito', '0004_auto_20141218_2319'),
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
             model_name='cart',
             name='series_id',
-            field=models.CharField(default=None, max_length=20, null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='item',
+            name='series_id',
+            field=models.IntegerField(default=None, null=True, blank=True),
             preserve_default=True,
         ),
     ]

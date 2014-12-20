@@ -136,7 +136,8 @@ $(document).ready(function() {
                 $( "#spinning-loader" ).remove();
         },
         onSet: function(context) {
-            if (context['select'] && $("#id_checkout-date_hidden").val()) {
+            var $idCheckoutHidden = $("#id_checkout-date_hidden");
+            if (context['select'] && $idCheckoutHidden.val()) {
                 $('#appointment-loading').fadeIn();
                 $.ajax({
                     type: 'POST',

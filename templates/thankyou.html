@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block page_title %}Thank You!{% endblock %}
+
+
+{% block content %}
+<div class="bh-position bh-position-light bh-position-title">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1>Thank you!</h1>
+        </div>
+    </div>
+</div>
+<div class="uk-grid" data-uk-grid-margin>
+    <div class="uk-width-small-1-1">
+        <div class=r"uk-alert uk-alert-success">
+            <a href="" class="uk-alert-close uk-close"></a>
+            <p>Your order was successful!</p>
+        </div>
+    </div>
+</div>
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <article class="uk-article">
+            <div class="uk-grid" data-uk-grid-margin>
+
+                <div class="uk-width-medium-2-3">
+                    <div class="uk-panel">
+                        <h3 class="uk-panel-title">Get in Touch</h3>
+                        <form class="uk-form uk-form-stacked" method="POST">
+                            {% csrf_token %}
+                            {% if contact_form.errors %}
+                                <div class="uk-width-1-1">
+                                    <div class="uk-alert uk-alert-danger ">
+                                        {% if contact_form.non_field_errors %}
+                                            {% for error in contact_form.non_field_errors %}
+                                                <p>{{error}}</p>
+                                            {% endfor %}
+                                        {% else %}
+                                            There was a problem sending your message. Please check the form and make sure that everything is filled out correctly.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+
+                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
+                                <div class="uk-width-medium-1-1">
+                                    <label class="uk-form-label" for="name">{{contact_form.name.label}}</label>
+                                    {% if contact_form.name.errors %}
+                                        {% render_field contact_form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                        {{contact_form.name.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1" %}
+                                    {% endif %}
+                                </div>
+                                <div class="uk-width-medium-1-1">
+                                    <label class="uk-form-label" for="email">{{contact_form.email.label}}</label>
+                                    {% if contact_form.email.errors %}
+                                        {% render_field contact_form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                        {{contact_form.email.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1" %}
+                                    {% endif %}
+                                </div>
+                                <div class="uk-width-medium-1-1">
+                                    <label class="uk-form-label" for="message">{{contact_form.message.label}}</label>
+                                    {% if contact_form.message.errors %}
+                                        {% render_field contact_form.message placeholder="Enter your message..." class+="uk-width-1-1 uk-form-large uk-form-danger" rows="6" id="form-contact-message" %}
+                                        {{contact_form.message.errors}}
+                                    {% else %}
+                                        {% render_field contact_form.message placeholder="Enter your message..." class+="uk-width-1-1 uk-form-large" rows="6"   id="form-contact-message" %}
+                                    {% endif %}
+                                </div>
+
+                                <div class="uk-width-1-1">
+                                    <button class="uk-button bh-button">Send</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+
+                <div class="uk-width-small-1-2 uk-width-medium-1-3">
+                    <div class="uk-panel">
+                        <h3 class="uk-panel-title">Contact info</h3>
+                        <ul class="uk-list uk-list-space">
+                            <li>
+                                <div class="uk-grid">
+
+                                    <div class="uk-width-2-10">
+                                        <i class="uk-icon uk-icon-phone"></i>
+                                    </div>
+
+                                    <div class="uk-width-8-10">
+                                        <a href="tel:3129616190">312-961-6190</a>
+                                    </div>
+
+                                </div>
+                            </li>
+                            <li>
+                                <div class="uk-grid">
+
+                                    <div class="uk-width-2-10">
+                                        <i class="uk-icon uk-icon-envelope"></i>
+                                    </div>
+
+                                    <div class="uk-width-8-10">
+                                        <a href="mailto: hello@blohaute.com">hello@blohaute.com</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <h4>Follow Us</h4>
+                        <a href="http://www.instagram.com/blohaute" target="blank" class="uk-icon-button uk-icon-instagram"></a>
+                        <a href="https://www.facebook.com/blohaute" target="blank"  class="uk-icon-button uk-icon-facebook uk-margin-small-left"></a>
+                    </div>
+                </div>
+
+            </div>
+        </article>
+    </div>
+</div>
+
+{% endblock %}

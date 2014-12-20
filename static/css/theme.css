@@ -180,6 +180,10 @@ nav > div > ul > li > .active{
   left: 10px;
   padding-left: 10px;
 }
+.bh-grid-img-cover > * > img.bh-img-height-1-1 {
+    height: 200%;
+}
+
 
 
 

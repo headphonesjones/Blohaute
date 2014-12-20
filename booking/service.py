@@ -632,22 +632,23 @@ class BookerMerchantClient(BookerClient):
         }
 
         adjusted_customer.pop('GUID')
+        appt = itinerary[0]['TreatmentTimeSlots'][0]
+        print(appt)
         params = {
             'LocationID': self.location_id,
             'ResourceTypeID': 1,
             'AppointmentTreatmentDTOs': [
                 {
-                    'TreatmentID': 0,
-                    'StartTime': 0,
-                    'RoomID': None,
-                    'EndTime': 0,
-                    'EmployeeID': 0
+                    'TreatmentID': appt['TreatmentID'],
+                    'StartTime': appt['StartDateTime'],
+                    'RoomID': appt['RoomID'],
+                    'EmployeeID': appt['EmployeeID']
                     # ,
                     # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
                     # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
                 }
             ],
-            'AppointmentDate': date,  # Date needs to be itinerary start date
+            'AppointmentDate': appt['StartDateTime'],  # Date needs to be itinerary start date
             'AppointmentPayment': {
                 'CouponCode': '',
                 'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
@@ -692,6 +693,33 @@ class BookerMerchantClient(BookerClient):
                 # print(tslot['EmployeeID'])
         print(times)
         return list(times)
+
+    def get_available_times_for_day(self, treatment, start_date):
+        times = []
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatment, start_date, end_date)
+
+        # When more than one employee, that 0 below goes away and we iterate
+        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            # avail_time_slot = AvailableTimeSlot()
+            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            # avail_time_slot.raw_time = itin_time
+            # avail_time_slot.pretty_time = self.parse_as_time(itin_time)
+            # print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
+            emp_list = set()
+            for time_slot in itinerary_option['TreatmentTimeSlots']:
+                emp_list.add(time_slot['EmployeeID'])
+            # print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
+
+            # if len(emp_list) == 1:
+
+                # avail_time_slot.single_employee_slots.append(itinerary_option)
+            times.append(itin_time)
+            # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
+            #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
+        return times
 
     def process_response(self, response):
         formatted_response = response.json()

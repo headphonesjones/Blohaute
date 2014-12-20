@@ -141,9 +141,8 @@ $(document).ready(function() {
                 $( "#spinning-loader" ).remove();
         },
         onSet: function(context) {
-            $('#appointment-loading').fadeIn();
-
-            if ($("#id_checkout-date_hidden").val()) {
+            if (context['select'] && $("#id_checkout-date_hidden").val()) {
+                $('#appointment-loading').fadeIn();
                 $.ajax({
                     type: 'POST',
                     url: '{% url "timesforday" %}',

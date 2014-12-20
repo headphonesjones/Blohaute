@@ -22,13 +22,11 @@ class BookerRequest(Request):
             self.token = token
 
     def send(self):
-        print self.token
-        print self.data
-        print self.params
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
         # print(self.data)
+        print(self.url)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self

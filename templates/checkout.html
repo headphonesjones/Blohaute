@@ -5,13 +5,6 @@
 {% block page_title %}Checkout{% endblock %}
 
 {% block content %}
-<div class="bh-position bh-position-light bh-position-title">
-    <div class="uk-container uk-container-center">
-        <div class="uk-panel">
-            <h1>Checkout</h1>
-        </div>
-    </div>
-</div>
 
 <div class="bh-position">
     <div class="uk-container uk-container-center">
@@ -26,10 +19,6 @@
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
                     {% if user.is_authenticated %}
-                    <div class="uk-alert uk-margin-bottom-remove uk-alert-success">
-                        <i class="uk-icon-check uk-margin-right"></i>Welcome back {{ user.first_name }}
-                    </div>
-
                     {% else %}
                     <div class="uk-alert uk-margin-bottom-remove">
                         <i class="uk-icon-info-circle uk-margin-right"></i>Returning customer? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-login', animation: 'uk-animation-fade'}">Click here to login</a>
@@ -93,7 +82,7 @@
                     <div class="uk-width-medium-1-2">
                         {% include 'form_snippets/appointment_payment.html' %}
                     </div>
-                    <div class="uk-width-medium-1-2">
+                    <div class="uk-width-medium-1-2" id="order-summary-container">
                         {% include 'form_snippets/order_summary.html' %}
                     </div>
                 </div>
@@ -128,14 +117,17 @@
 <script>
 $(document).ready(function() {
 
-    $("#id_checkout-date").pickadate({
+    var datePicker = $("#id_checkout-date").pickadate({
         disable: {{ unavailable_days }},
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
+        close: '',
+        today: '',
+        clear: '',
         beforeSend: function() {
                 console.log("beforeSend fired");
-                $( "body" ).append( "<div id='loading-container'><img src='{% static 'loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
+                $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
         },
         complete: function() {
                 console.log("complete fired");
@@ -156,18 +148,28 @@ $(document).ready(function() {
             });
         }
     });
+    var picker = datePicker.pickadate('picker');
+    picker.open(false);
 
     var timeInput = $('#id_checkout-time').pickatime({
         formatSubmit: 'HH:i',
         hiddenName: true,
         min: [7, 0],
-        max: [20, 0]
+        max: [20, 0],
+        interval: 15
     });
 
     var timePicker = timeInput.pickatime('picker');
     timePicker.set('disable', true); //start with all times disabled
 
 });
+
+/*
+$("#id_checkout-date").open(false)
+$(document).on('click', function() {
+    $("#id_checkout-date").close()
+});
+*/
 
 </script>
 {% endblock %}

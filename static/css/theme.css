@@ -139,6 +139,8 @@ nav > div > ul > li > .active{
 #loading-container{
   width: 100%;
   height: 100%;
+  z-index: 10;
+  background-color: #FFFFFF;
 }
 
 #spinning-loader{
@@ -151,10 +153,31 @@ nav > div > ul > li > .active{
   margin-left: -250px; /* Half the width */
   width: 508px;
   height: 381px;
+  z-index: 10;
 }
 
+#order-summary-container{
+  margin-top: 50px;
+}
 
+#id_checkout-time{
+  background-image: url('http://icons.iconarchive.com/icons/walrick/openphone/256/Clock-icon.png');
+  background-repeat: no-repeat;
+  background-size: 40px 40px;
+  background-position: 5px center;
+  padding-left: 50px;
+  width: 140px;
+  height: 50px;
+  position: relative;
+  right: 65px;
+}
 
+#pick-time-text{
+  position: relative;
+  bottom: 35px;
+  left: 10px;
+  padding-left: 10px;
+}
 
 
 

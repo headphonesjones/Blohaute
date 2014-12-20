@@ -33,6 +33,9 @@
                                 <tr>
                                 <td colspan="6">There are no items in the shopping cart. Add items to your cart to book and schedule your appointment(s).</td>
                                 </tr>
+                                <br /><br /><br />
+                                {% treatment_slider %}
+
                                 {% else %}
                                 {% for item in cart %}
                                 <tr>
@@ -64,7 +67,7 @@
                                                 <button class="uk-button">Apply Coupon</button>
                                             </div>
                                             <div class="uk-width-2-3 uk-text-right">
-                                                <a href="{% url 'checkout' %}" class="uk-button uk-button-primary">Checkout</a>
+                                                <a href="{% url 'checkout' %}" class="uk-button uk-button-primary" id="checkout-button">Checkout</a>
                                             </div>
                                         </form>
                                     </td>
@@ -76,9 +79,7 @@
                         </table>
                     </div>
                 </div>
-                {% if cart.is_empty %}
-                    {% treatment_slider %}
-                {% else %}
+
                 <div class="uk-push-1-2 uk-width-medium-1-2">
                     <div class="uk-panel uk-panel-box uk-panel-header">
                         <h3 class="uk-panel-title">Carts Total</h3>
@@ -93,7 +94,6 @@
 
                     </div>
                 </div>
-                {% endif %}
 
             </div>
         </article>
@@ -122,6 +122,11 @@ $( document ).ready(function() {
         form.appendChild(input2);
         form.submit()
     });
+});
+</script>
+<script>
+$("#checkout-button").click(function(){
+    $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
 });
 </script>
 {% endblock %}

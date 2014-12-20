@@ -10075,3 +10075,10 @@ font-family: "Oswald", sans-serif;
   left: 0;
 }
 
+.errorlist
+{
+  padding-left: 0;
+  list-style-type: none;
+  margin:0;
+  color: #9e314e;
+}

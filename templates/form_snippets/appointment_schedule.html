@@ -8,10 +8,14 @@
 	</div>
 
 	<div class="uk-width-small-6-10" id="booking-datepicker">Pick Date
-	{% render_field checkout_form.date %}
+		{% render_field checkout_form.date %}
+		{{ checkout_form.date.errors}}
 	</div>
 
 	<div class="uk-width-small-4-10">Pick Time
 		{% render_field checkout_form.time %}
+		{{ checkout_form.time.errors}}
 	</div>
+
+
 </div>

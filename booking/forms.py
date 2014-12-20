@@ -53,21 +53,21 @@ class CouponForm(forms.Form):
 
 class CheckoutForm(forms.Form):
     #appointment location
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    address = forms.CharField()
-    city = forms.CharField()
-    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
-    zip_code = USZipCodeField()
+    first_name = forms.CharField(error_messages={'required': 'Enter your first name'})
+    last_name = forms.CharField(error_messages={'required': 'Enter your last name'})
+    address = forms.CharField(error_messages={'required': 'Enter your address'})
+    city = forms.CharField(error_messages={'required': 'Enter a city'})
+    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}), error_messages={'required': 'Enter state'})
+    zip_code = USZipCodeField(error_messages={'required': 'ZIP is required'})
     notes = forms.CharField(required=False, label="Other Notes",
                             widget=forms.Textarea(attrs={'rows': 3}))
 
     #billing Information
-    name_on_card = forms.CharField(required=True)
-    card_number = CreditCardField(required=True)
+    name_on_card = forms.CharField(required=True, error_messages={'required': 'Enter the name on your credit card'})
+    card_number = CreditCardField(required=True, error_messages={'required': 'Enter your credit card number'})
     expiry_date = ExpiryDateField(required=True)
     card_code = VerificationValueField(required=True, label="CVV")
-    billing_zip_code = USZipCodeField(label="Billing Zip")
+    billing_zip_code = USZipCodeField(label="Billing Zip", error_messages={'required': 'ZIP is required'})
 
     email_address = forms.EmailField()
     phone_number = USPhoneNumberField()

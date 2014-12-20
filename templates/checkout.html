@@ -164,7 +164,9 @@ $(document).ready(function() {
     });
     var picker = datePicker.pickadate('picker');
 
-    picker.set('select', new Date())
+    if ($("#id_checkout-date").val() != "") {
+        picker.set('select', $("#id_checkout-date").val(), { format: 'yyyy-mm-dd' })
+    }
     picker.open(false);
 
     var timeInput = $('#id_checkout-time').pickatime({
@@ -176,7 +178,11 @@ $(document).ready(function() {
     });
 
     var timePicker = timeInput.pickatime('picker');
-    timePicker.set('disable', true); //start with all times disabled
+   // timePicker.set('disable', true); //start with all times disabled
+
+    if ($("#id_checkout-time").val() != "") {
+        timePicker.set('select', $("#id_checkout-time").val(), { format: 'HH:i' })
+    }
 
 
     $('#appointment-schedule').css({position: 'relative'});
@@ -193,6 +199,14 @@ $(document).ready(function() {
             $('#appointment-loading').fadeOut();
         }
     });
+
+    //make time and date borders red if there are errors
+    if ($("#id_checkout-date").hasClass('uk-form-danger')) {
+        $("#id_checkout-date_root").find('.picker__holder').addClass('uk-form-danger');
+    }
+    if ($("#id_checkout-time").hasClass('uk-form-danger')) {
+        $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
+    }
 });
 
 </script>

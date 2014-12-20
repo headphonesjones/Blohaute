@@ -231,6 +231,9 @@ class BookerCustomerClient(BookerClient):
     customer_id = None
 
     def get_server_information(self):
+        """
+        get some server settings, most importantly time zone.
+        """
         response = BookerRequest('/server_information', self.token, {}).get()
         return self.process_response(response)
 
@@ -359,6 +362,17 @@ class BookerCustomerClient(BookerClient):
         response = BookerAuthedRequest('/customer/%s' % self.customer_id, self.customer_token, params).put()
         return self.process_response(response)
 
+    def reset_password(self, email, first_name):
+        """
+        resets a forgotten customer password
+        """
+        params = {'FirstName': first_name,
+                  'LocationID': self.location_id,
+                  'Email': email}
+        response = BookerRequest('/forgot_password/custom', self.token, params).post()
+        print response.text
+        return self.process_response(response)
+       
     def delete_customer(self):
         """
         Delete a customer
@@ -369,6 +383,9 @@ class BookerCustomerClient(BookerClient):
         return self.process_response(response)
 
     def get_appointments(self):
+        """
+        get a list of currrent and past customer appointments for a specific location
+        """
         params = {
             'CustomerID': self.customer_id,
             'LocationID': self.location_id
@@ -394,6 +411,9 @@ class BookerCustomerClient(BookerClient):
         return result
 
     def cancel_appointment(self, appointment_id):
+        """
+        cancel an appointment
+        """
         params = {
             'ID': appointment_id
         }

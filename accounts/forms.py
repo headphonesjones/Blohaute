@@ -108,6 +108,56 @@ class AuthenticationRememberMeForm(AuthenticationForm):
                                      required=False)
 
 
+class SetPasswordForm(forms.Form):
+    """
+    A form that lets a user change set their password without entering the old
+    password
+    """
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+    }
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Email Address'}))
+    new_password1 = forms.CharField(label=_("New password"),
+                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label=_("New password confirmation"),
+                                    widget=forms.PasswordInput)
+
+    def clean_newpassword1(self):
+        # clean the new password to match API requirements
+        password1 = self.cleaned_data.get('new_password1')
+
+        # Between MIN_LENGTH and MAX_LENGTH
+        if len(password1) < self.MIN_LENGTH or len(password1) > self.MAX_LENGTH:
+            raise forms.ValidationError(
+                self.error_messages['password_length'],
+                code='password_length'
+            )
+
+        #At least one letter and one non-letter
+        first_isalpha = password1[0].isalpha()
+        if all(c.isalpha() == first_isalpha for c in password1):
+            raise forms.ValidationError("The new password must contain at least one letter and at "
+                                        "least one digit or punctuation character.")
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError(
+                    self.error_messages['password_mismatch'],
+                    code='password_mismatch',
+                )
+        return password2
+
+    def save(self, commit=True):
+        self.user = User.objects.get(email=self.cleaned_data['email'])
+        self.user.set_password(self.cleaned_data['new_password1'])
+        if commit:
+            self.user.save()
+        return self.user
+
+
 class PasswordUpdateForm(PasswordChangeForm):
     """
     Subclass of Django ``PasswordChangeForm`` which adds placeholder text.
@@ -153,3 +203,8 @@ class EmailUpdateForm(forms.Form):
                 code='existing_account'
             )
         return self.cleaned_data.get('email')
+
+
+class PasswordResetForm(forms.Form):
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'First Name'}))
+    email = forms.EmailField(label=_("Email"), max_length=254)

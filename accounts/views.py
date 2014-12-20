@@ -10,10 +10,9 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.edit import DeleteView
-from changuito.models import Cart
 from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
-                            EmailUpdateForm)
+                            EmailUpdateForm, PasswordResetForm, SetPasswordForm)
 from booking.forms import AvailableServiceFormset
 from booking.models import Treatment
 
@@ -86,6 +85,42 @@ def login(request):
                 form.add_error(None, e)
 
     return render(request, 'registration/login_page.html', {'login_form': form})
+
+
+@csrf_protect
+def forgot_password(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            client = request.session['client']
+            try:
+                client.reset_password(form.cleaned_data['email'], form.cleaned_data['first_name'])
+                return HttpResponseRedirect(reverse('reset_success'))
+            except ValidationError as e:
+                form.add_error(None, e)
+
+    else:
+        form = PasswordResetForm()
+
+    return render(request, 'registration/forgot_password.html', {'form': form})
+
+
+@csrf_protect
+def reset_forogtten_password(request):
+    if request.method == 'POST':
+        form = SetPasswordForm(request.POST)
+        if form.is_valid():
+            client = request.session['client']
+            try:
+                #update password on server
+                forms.save()
+                return HttpResponseRedirect(reverse('welcome'))
+            except ValidationError as e:
+                form.add_error(None, e)
+    else:
+        form = SetPasswordForm()
+
+    return render(request, 'registration/reset_password.html', {'password_form': form})
 
 
 @csrf_protect

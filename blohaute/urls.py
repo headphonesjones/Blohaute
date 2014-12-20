@@ -13,6 +13,7 @@ urlpatterns = patterns(
     url(r'^contact/', contact_view, name='contact'),
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),
+    url(r'^thankyou/', TemplateView.as_view(template_name="thankyou.html"), name='thankyou'),
     
     url(r'^cart/', include('changuito.urls')),
     url(r'^checkout/', checkout, name='checkout'),

@@ -18,7 +18,11 @@
 
                 <div class="uk-width-1-1">
                     <div class="uk-overflow-container">
-                        <table class="uk-table uk-table-middle uk-text-nowrap">
+                    <div id="appointment-loading" class="loading-container">
+                        <div class="loading-bg"></div>
+                        <div class="loading-text">Preparing Cart for Checkout...</div>
+                    </div>
+                        <table class="uk-table uk-table-middle uk-text-nowrap" id="cart-table">
                             <thead>
                                 <tr>
                                     <th>&nbsp;</th>
@@ -41,7 +45,7 @@
                                 <tr>
                                     <td>
                                         <a href="{% url 'treatment_detail' item.product.slug %}">
-                                            <img src="{{item.product.thumb_image_url}}" width="100" height="75" alt="{{item.product.name}} Cart Item">
+                                            <img src="{{item.product.thumb_image_url}}" width="auto" height="75" alt="{{item.product.name}} Cart Item">
                                         </a>
                                     </td>
                                     <td>
@@ -125,8 +129,13 @@ $( document ).ready(function() {
 });
 </script>
 <script>
+$('#appointment-loading').hide();
+
 $("#checkout-button").click(function(){
-    $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
+    $('#appointment-loading').show();
+    $('#cart-table').css({position: 'relative'});
+    var spinner = new Spinner().spin();
+    $(spinner.el).appendTo(document.getElementById('appointment-loading'));
 });
 </script>
 {% endblock %}

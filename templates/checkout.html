@@ -128,7 +128,7 @@
 <script>
 $(document).ready(function() {
 
-    $("#id_checkout-date").pickadate({
+    var datePicker = $("#id_checkout-date").pickadate({
         disable: {{ unavailable_days }},
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
@@ -156,6 +156,8 @@ $(document).ready(function() {
             });
         }
     });
+    var picker = datePicker.pickadate('picker');
+    picker.open(false);
 
     var timeInput = $('#id_checkout-time').pickatime({
         formatSubmit: 'HH:i',

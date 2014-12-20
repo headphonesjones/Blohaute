@@ -167,8 +167,9 @@ nav > div > ul > li > .active{
 }
 
 #pick-time-text{
-  position: absolute;
-  bottom: 37px;
+  position: relative;
+  bottom: 35px;
+  left: 97px;
   padding-left: 10px;
 }
 

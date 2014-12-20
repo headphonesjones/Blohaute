@@ -44,6 +44,9 @@ class Treatment(Sortable):
         if self.thumb_image and hasattr(self.list_image, 'url'):
             return self.thumb_image.url
 
+    def price_units(self):
+        return ""
+
 
 class TreatmentImage(models.Model):
     treatment = models.ForeignKey(Treatment, related_name="images")
@@ -62,6 +65,9 @@ class Package(models.Model):
 
     def cart_description(self):
         return "%s - %s Pack" % (self.treatment.name, self.quantity)
+
+    def price_units(self):
+        return ""
 
 
 class Membership(models.Model):

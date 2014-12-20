@@ -50,7 +50,7 @@
                                     <td class="uk-text-center">
                                         <form class="uk-form" action="{% url 'update_quantity' %}" method="POST">
                                             {% csrf_token %}
-                                            <input class="uk-form-width-mini" type="number" value={{item.quantity}} min=0 name="quantity">                                               
+                                            <input class="uk-form-width-mini" type="number" value={{item.quantity|floatformat:"0"}} min=0 name="quantity">                                               
                                             <input class="" type="hidden" value={{item.pk}} name="pk">                                               
                                             <button class="uk-button">Update</button>
                                         </form>

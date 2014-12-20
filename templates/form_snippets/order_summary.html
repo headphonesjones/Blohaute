@@ -49,7 +49,7 @@
                 <td class="uk-text-center">
                 {{item.quantity}}
                 </td>
-                <td class="uk-text-center">${{ item.total_price|floatformat:"-2" }} {{ item.product.price_units }}</td>
+                <td class="uk-text-center">{{ item.total_price_display }}</td>
             </tr>
             {% endfor %}
             <tr>

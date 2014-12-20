@@ -64,6 +64,14 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
+def unavailable_days(request):
+    services_requested = get_services_from_cart(request)
+    client = request.session['client']
+    unavailable_days = client.get_unavailable_warm_period(services_requested)
+    unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
+    return HttpResponse(json.dumps(unavailable_days))
+
+
 def available_times_for_day(request):
     time_slots = [True]
 
@@ -79,6 +87,7 @@ def available_times_for_day(request):
 
 
 def get_services_from_cart(request):
+    
     services_requested = []
     for item in request.cart:
         if isinstance(item.product, Treatment):
@@ -95,11 +104,7 @@ def checkout(request):
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout")
 
-    services_requested = get_services_from_cart(request)
-
     client = request.session['client']
-    unavailable_days = client.get_unavailable_warm_period(services_requested)
-    unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
 
     if request.method == 'POST':
         if 'login-password' in request.POST:
@@ -132,6 +137,8 @@ def checkout(request):
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
+                services_requested = get_services_from_cart(request)
+
                 itinerary = client.get_itinerary_for_slot(services_requested,
                                                           data['date'], data['time'])
                 print("itin is %s" % itinerary)
@@ -151,8 +158,7 @@ def checkout(request):
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,
                                              'checkout_form': checkout_form,
-                                             'cart': request.cart,
-                                             'unavailable_days': unavailable_days})
+                                             'cart': request.cart})
 
 
 def contact_view(request):

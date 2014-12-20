@@ -79,9 +79,11 @@
 
                 <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                     {# if paying with series, order summary left, empty div right#}
+                    {% if cart.cart.needs_payment %}
                     <div class="uk-width-medium-1-2">
                         {% include 'form_snippets/appointment_payment.html' %}
                     </div>
+                    {% endif %}
                     <div class="uk-width-medium-1-2" id="order-summary-container">
                         {% include 'form_snippets/order_summary.html' %}
                     </div>
@@ -117,14 +119,18 @@
 <script>
 $(document).ready(function() {
 
+    var datesLoaded = false;
+
     var datePicker = $("#id_checkout-date").pickadate({
-        disable: {{ unavailable_days }},
+        disable: null,
         format: 'ddd mmmm d yyyy',
         formatSubmit: 'yyyy-mm-dd',
         hiddenName: true,
         close: '',
         today: '',
         clear: '',
+        min: new  Date(),
+
         beforeSend: function() {
                 console.log("beforeSend fired");
                 $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
@@ -135,20 +141,30 @@ $(document).ready(function() {
                 $( "#spinning-loader" ).remove();
         },
         onSet: function(context) {
-            $.ajax({
-                type: 'POST',
-                url: '/timesforday',
-                dataType: 'json',
-                data: {
-                    date: $("#id_checkout-date_hidden").val()
-                },
-                success: function(data) {
-                    timePicker.set('disable', data);
-                }
-            });
-        }
+            $('#appointment-loading').fadeIn();
+
+            if ($("#id_checkout-date_hidden").val()) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "timesforday" %}',
+                    dataType: 'json',
+                    data: {
+                        date: $("#id_checkout-date_hidden").val()
+                    },
+                    success: function(data) {
+                        timePicker.set('disable', data);
+                        if (datesLoaded == true) {
+                            $('#appointment-loading').fadeOut();
+                        }
+
+                    }
+                });
+            }
+        },
     });
     var picker = datePicker.pickadate('picker');
+
+    picker.set('select', new Date())
     picker.open(false);
 
     var timeInput = $('#id_checkout-time').pickatime({
@@ -162,6 +178,21 @@ $(document).ready(function() {
     var timePicker = timeInput.pickatime('picker');
     timePicker.set('disable', true); //start with all times disabled
 
+
+    $('#appointment-schedule').css({position: 'relative'});
+    var spinner = new Spinner().spin();
+    $(spinner.el).appendTo(document.getElementById('appointment-loading'));
+
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'unavailable_days' %}",
+        dataType: 'json',
+        success: function(data) {
+            picker.set('disable', data);
+            datesLoaded = true;
+            $('#appointment-loading').fadeOut();
+        }
+    });
 });
 
 </script>

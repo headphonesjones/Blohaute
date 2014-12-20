@@ -132,7 +132,7 @@ def profile_view(request):
     client = request.session['client']
     appointments = client.get_appointments()
     series = client.get_customer_series()
-
+    print series
     service_formset = AvailableServiceFormset(series=series, prefix="services", data=request.POST or None)
 
     if request.method == 'GET':

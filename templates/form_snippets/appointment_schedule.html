@@ -1,7 +1,17 @@
+{% load staticfiles %}
 {% load widget_tweaks %}
 <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>
-<div class="uk-panel" id="booking-datepicker">Pick Date
+<div class="uk-grid" id="appointment-schedule">
+	<div id="appointment-loading" class="loading-container">
+		<div class="loading-bg"></div>
+		<div class="loading-text">Checking Availability</div>
+	</div>
+
+	<div class="uk-width-small-6-10" id="booking-datepicker">Pick Date
+	{% render_field checkout_form.date %}
+	</div>
+
+	<div class="uk-width-small-4-10">Pick Time
+		{% render_field checkout_form.time %}
+	</div>
 </div>
-{% render_field checkout_form.date class+="uk-form-large uk-width-1-2" %}
-<span id="pick-time-text">Pick Time</span>
-{% render_field checkout_form.time class+="uk-form-large uk-width-1-2" %}

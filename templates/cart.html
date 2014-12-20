@@ -129,11 +129,12 @@ $( document ).ready(function() {
 });
 </script>
 <script>
+$('#appointment-loading').fadeOut();
+
 $("#checkout-button").click(function(){
     $('#cart-table').css({position: 'relative'});
     var spinner = new Spinner().spin();
     $(spinner.el).appendTo(document.getElementById('appointment-loading'));
-
 });
 </script>
 {% endblock %}

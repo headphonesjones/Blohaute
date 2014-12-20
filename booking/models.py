@@ -78,3 +78,52 @@ class Membership(models.Model):
 
     def price_units(self):
         return "/ month"
+
+
+class AppointmentResult(object):
+    def __init__(self):
+        self.upcoming = []
+        self.past = []
+
+
+class Appointment(object):
+    appointment_id = None
+    time = None
+    date = None
+    treatment = None
+
+    def __init__(self, appointment_id, appt_time, date, service_id, service_name):
+        self.appointment_id = appointment_id
+        self.date = date
+        self.time = appt_time
+        self.treatment_id = service_id
+        self.treatment_name = service_name
+        self.treatment = Treatment.objects.filter(booker_id=service_id)
+
+    def __str__(self):
+        return self.treatment + " at " + self.time + " on " + self.date
+
+
+class CustomerSeries(object):
+    series_id = None
+    name = None
+    quantity = None
+    remaining = None
+    expiration = None
+    redeemable_items = None
+    treatment = None
+
+    def __init__(self, series_id, name, quantity, remaining, expiration, redeemable):
+        self.series_id = series_id
+        self.name = name
+        self.quantity = quantity
+        self.remaining = remaining
+        # self.expiration = expiration
+        self.redeemable_items = redeemable
+        treatment_id = self.redeemable_items[0]['TreatmentID']
+        self.treatment = Treatment.objects.get(booker_id=treatment_id)
+
+    def __str__(self):
+        if self.expiration is None:
+            self.expiration = "Never"
+        return self.name + " " + str(self.remaining) + " of " + str(self.quantity)

@@ -2,7 +2,7 @@ import json
 from requests import Request, Session
 from django.conf import settings
 from django.forms import ValidationError
-from booking.models import Setting, Treatment
+from booking.models import Setting, Treatment, AppointmentResult, Appointment, CustomerSeries
 from datetime import timedelta, datetime, date
 import calendar
 import time
@@ -82,55 +82,6 @@ class BookerMerchantRequest(BookerRequest):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
 
 
-class AppointmentResult(object):
-    def __init__(self):
-        self.upcoming = []
-        self.past = []
-
-
-class Appointment(object):
-    appointment_id = None
-    time = None
-    date = None
-    treatment = None
-
-    def __init__(self, appointment_id, appt_time, date, service_id, service_name):
-        self.appointment_id = appointment_id
-        self.date = date
-        self.time = appt_time
-        self.treatment_id = service_id
-        self.treatment_name = service_name
-        self.treatment = Treatment.objects.filter(booker_id=service_id)
-
-    def __str__(self):
-        return self.treatment + " at " + self.time + " on " + self.date
-
-
-class CustomerSeries(object):
-    series_id = None
-    name = None
-    quantity = None
-    remaining = None
-    expiration = None
-    redeemable_items = None
-    treatment = None
-
-    def __init__(self, series_id, name, quantity, remaining, expiration, redeemable):
-        self.series_id = series_id
-        self.name = name
-        self.quantity = quantity
-        self.remaining = remaining
-        # self.expiration = expiration
-        self.redeemable_items = redeemable
-        treatment_id = self.redeemable_items[0]['TreatmentID']
-        self.treatment = Treatment.objects.get(booker_id=treatment_id)
-
-    def __str__(self):
-        if self.expiration is None:
-            self.expiration = "Never"
-        return self.name + " " + str(self.remaining) + " of " + str(self.quantity)
-
-
 class BookerCustomerMixin(object):
     customer_token = None
     customer_password = None
@@ -173,6 +124,10 @@ class BookerCustomerMixin(object):
         return self.process_response(response)['Results']
 
     def get_customer_series(self, treatment_id=None):
+        """
+        Gets a list series for the customer, optionally filtered by a specific treatmetn
+        Replaced by the get customer series method in merchant.
+        """
         series_list = []
         params = {
             'LocationID': self.location_id,
@@ -484,6 +439,56 @@ class BookerMerchantMixin(object):
     def get_locations(self):
         return BookerMerchantRequest('/locations', self.merchant_token).post()
 
+    def get_customer_series(self, treatment_id=None):
+        """
+        Gets a list series for the customer, optionally filtered by a specific treatment.
+        """
+        print 'performing merchant request'
+        series_list = []
+        params = {
+            'LocationID': self.location_id,
+            'CustomerID': self.customer_id
+        }
+        if treatment_id is not None:
+            params['TreatmentID'] = treatment_id
+        response = BookerMerchantRequest('/customer/series', self.merchant_token, params).post()
+        customer_series = self.process_response(response)['Results']
+        for series in customer_series:
+            print(series)
+            series_list.append(CustomerSeries(series['SeriesID'], series['Series']['Name'],
+                               series['QuantityRemaining'], series['QuantityOriginal'],
+                               series['ExpirationDate'], series['SeriesRedeemableItems']))
+
+        return series_list
+
+    def get_appointments(self):
+        """
+        get a list of currrent and past appointments for a specific location and customer
+        """
+        params = {
+            'CustomerID': self.customer_id,
+            'LocationID': self.location_id
+        }
+        response = BookerMerchantRequest('/appointments', self.customer_token, params).post()
+        appointment_results = self.process_response(response)
+        result = AppointmentResult()
+        for itinerary in appointment_results['Results']:
+            for appointment in itinerary['AppointmentTreatments']:
+                if itinerary['Status']['ID'] != 6:
+                    appointment_id = appointment['AppointmentID']
+                    start_time = self.parse_date(appointment['StartDateTime'])
+                    appointment_result = Appointment(appointment_id,
+                                                     self.parse_as_time(start_time),
+                                                     self.parse_as_date(start_time),
+                                                     appointment['Treatment']['ID'],
+                                                     appointment['Treatment']['Name'])
+                    if datetime.now() - start_time > timedelta(minutes=5):
+                        result.past.append(appointment_result)
+                    else:
+                        result.upcoming.append(appointment_result)
+
+        return result
+
     def book_appointment(self, itinerary, customer, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
         if customer:
@@ -496,7 +501,7 @@ class BookerMerchantMixin(object):
                 'LastName': last_name,
                 'HomePhone': phone,
                 'SendEmail': True
-           }
+            }
 
         adjusted_customer['Address'] = {
             'Street1': address,

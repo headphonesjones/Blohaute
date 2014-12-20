@@ -494,8 +494,9 @@ class BookerMerchantMixin(object):
                 'Email': email,
                 'FirstName': first_name,
                 'LastName': last_name,
-                'HomePhone': phone
-            }
+                'HomePhone': phone,
+                'SendEmail': True
+           }
 
         adjusted_customer['Address'] = {
             'Street1': address,
@@ -565,6 +566,29 @@ class BookerMerchantMixin(object):
                 # print(tslot['EmployeeID'])
         print(times)
         return list(times)
+
+    def get_itinerary_for_slot(self, treatments_requested, date, time_string):
+        time_string = time_string.split(" ")[0]
+        new_time = map(int, time_string.split(":"))
+        print("time %s" % new_time)
+        start_date = datetime(date.year, date.month, date.day, new_time[0]-1, new_time[1], 0, 0)
+        print(start_date)
+        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        response = self.get_availability(treatments_requested, start_date, end_date)
+
+        # When more than one employee, that 0 below goes away and we iterate
+        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+            # avail_time_slot = AvailableTimeSlot()
+            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            if time_string == itin_time:
+                # emp_list = set()
+                # for time_slot in itinerary_option['TreatmentTimeSlots']:
+                #     emp_list.add(time_slot['EmployeeID'])
+                return itinerary_option
+                # break
+            else:
+                print("nope %s vs %s" % (new_time, itin_time))
+        return None
 
     def login_merchant(self):
         """

@@ -5,7 +5,8 @@ from adminsortable.models import Sortable
 
 
 class Setting(models.Model):
-    access_token = models.CharField(max_length=255)
+    access_token = models.CharField(max_length=255, null=True, blank=True)
+    merchant_access_token = models.CharField(max_length=255, null=True, blank=True)
 
 
 class Treatment(Sortable):

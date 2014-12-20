@@ -12,22 +12,25 @@ class BookerRequest(Request):
     """
     Sets up, sends, and processes a single request to the Booker API
     """
-    base_url = None
+    base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
     path = None
     method = None
     params = {}
+    original_params = None
     needs_user_token = False
     token = None
 
-    def __init__(self, base_url, path, token, params={}):
+    def __init__(self, path, token, params={}):
         headers = {'content-type': 'application/json'}
         super(BookerRequest, self).__init__(params=params, headers=headers)
-        self.base_url = base_url
         self.path = path
         if token:
             self.token = token
 
     def send(self):
+        print self.token
+        print self.data
+        print self.params
         self.url = "%s%s" % (self.base_url, self.path)
         prepped = self.prepare()
         s = Session()
@@ -79,108 +82,6 @@ class BookerMerchantRequest(BookerRequest):
     base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
 
 
-class BookerClient(object):
-    CREDIT_CARD_TYPES = {
-        4: 2,  # visa
-        3: 1,  # american express
-        2: 4,  # discover
-        5: 3   # mastercard
-    }
-
-    token = None
-    location_id = 29033  # From get location call, we should cache this for now
-
-    def __init__(self, token=None):
-        if token is None:
-            setting = self.get_settings_object()
-
-            self.token = setting.access_token
-            if self.token is None:
-                self.load_token()
-
-    def get_settings_object(self):
-        setting = Setting.objects.first()
-        if setting is None:
-            setting = Setting()
-        return setting
-
-    def load_token(self, setting=None):
-        params = {'client_id': settings.BOOKER_API_KEY,
-                  'client_secret': settings.BOOKER_API_SECRET,
-                  'grant_type': 'client_credentials'}
-        response = BookerRequest(self.base_url, '/access_token', None, params).get()
-        self.token = response.json()['access_token']
-        if setting is None:
-            setting = self.get_settings_object()
-        setting.access_token = self.token
-        setting.save()
-
-        
-
-    def parse_as_time(self, date_time):
-        return date_time.strftime("%H:%M")
-
-    def parse_as_date(self, date_time):
-        return date_time.strftime("%Y-%m-%d")
-
-    def format_date_for_booker_json(self, start_date):
-        return "/Date(%s%s)/" % (int(time.mktime(start_date.timetuple()) * 1000), "-0500")
-
-    def date_range(self, start_date, end_date):
-        for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
-
-    def credit_card_type(self, credit_card_number):
-        first_character = int(credit_card_number[0])
-        card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
-        return card_type
-
-    def get_booker_credit_card_payment_item(self, billingzip, cccode, ccnum, expmonth, expyear, name_on_card):
-        return {
-            'Amount': {
-                'Amount': 0.0,
-                'CurrencyCode': 'USD'
-            },
-            'CreditCard': {
-                'BillingZip': billingzip,
-                'NameOnCard': name_on_card,
-                'ExpirationDate': self.format_date_for_booker_json(
-                    datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
-                'Number': ccnum,
-                'SecurityCode': cccode,
-                'Type': {
-                    'ID': self.credit_card_type(ccnum),
-                }
-            },
-            'Method': {
-                'ID': 1,
-            }
-        }
-
-    def get_booker_series_payment_item(self, series_id):
-        return {
-            'Amount': {
-                'Amount': 0.0,
-                'CurrencyCode': 'USD'
-            },
-            'CustomerSeries': {
-                'SeriesID': series_id
-            },
-            'Method': {
-                'ID': 5,
-            }
-        }
-
-
 class AppointmentResult(object):
     def __init__(self):
         self.upcoming = []
@@ -230,17 +131,16 @@ class CustomerSeries(object):
         return self.name + " " + str(self.remaining) + " of " + str(self.quantity)
 
 
-class BookerCustomerClient(BookerClient):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
+class BookerCustomerMixin(object):
     customer_token = None
     customer_password = None
-    merchant_token = None
+
     user = None
     customer = None
     customer_id = None
 
     def get_server_information(self):
-        response = BookerRequest(self.base_url, '/server_information', self.token, {}).get()
+        response = BookerRequest('/server_information', self.token, {}).get()
         return self.process_response(response)
 
     def get_services(self):
@@ -248,7 +148,7 @@ class BookerCustomerClient(BookerClient):
         Returns treatments for a spa/location
         """
         params = {'LocationID': self.location_id}
-        response = BookerRequest(self.base_url, '/treatments', self.token, params).post()
+        response = BookerRequest('/treatments', self.token, params).post()
         return self.process_response(response)['Treatments']
 
     def get_packages(self):
@@ -256,7 +156,7 @@ class BookerCustomerClient(BookerClient):
         Returns packages for a spa/location
         """
         params = {'LocationID': self.location_id}
-        response = BookerRequest(self.base_url, '/series', self.token, params).post()
+        response = BookerRequest('/series', self.token, params).post()
         return self.process_response(response)['Results']
 
     def get_memberships(self):
@@ -264,12 +164,12 @@ class BookerCustomerClient(BookerClient):
         Returns memberships for a spa/location
         """
         params = {'LocationID': self.location_id}
-        response = BookerRequest(self.base_url, '/memberships', self.token, params).post()
+        response = BookerRequest('/memberships', self.token, params).post()
         return self.process_response(response)['Results']
 
     def get_series(self):
         params = {'LocationID': self.location_id}
-        response = BookerRequest(self.base_url, '/series', self.token, params).post()
+        response = BookerRequest('/series', self.token, params).post()
         return self.process_response(response)['Results']
 
     def get_customer_series(self, treatment_id=None):
@@ -280,7 +180,7 @@ class BookerCustomerClient(BookerClient):
         }
         if treatment_id is not None:
             params['TreatmentID'] = treatment_id
-        response = BookerAuthedRequest(self.base_url, '/customer/series', self.customer_token, params).post()
+        response = BookerAuthedRequest('/customer/series', self.customer_token, params).post()
         customer_series = self.process_response(response)['Results']
         for series in customer_series:
             print(series)
@@ -294,7 +194,7 @@ class BookerCustomerClient(BookerClient):
         """
         Returns employees for a spa/location
         """
-        response = BookerRequest(self.base_url, '/employees', self.token, {'LocationID': self.location_id}).post()
+        response = BookerRequest('/employees', self.token, {'LocationID': self.location_id}).post()
         return self.process_response(response)
 
     def create_user(self, email, password, fname, lname, phone):
@@ -308,7 +208,7 @@ class BookerCustomerClient(BookerClient):
                   'LastName': lname,
                   'HomePhone': phone,
                   'Address': {'Street1': None}}
-        response = BookerRequest(self.base_url, '/customer/account', self.token, params).post()
+        response = BookerRequest('/customer/account', self.token, params).post()
         return self.process_response(response)
 
     def login(self, email, password):
@@ -320,7 +220,7 @@ class BookerCustomerClient(BookerClient):
                   'Password': password,
                   'client_id': settings.BOOKER_API_KEY,
                   'client_secret': settings.BOOKER_API_SECRET}
-        response = BookerRequest(self.base_url, '/customer/login', self.token, params).post()
+        response = BookerRequest('/customer/login', self.token, params).post()
         response = self.process_response(response)
         if response['access_token']:
             self.customer_token = response['access_token']
@@ -337,7 +237,7 @@ class BookerCustomerClient(BookerClient):
         Logout the currently logged in user
         This doesn't seem to work
         """
-        response = BookerAuthedRequest(self.base_url, '/logout', self.customer_token, None).get()
+        response = BookerAuthedRequest('/logout', self.customer_token, None).get()
         return self.process_response(response)
 
     def update_password(self, email, old_password, new_password):
@@ -350,7 +250,7 @@ class BookerCustomerClient(BookerClient):
                   'OldPassword': old_password,
                   'CustomerID': self.customer_id}
 
-        response = BookerAuthedRequest(self.base_url, '/customer/password', self.customer_token, params).post()
+        response = BookerAuthedRequest('/customer/password', self.customer_token, params).post()
         self.customer_password = new_password
         return self.process_response(response)
 
@@ -365,7 +265,7 @@ class BookerCustomerClient(BookerClient):
                   'HomePhone': self.user.phone_number,
                   'Address': self.customer['Address'],
                   'CustomerID': self.customer_id}
-        response = BookerAuthedRequest(self.base_url, '/customer/%s' % self.customer_id, self.customer_token, params).put()
+        response = BookerAuthedRequest('/customer/%s' % self.customer_id, self.customer_token, params).put()
         return self.process_response(response)
 
     def reset_password(self, email, first_name):
@@ -385,7 +285,7 @@ class BookerCustomerClient(BookerClient):
         This doesn't seem to work
         """
         params = {'CustomerID': self.customer.booker_id}
-        response = BookerRequest(self.base_url, '/customer/%s' % self.customer_id, self.token, params).delete()
+        response = BookerRequest('/customer/%s' % self.customer_id, self.token, params).delete()
         return self.process_response(response)
 
     def get_appointments(self):
@@ -396,7 +296,7 @@ class BookerCustomerClient(BookerClient):
             'CustomerID': self.customer_id,
             'LocationID': self.location_id
         }
-        response = BookerAuthedRequest(self.base_url, '/appointments', self.customer_token, params).post()
+        response = BookerAuthedRequest('/appointments', self.customer_token, params).post()
         appointment_results = self.process_response(response)
         result = AppointmentResult()
         for itinerary in appointment_results['Results']:
@@ -420,7 +320,7 @@ class BookerCustomerClient(BookerClient):
         params = {
             'ID': appointment_id
         }
-        response = BookerAuthedRequest(self.base_url, '/appointment/cancel', self.customer_token, params).put()
+        response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
         return self.process_response(response)
 
     # def reschedule_appointment(self):
@@ -440,7 +340,7 @@ class BookerCustomerClient(BookerClient):
                   'Itineraries': itinerary,
                   'LocationID': self.location_id}
 
-        response = BookerRequest(self.base_url, '/availability/multiservice', self.token, params).post()
+        response = BookerRequest('/availability/multiservice', self.token, params).post()
         # print(response)
         return self.process_response(response)
 
@@ -553,7 +453,7 @@ class BookerCustomerClient(BookerClient):
 
         # print(params)
 
-        response = BookerAuthedRequest(self.base_url, '/appointment/create', self.customer_token, params).post()
+        response = BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
         print("book response %s" % response)
         return self.process_response(response)
 
@@ -571,52 +471,18 @@ class BookerCustomerClient(BookerClient):
                                                                     name_on_card),
             'SeriesID': series_id
         }
-        response = BookerAuthedRequest(self.base_url, '/series/purchase', self.customer_token, params).post()
+        response = BookerAuthedRequest('/series/purchase', self.customer_token, params).post()
         return self.process_response(response)
 
-    def process_response(self, response):
-        formatted_response = response.json()
-        error_code = formatted_response.get('ErrorCode', 0)
-        if error_code == 1000:
-            self.load_token()
-            if response.needs_user_token:
-                self.login(self.user.email, self.customer_password)
-                new_request = BookerAuthedRequest(self.base_url, response.original_request.path, self.customer_token)
-            else:
-                new_request = BookerRequest(self.base_url, response.original_request.path, self.token)
-            new_request.method = response.original_request.method
-            if new_request.method == 'GET':
-                new_request.params = response.original_request.params or {}
-                return self.process_response(new_request.get())
-            else:
-                new_request.params = response.original_request.original_params or {}
-                if new_request.token:
-                    new_request.params['access_token'] = self.token
-                new_request.data = json.dumps(new_request.params)
-                new_request.params = None
-                return self.process_response(new_request.send())
 
-        if error_code == 200:
-            for error in formatted_response['ArgumentErrors']:
-                raise ValidationError(
-                    '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),
-                    code='argument_error'
-                )
-        if error_code != 0:
-            print("Request to %s with params %s Failed with ErrorCode %s: %s" %
-                  (response.original_request.path, response.original_request.params, error_code,
-                   formatted_response['ErrorMessage']))
-        return formatted_response
+class BookerMerchantMixin(object):
 
-
-class BookerMerchantClient(BookerClient):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
     merchant_token = None
     merchant_password = 'Test123!'
     merchant_user = 'blohauteweb'
 
     def get_locations(self):
-        return BookerRequest(self.base_url, '/locations', self.token).post()
+        return BookerMerchantRequest('/locations', self.merchant_token).post()
 
     def book_appointment(self, itinerary, customer, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
@@ -666,7 +532,7 @@ class BookerMerchantClient(BookerClient):
 
         # print(params)
 
-        response = BookerAuthedRequest(self.base_url, '/appointment/create', self.merchant_token, params).post()
+        response = BookerMerchantRequest('/appointment/create', self.merchant_token, params).post()
         print("book response %s" % response)
         return self.process_response(response)
 
@@ -680,7 +546,7 @@ class BookerMerchantClient(BookerClient):
             'StartDateTime': self.format_date_for_booker_json(start_date),
             'EndDateTime': self.format_date_for_booker_json(end_date),
         }
-        request = BookerAuthedRequest(self.base_url, '/availability/employee_room', self.merchant_token, params)
+        request = BookerMerchantRequest('/availability/employee_room', self.merchant_token, params)
         response = request.post()
         print(response)
         return self.process_response(response)
@@ -700,28 +566,106 @@ class BookerMerchantClient(BookerClient):
         print(times)
         return list(times)
 
+    def login_merchant(self):
+        """
+        Login a user to the API using their email and password
+        """
+        params = {'AccountName': 'blohauteil',
+                  'UserName': self.merchant_user,
+                  'Password': self.merchant_password,
+                  'client_id': settings.BOOKER_API_KEY,
+                  'client_secret': settings.BOOKER_API_SECRET}
+        response = BookerMerchantRequest('/accountlogin', self.token, params)
+        response = response.post()
+        print("response is %r" % response)
+        response = self.process_response(response)
+        if response['access_token']:
+            self.merchant_token = response['access_token']
+            setting = self.get_settings_object()
+            setting.merchant_access_token = self.merchant_token
+            setting.save()
+        else:
+            raise ValidationError(response['error'])
+
+        return response['access_token']
+
+
+class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
+    token = None
+
+    CREDIT_CARD_TYPES = {
+        4: 2,  # visa
+        3: 1,  # american express
+        2: 4,  # discover
+        5: 3   # mastercard
+    }
+
+    location_id = 29033  # From get location call, we should cache this for now
+
+    def __init__(self, token=None):
+        if token is None:
+            setting = self.get_settings_object()
+
+            self.token = setting.access_token
+            self.merchant_token = setting.merchant_access_token
+            if self.token is None:
+                self.load_token()
+            if self.merchant_token is None:
+                self.login_merchant()
+
+    def get_settings_object(self):
+        setting = Setting.objects.first()
+        if setting is None:
+            setting = Setting()
+        return setting
+
+    def load_token(self):
+        params = {'client_id': settings.BOOKER_API_KEY,
+                  'client_secret': settings.BOOKER_API_SECRET,
+                  'grant_type': 'client_credentials'}
+        response = BookerRequest('/access_token', None, params).get()
+        self.token = response.json()['access_token']
+        setting = self.get_settings_object()
+        setting.access_token = self.token
+        setting.save()
+
+    def resubmit_denied_request(self, response):
+        new_request = response.original_request
+        if new_request.original_params:
+            new_request.params = new_request.original_params
+
+        if isinstance(new_request, BookerAuthedRequest):
+            self.login(self.user.email, self.customer_password)
+            new_request.token = self.customer_token
+        elif isinstance(new_request, BookerMerchantRequest):
+            setting = self.get_settings_object()
+            if self.merchant_token != setting.merchant_access_token:
+                self.merchant_token = setting.merchant_access_token
+            else:
+                self.login_merchant()
+            new_request.token = self.merchant_token
+        else:
+            setting = self.get_settings_object()
+            if self.token != setting.access_token:
+                self.token = setting.access_token
+            else:
+                self.load_token()
+            new_request.token = self.token
+
+        if new_request.method == 'GET':
+            return self.process_response(new_request.get())
+        if new_request.method == 'POST':
+            return self.process_response(new_request.post())
+        if new_request.method == 'PUT':
+            return self.process_response(new_request.put())
+        if new_request.method == 'DELETE':
+            return self.process_response(new_request.delete())
+
     def process_response(self, response):
         formatted_response = response.json()
         error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
-            self.load_token()
-            if response.needs_user_token:
-                self.login()
-                new_request = BookerAuthedRequest(self.base_url, response.original_request.path, self.merchant_token)
-            else:
-                new_request = BookerRequest(self.base_url, response.original_request.path, self.token)
-            new_request.method = response.original_request.method
-            if new_request.method == 'GET':
-                new_request.params = response.original_request.params or {}
-                return self.process_response(new_request.get())
-            else:
-                new_request.params = response.original_request.original_params or {}
-                if new_request.token:
-                    new_request.params['access_token'] = self.token
-                new_request.data = json.dumps(new_request.params)
-                new_request.params = None
-                return self.process_response(new_request.send())
-
+            return self.resubmit_denied_request(response)
         if error_code == 200:
             for error in formatted_response['ArgumentErrors']:
                 raise ValidationError(
@@ -734,22 +678,65 @@ class BookerMerchantClient(BookerClient):
                    formatted_response['ErrorMessage']))
         return formatted_response
 
-    def login(self):
-        """
-        Login a user to the API using their email and password
-        """
-        params = {'AccountName': 'blohauteil',
-                  'UserName': self.merchant_user,
-                  'Password': self.merchant_password,
-                  'client_id': settings.BOOKER_API_KEY,
-                  'client_secret': settings.BOOKER_API_SECRET}
-        response = BookerRequest(self.base_url, '/accountlogin', self.token, params)
-        response = response.post()
-        print("response is %r" % response)
-        response = self.process_response(response)
-        if response['access_token']:
-            self.merchant_token = response['access_token']
-        else:
-            raise ValidationError(response['error'])
+    def parse_as_time(self, date_time):
+        return date_time.strftime("%H:%M")
 
-        return response['access_token']
+    def parse_as_date(self, date_time):
+        return date_time.strftime("%Y-%m-%d")
+
+    def format_date_for_booker_json(self, start_date):
+        return "/Date(%s%s)/" % (int(time.mktime(start_date.timetuple()) * 1000), "-0500")
+
+    def date_range(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
+    def credit_card_type(self, credit_card_number):
+        first_character = int(credit_card_number[0])
+        card_type = self.CREDIT_CARD_TYPES.get(first_character, None)
+        return card_type
+
+    def get_booker_credit_card_payment_item(self, billingzip, cccode, ccnum, expmonth, expyear, name_on_card):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CreditCard': {
+                'BillingZip': billingzip,
+                'NameOnCard': name_on_card,
+                'ExpirationDate': self.format_date_for_booker_json(
+                    datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
+                'Number': ccnum,
+                'SecurityCode': cccode,
+                'Type': {
+                    'ID': self.credit_card_type(ccnum),
+                }
+            },
+            'Method': {
+                'ID': 1,
+            }
+        }
+
+    def get_booker_series_payment_item(self, series_id):
+        return {
+            'Amount': {
+                'Amount': 0.0,
+                'CurrencyCode': 'USD'
+            },
+            'CustomerSeries': {
+                'SeriesID': series_id
+            },
+            'Method': {
+                'ID': 5,
+            }
+        }

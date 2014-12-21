@@ -10128,11 +10128,15 @@ font-family: "Oswald", sans-serif;
 
 .appointment-table td
 {
-  padding: 0;
+  padding: 10px 0;
 }
 
 .appointment-list{
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+.appointment-list li
+{
+  margin 3px 0;
 }

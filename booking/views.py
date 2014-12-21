@@ -151,7 +151,7 @@ def checkout(request):
                     print("sucessful booking")
                     request.cart.clear()
                     if client.user:
-                    return HttpResponseRedirect(reverse('thank_you'))
+                        return HttpResponseRedirect(reverse('thank_you'))
                 else:
                     messages.error(request, "Your booking could not be completed. Please try again.")
             else:

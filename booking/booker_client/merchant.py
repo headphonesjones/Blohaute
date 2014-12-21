@@ -83,24 +83,20 @@ class BookerMerchantMixin(object):
 
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
-        # print(itinerary)
         for idx, treatment in enumerate(itinerary):
 
             end_time_json = self.format_date_for_booker_json(
                 self.parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
-            # print("booking end time json date: %s" % end_time_json)
             treatmentDTO = {
                 'TreatmentID': treatment['TreatmentID'],
                 'StartTime': treatment['StartDateTime'],
                 'RoomID': treatment['RoomID'],
                 'EndTime': end_time_json,
                 'EmployeeID': treatment['EmployeeID']
-                # ,
-                # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
-                # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
             }
-            if idx == len(itinerary):
-                treatmentDTO['RecoveryTime'] = 45
+            # if idx == len(itinerary) - 1:
+            #     add a busy period at end of itin
+            #     treatmentDTO['GapFinishDuration'] = 45
             params = {
                 'LocationID': self.location_id,
                 'ResourceTypeID': 1,

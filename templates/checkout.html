@@ -66,8 +66,11 @@
                   {% endif %}
 
             {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
-
             <form method="POST" class="uk-form">
+                {% for hidden in checkout_form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
                 <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                     <div class="uk-width-medium-1-2">
                         {% include 'form_snippets/appointment_location.html' %}

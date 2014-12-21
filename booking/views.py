@@ -87,7 +87,6 @@ def available_times_for_day(request):
 
 
 def get_services_from_cart(request):
-    
     services_requested = []
     for item in request.cart:
         if isinstance(item.product, Treatment):
@@ -102,7 +101,7 @@ def checkout(request):
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
-    checkout_form = CheckoutForm(prefix="checkout")
+    checkout_form = CheckoutForm(prefix="checkout", user=request.user)
 
     client = request.session['client']
 
@@ -133,7 +132,7 @@ def checkout(request):
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
         if 'checkout-address' in request.POST:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout')
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user)
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
@@ -158,7 +157,8 @@ def checkout(request):
                 else:
                     pass
                     # some kind of error reporting of the appointment booking failure reason then return to checkout below
-
+            else:
+                print checkout_form.errors
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,
                                              'checkout_form': checkout_form,

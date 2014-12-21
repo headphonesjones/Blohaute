@@ -116,7 +116,7 @@ def checkout(request):
                     client.login(user.email, remember_me_form.cleaned_data.get('password'))
                     client.user = user
                     auth_login(request, remember_me_form.get_user())
-                    return HttpResponseRedirect(reverse('welcome'))  # change this to o ther logic
+                    return HttpResponseRedirect(reverse('checkout'))
 
                 except ValidationError as e:
                     remember_me_form.add_error(None, e)

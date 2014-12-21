@@ -87,7 +87,7 @@ def available_times_for_day(request, services_requested=None):
 
 
 def get_services_from_cart(request):
-    return [item.product for item in request.cart if isinstance(item.product, Treatment)]
+    return [item for item in request.cart if isinstance(item.product, Treatment)]
 
 
 @csrf_protect

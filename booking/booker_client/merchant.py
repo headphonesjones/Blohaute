@@ -1,6 +1,5 @@
 from booking.booker_client.request import BookerMerchantRequest
 from booking.models import CustomerSeries, Appointment
-from booking.models import CustomerSeries
 from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date

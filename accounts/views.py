@@ -13,7 +13,7 @@ from django.views.generic.edit import DeleteView
 from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
                             EmailUpdateForm, PasswordResetForm, SetPasswordForm)
-from booking.forms import AvailableServiceFormset
+from booking.forms import AvailableServiceFormset, RescheduleForm
 from booking.models import Treatment
 
 
@@ -207,13 +207,32 @@ def cancel_view(request, pk):
     if request.method == 'POST':
         client = request.session['client']
         try:
-            client.cancel_appointment(pk)
-            messages.error(request, "There was a problem scheduling your appointment. Please check the form and try again.")
+            response = client.cancel_appointment(pk)
+            if response['isSuccess'] is False:
+                raise Exception
             return HttpResponseRedirect(reverse('welcome'))
         except:
             messages.error(request, "There was a problem canceling your appointment. If you have trouble, please call or email for assistance.")
 
-    return render(request, 'appointment/appointment_cancel.html', {})
+    return render(request, 'appointment/appointment_cancel.html', {'appt_id': pk})
+
+
+@login_required
+@csrf_protect
+def reschedule(request, pk):
+    form = RescheduleForm()
+    client = request.session['client']
+    appointment = client.get_appointment(pk)
+    print appointment
+    return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form':form, 'appointment': appointment})
+
+
+def reschedule_days(request, pk):
+    pass
+
+
+def reschedule_times(request, pk):
+    pass
 
 
 class UserDelete(DeleteView):

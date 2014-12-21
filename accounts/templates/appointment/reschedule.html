@@ -1,0 +1,147 @@
+{% extends "minimal_base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block page_title %}Reschedule{% endblock %}
+
+{% block content %}
+            {{appointment.treatments}} xxx
+            {% for treatment in appointment.treatments %}
+                {{treatment}}
+            {% endfor %}
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid uk-grid-divider" data-uk-grid-margin="">
+            <div class="uk-width-1-1">
+                    <h2 class="bh-headline-bottom-border"><span>Reschedule an Upcoming Appointment</span></h2>
+            </div>
+            <div class="uk-grid" id="appointment-schedule">
+                <div class="uk-width-small-6-10" id="booking-datepicker">Pick Date
+                    {% render_field form.date %}
+                    {{ form.date.errors}}
+                </div>
+
+                <div class="uk-width-small-4-10">Pick Time
+                    {% render_field form.time %}
+                    {{ form.time.errors}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br /><br /><br /><br />
+{% endblock %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.date.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.time.css' %}">
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static 'js/pickadate/picker.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.date.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.time.js' %}"></script>
+<script src="{% static 'js/pickadate/legacy.js' %}"></script>
+
+
+<script>
+$(document).ready(function() {
+
+    var datesLoaded = false;
+
+    var $dateField = $("#id_date");
+    var datePicker = $dateField.pickadate({
+        disable: null,
+        format: 'ddd mmmm d yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true,
+        close: '',
+        today: '',
+        clear: '',
+        min: new  Date(),
+
+        beforeSend: function() {
+                console.log("beforeSend fired");
+                $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
+        },
+        complete: function() {
+                console.log("complete fired");
+                $( "#loading-container" ).remove();
+                $( "#spinning-loader" ).remove();
+        },
+        onSet: function(context) {
+            var $dateFieldHidden = $("#id_date_hidden");
+            if (context['select'] && $dateFieldHidden.val()) {
+                $('#appointment-loading').fadeIn();
+                timePicker.set('disable', true);
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "timesforday" %}',
+                    dataType: 'json',
+                    data: {
+                        date: $dateFieldHidden.val()
+                    },
+                    success: function(data) {
+{#                        data.unshift(true);#}
+                        timePicker.set('disable', data);
+                        if (datesLoaded == true) {
+                            $('#appointment-loading').fadeOut();
+                        }
+                    }
+                });
+            }
+        }
+    });
+    var picker = datePicker.pickadate('picker');
+
+    if ($dateField.val() != "") {
+        picker.set('select', $dateField.val(), { format: 'yyyy-mm-dd' })
+    }
+    picker.open(false);
+
+    var $timeField = $('#id_time');
+    var timeInput = $timeField.pickatime({
+        formatSubmit: 'HH:i',
+        hiddenName: true,
+        min: [7, 0],
+        max: [20, 0],
+        interval: 15
+    });
+
+    var timePicker = timeInput.pickatime('picker');
+    timePicker.set('disable', true); //start with all times disabled
+
+    if ($timeField.val() != "") {
+        timePicker.set('select', $timeField.val(), { format: 'HH:i' })
+    }
+
+
+    $('#appointment-schedule').css({position: 'relative'});
+    var spinner = new Spinner().spin();
+    $(spinner.el).appendTo(document.getElementById('appointment-loading'));
+
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'unavailable_days' %}",
+        dataType: 'json',
+        success: function(data) {
+            picker.set('disable', data);
+            datesLoaded = true;
+            $('#appointment-loading').fadeOut();
+        }
+    });
+
+    //make time and date borders red if there are errors
+    if ($dateField.hasClass('uk-form-danger')) {
+        $("#id_date_root").find('.picker__holder').addClass('uk-form-danger');
+    }
+    if ($timeField.hasClass('uk-form-danger')) {
+        $("#id_time_root").find('.picker__holder').addClass('uk-form-danger');
+    }
+});
+
+</script>
+{% endblock %}

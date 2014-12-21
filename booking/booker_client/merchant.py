@@ -1,6 +1,6 @@
 from booking.booker_client.request import BookerMerchantRequest
 from booking.models import CustomerSeries
-from booking.booker_models import Itinerary
+from booking.booker_models import Appointment
 from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
@@ -47,9 +47,17 @@ class BookerMerchantMixin(object):
         }
         response = BookerMerchantRequest('/appointments', self.merchant_token, params).post()
         appointment_results = self.process_response(response)
-        result = [Itinerary(itinerary) for itinerary in appointment_results['Results']]
+        result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
         print result
         return result
+
+    def get_appointment(self, id):
+        """
+        get a single appointment by ID
+        """
+        params = {}
+        response = BookerMerchantRequest('/appointment/%s' % id, self.merchant_token, params).get()
+        return Appointment(self.process_response(response)['Appointment'])
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
@@ -115,7 +123,6 @@ class BookerMerchantMixin(object):
             'ID': int(appointment_id)
         }
         response = BookerMerchantRequest('/appointment/cancel', self.merchant_token, params).put()
-        print response.text
         return self.process_response(response)
 
     def get_availability(self, treatment, start_date, end_date):

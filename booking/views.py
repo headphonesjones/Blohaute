@@ -62,8 +62,9 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
-def unavailable_days(request):
-    services_requested = get_services_from_cart(request)
+def unavailable_days(request, services_requested=None):
+    if services_requested is None:
+        services_requested = get_services_from_cart(request)
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
     unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
@@ -85,11 +86,7 @@ def available_times_for_day(request):
 
 
 def get_services_from_cart(request):
-    services_requested = []
-    for item in request.cart:
-        if isinstance(item.product, Treatment):
-            services_requested.append(item)
-    return services_requested
+    return [item.product for item in request.cart if isinstance(item.product, Treatment)]
 
 
 @csrf_protect

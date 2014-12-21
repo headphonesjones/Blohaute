@@ -28,7 +28,7 @@
                                 <a href="{% url 'reschedule' %}" class="uk-button bh-button-secondary uk-margin-small-bottom ">
                                     <i class="uk-icon-calendar"></i> Reschedule
                                 </a>
-
+                                <br/>
                                 {% if appt.can_cancel %}
                                     <a href="{% url 'cancel' appt.id %}" class="uk-button bh-button-secondary uk-margin-small-bottom "><i class="uk-icon-times"></i> Cancel</a>
                                 {% endif %}

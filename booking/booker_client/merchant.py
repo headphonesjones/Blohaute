@@ -83,6 +83,7 @@ class BookerMerchantMixin(object):
 
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
+        appointments = []
         for idx, treatment in enumerate(itinerary):
 
             end_time_json = self.format_date_for_booker_json(
@@ -117,13 +118,16 @@ class BookerMerchantMixin(object):
             response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
             appointment = self.process_response(response)
             # print("appt result is: %s" % appointment)
+
             success = appointment['IsSuccess']
             # print("success?:  %s" % success)
             if not success:
                 print("On no, we died on booking, params was %s and appointment was %s" % (params, appointment))
-                return False
+                return None
+            else:
+                appointments.append(appointment)
 
-        return True
+        return appointments
 
     def cancel_appointment(self, appointment_id):
         params = {

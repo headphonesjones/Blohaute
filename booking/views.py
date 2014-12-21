@@ -139,18 +139,19 @@ def checkout(request):
                                                           data['date'], data['time'])
                 print("itin is %s" % itinerary)
                 # get payment method
-                appointment_success = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                appointments = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
                                                       data['city'], data['state'], data['zip_code'],
                                                       data['email_address'], data['phone_number'], data['card_number'],
                                                       data['name_on_card'], data['expiry_date'].year,
                                                       data['expiry_date'].month, data['card_code'],
                                                       data['billing_zip_code'], data['notes'])
                 # print("appt result is: %s" % appointment)
-                # print("success?:  %s" % appointment['IsSuccess'])
-                if appointment_success:
-                    print("sucessful booking")
+                # print("success?:  %s" % )
+                if appointments is not None:
+                    print("successful booking")
                     request.cart.clear()
                     if client.user:
+                        request.session['appointments'] = appointments
                         return HttpResponseRedirect(reverse('thank_you'))
                 else:
                     messages.error(request, "Your booking could not be completed. Please try again.")

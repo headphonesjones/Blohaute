@@ -171,9 +171,11 @@ class BookerCustomerMixin(object):
 
     def cancel_appointment(self, appointment_id):
         params = {
-            'ID': appointment_id
+            'ID': int(appointment_id)
         }
+        print appointment_id
         response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
+        print response.text
         return self.process_response(response)
 
     # def reschedule_appointment(self):

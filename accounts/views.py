@@ -203,10 +203,17 @@ def profile_view(request):
 
 @login_required
 @csrf_protect
-def cancel_view(request):
-    client = request.session['client']
-    client.cancel_appointment(request.POST['appointment_id'])
-    return HttpResponseRedirect(reverse('welcome'))
+def cancel_view(request, pk):
+    if request.method == 'POST':
+        client = request.session['client']
+        try:
+            client.cancel_appointment(pk)
+            messages.error(request, "There was a problem scheduling your appointment. Please check the form and try again.")
+            return HttpResponseRedirect(reverse('welcome'))
+        except:
+            messages.error(request, "There was a problem canceling your appointment. If you have trouble, please call or email for assistance.")
+
+    return render(request, 'appointment/appointment_cancel.html', {})
 
 
 class UserDelete(DeleteView):

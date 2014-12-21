@@ -14,6 +14,6 @@ urlpatterns = patterns(
 
     url(r'^welcome/', views.profile_view, name='welcome'),
     url(r'^delete/', views.UserDelete.as_view(), name='delete_user'),
+    url(r'^appointments/(?P<pk>\d+)/cancel/$', views.cancel_view, name='cancel'),
     url(r'^reschedule/', TemplateView.as_view(template_name="registration/reschedule.html"), name='reschedule'),
-    url(r'^cancel/', views.cancel_view, name='cancel'),
 )

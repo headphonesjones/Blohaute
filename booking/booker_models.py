@@ -58,7 +58,7 @@ class Appointment(JSONSerializable):
             self.treatment_name = data['Treatment']['Name']
             self.employee_name = data['Employee']['FirstName']
             self.treatment = Treatment.objects.get(booker_id=self.treatment_id)
-
+            print 'creaeted appointment id %d' % self.appointment_id
     def __str__(self):
         return self.treatment + " at " + self.time + " on " + self.date
 
@@ -90,6 +90,7 @@ class Itinerary(JSONSerializable):
             for appointment in data['AppointmentTreatments']:
                 treatment = Appointment(appointment)
                 self.treatments.append(treatment)
+            print 'creaeted Itinerary id %d' % self.id
 
     def is_past(self):
         return datetime.now() - self.start_datetime > timedelta(minutes=5)

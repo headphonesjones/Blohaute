@@ -79,7 +79,7 @@ class CheckoutForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super(CheckoutForm, self).__init__(*args, **kwargs)
-        if self.user:
+        if self.user.is_authenticated():
             self.fields['first_name'].widget = forms.HiddenInput()
             self.fields['first_name'].initial = self.user.first_name
             self.fields['last_name'].widget = forms.HiddenInput()

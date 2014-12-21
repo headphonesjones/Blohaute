@@ -142,6 +142,7 @@ $(document).ready(function() {
             var $idCheckoutHidden = $("#id_checkout-date_hidden");
             if (context['select'] && $idCheckoutHidden.val()) {
                 $('#appointment-loading').fadeIn();
+                timePicker.set('disable', true);
                 $.ajax({
                     type: 'POST',
                     url: '{% url "timesforday" %}',

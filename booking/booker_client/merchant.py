@@ -228,9 +228,11 @@ class BookerMerchantMixin(object):
         new_time = map(int, time_string.split(":"))
         # print("time for itin request %s" % new_time)
         start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
+
         # That -1 is important and comes from the timezone thing, we shoudl work on timezones
         # TODO: end_date should be start date + duration of appt
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        end_date = end_date + timedelta(hours=6)  # time zone fix
         # print("start %r and end %r" % (start_date, end_date))
         response = self.get_availability(treatments_requested, start_date, end_date)
 

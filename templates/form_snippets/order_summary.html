@@ -47,7 +47,7 @@
                     {{ item.product.cart_description }}<br>
                 </td>
                 <td class="uk-text-center">
-                {{item.quantity}}
+                {{item.quantity|floatformat:"0"}}
                 </td>
                 <td class="uk-text-center">{{ item.total_price_display }}</td>
             </tr>

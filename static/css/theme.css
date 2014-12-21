@@ -10086,3 +10086,53 @@ font-family: "Oswald", sans-serif;
   margin:0;
   color: #9e314e;
 }
+
+.calendar-icon
+{
+  width: 100px;
+  text-align: center;
+  font-family: "Oswald", sans-serif;
+  text-transform: uppercase;
+}
+
+.calendar-icon-month
+{
+  background-color: #9e314e;
+  color: #fff;
+  height:32px;
+  font-size: 20px;
+  line-height: 32px;
+}
+
+.calendar-icon-date
+{
+  color: #444444;
+  height:45px;
+  font-size: 32px;
+  line-height: 45px;
+  border-left: 1px solid #bdbdbd;
+  border-right: 1px solid #bdbdbd;
+}
+.calendar-icon-time
+{
+  border-left: 1px solid #bdbdbd;
+  border-right: 1px solid #bdbdbd;
+  border-bottom: 1px solid #bdbdbd;
+  padding-bottom: 3px;
+}
+
+.appointment-table
+{
+  vertical-align: middle;
+}
+
+.appointment-table td
+{
+  padding: 0;
+}
+
+.appointment-list{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

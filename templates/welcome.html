@@ -24,7 +24,7 @@
                         <li class="uk-width-1-2 uk-active"><a href="#">Upcoming Appointments</a></li>
                         <li class="uk-width-1-2"><a href="#">Past Appointments</a></li>
                     </ul>
-                    <ul id="shop-single-details" class="uk-switcher uk-margin">
+                    <ul id="shop-single-details" class="uk-switcher">
                        {% include 'profile_snippets/upcoming_appointments.html' %}
                        {% include 'profile_snippets/past_appointments.html' %}
                     </ul>
@@ -110,49 +110,4 @@
 </div>
 
 <br /><br />
-<script type="text/javascript">
-    $(document).ready(function() {
-
-    $("#id_checkout-date").pickadate({
-        disable: {{ unavailable_days }},
-        format: 'ddd mmmm d yyyy',
-        formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true,
-        beforeSend: function() {
-                console.log("beforeSend fired");
-                $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
-        },
-        complete: function() {
-                console.log("complete fired");
-                $( "#loading-container" ).remove();
-                $( "#spinning-loader" ).remove();
-        },
-        onSet: function(context) {
-            $.ajax({
-                type: 'POST',
-                url: '/timesforday',
-                dataType: 'json',
-                data: {
-                    date: $("#id_checkout-date_hidden").val()
-                },
-                success: function(data) {
-                    timePicker.set('disable', data);
-                }
-            });
-        }
-    });
-
-    var timeInput = $('#id_checkout-time').pickatime({
-        formatSubmit: 'HH:i',
-        hiddenName: true,
-        min: [7, 0],
-        max: [20, 0]
-    });
-
-    var timePicker = timeInput.pickatime('picker');
-    timePicker.set('disable', true); //start with all times disabled
-
-});
-    
-</script>
 {% endblock %}

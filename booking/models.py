@@ -86,30 +86,6 @@ class Membership(models.Model):
         return "/ month"
 
 
-class AppointmentResult(object):
-    def __init__(self):
-        self.upcoming = []
-        self.past = []
-
-
-class Appointment(object):
-    appointment_id = None
-    time = None
-    date = None
-    treatment = None
-
-    def __init__(self, appointment_id, appt_time, date, service_id, service_name):
-        self.appointment_id = appointment_id
-        self.date = date
-        self.time = appt_time
-        self.treatment_id = service_id
-        self.treatment_name = service_name
-        self.treatment = Treatment.objects.filter(booker_id=service_id)
-
-    def __str__(self):
-        return self.treatment + " at " + self.time + " on " + self.date
-
-
 class CustomerSeries(object):
     series_id = None
     name = None

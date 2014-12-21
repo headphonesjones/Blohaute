@@ -137,19 +137,19 @@ def checkout(request):
                 data = checkout_form.cleaned_data
                 services_requested = get_services_from_cart(request)
 
-                itinerary = client.get_itinerary_for_slot(services_requested,
+                itinerary = client.get_itinerary_for_slot_multiple(services_requested,
                                                           data['date'], data['time'])
                 print("itin is %s" % itinerary)
                 # get payment method
-                appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                appointment_success = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
                                                       data['city'], data['state'], data['zip_code'],
                                                       data['email_address'], data['phone_number'], data['card_number'],
                                                       data['name_on_card'], data['expiry_date'].year,
                                                       data['expiry_date'].month, data['card_code'],
                                                       data['billing_zip_code'], data['notes'])
-                print("appt result is: %s" % appointment)
-                print("success?:  %s" % appointment['IsSuccess'])
-                if appointment['IsSuccess']:
+                # print("appt result is: %s" % appointment)
+                # print("success?:  %s" % appointment['IsSuccess'])
+                if appointment_success:
                     print("sucessful booking")
                     request.cart.clear()
                     if client.user:

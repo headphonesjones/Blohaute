@@ -76,40 +76,51 @@ class BookerMerchantMixin(object):
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
         print(itinerary)
-        first_treatment = itinerary['TreatmentTimeSlots'][0]
-        end_time_json = self.format_date_for_booker_json(
-            self.parse_date(itinerary['StartDateTime']) + timedelta(minutes=first_treatment['Duration']))
-        # print("booking end time json date: %s" % end_time_json)
-        params = {
-            'LocationID': self.location_id,
-            'ResourceTypeID': 1,
-            'AppointmentTreatmentDTOs': [
-                {
-                    'TreatmentID': first_treatment['TreatmentID'],
-                    'StartTime': itinerary['StartDateTime'],
-                    'RoomID': first_treatment['RoomID'],
-                    'EndTime': end_time_json,
-                    'EmployeeID': first_treatment['EmployeeID']
-                    # ,
-                    # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
-                    # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
-                }
-            ],
-            'AppointmentDate': itinerary['StartDateTime'],  # Date needs to be itinerary start date
-            'AppointmentPayment': {
-                'CouponCode': '',
-                'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
-                                                                        name_on_card)
-            },
-            'Customer': adjusted_customer,
-            'Notes': notes
-        }
+        # first_treatment = itinerary['TreatmentTimeSlots'][0]
+        for idx, treatment in enumerate(itinerary):
 
-        # print(params)
+            end_time_json = self.format_date_for_booker_json(
+                self.parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
+            # print("booking end time json date: %s" % end_time_json)
+            treatmentDTO = {
+                'TreatmentID': treatment['TreatmentID'],
+                'StartTime': treatment['StartDateTime'],
+                'RoomID': treatment['RoomID'],
+                'EndTime': end_time_json,
+                'EmployeeID': treatment['EmployeeID']
+                # ,
+                # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
+                # 'RecoveryTime': 0    #  for non final treatment 0 then 45 on last treatment
+            }
+            if idx == len(itinerary):
+                treatmentDTO['RecoveryTime'] = 45
+            params = {
+                'LocationID': self.location_id,
+                'ResourceTypeID': 1,
+                'AppointmentTreatmentDTOs': [
+                    treatmentDTO
+                ],
+                'AppointmentDate': treatment['StartDateTime'],  # Date needs to be itinerary start date
+                'AppointmentPayment': {
+                    'CouponCode': '',
+                    'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
+                                                                            name_on_card)
+                },
+                'Customer': adjusted_customer,
+                'Notes': notes
+            }
 
-        response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
-        process_response = self.process_response(response)
-        return process_response
+            # print(params)
+            response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
+            appointment = self.process_response(response)
+            print("appt result is: %s" % appointment)
+            success = appointment['IsSuccess']
+            print("success?:  %s" % success)
+            if not success:
+                print("On no, we died on booking, params was %s and appointment was %s" % (params, appointment))
+                return False
+
+        return True
 
     def get_availability(self, treatment, start_date, end_date):
         # for treatment in treatments:
@@ -225,7 +236,12 @@ class BookerMerchantMixin(object):
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         end_date = end_date + timedelta(hours=6)  # time zone fix
         # print("start %r and end %r" % (start_date, end_date))
-        response = self.get_availability(treatments_requested, start_date, end_date)
+
+        total_treatments = 0
+        for treatment in treatments_requested:
+            total_treatments += treatment.quantity
+        print("total treatments is %d" % total_treatments)
+        response = self.get_availability(treatments_requested[0].product, start_date, end_date)
 
         # When more than one employee, that 0 below goes away and we iterate
         current_time_string = time_string
@@ -244,13 +260,15 @@ class BookerMerchantMixin(object):
                 for time_slot in itinerary_option['TreatmentTimeSlots']:
                     emp_list.add(time_slot['EmployeeID'])
                     times_to_slot_by_employee[current_time_string] = {time_slot['EmployeeID']: time_slot}
-                if len(times_to_slot_by_employee) == 1:
+                if len(times_to_slot_by_employee.keys()) == 1:
                     employee_in_all_set.update(emp_list)
                 else:
                     employee_in_all_set = employee_in_all_set.intersection(emp_list)
+                if len(times_to_slot_by_employee.keys()) == total_treatments:
+                    break
                 current_time_string = self.parse_as_time(new_date)
             else:
-                print("nope %s vs %s" % (new_time, itin_time))
+                print("nope %s vs %s" % (current_time_string, itin_time))
         result = []
         if len(employee_in_all_set) <= 0:
             print("OH FUCK NOOOOOOOO")
@@ -260,7 +278,7 @@ class BookerMerchantMixin(object):
                 by_emp = times_to_slot_by_employee.get(time)
                 print("by_emp is: %s" % by_emp)
                 for_emp = by_emp.get(employee)
-                print("for emp is: $s" % for_emp)
+                print("for emp is: %s" % for_emp)
                 result.append(for_emp)
         return result
 

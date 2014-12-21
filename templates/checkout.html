@@ -27,24 +27,10 @@
                         <form method="POST" class="uk-form" id="login-form">
                             {% csrf_token %}
                             <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
-                                {% if login_form.errors %}
-                                    <div class="uk-width-1-1">
-                                        <div class="uk-alert uk-alert-danger ">
-                                            {% if login_form.non_field_errors %}
-                                                {% for error in login_form.non_field_errors %}
-                                                    <p>{{error}}</p>
-                                                {% endfor %}
-                                            {% else %}
-                                                There was a problem signing in. Please check the form and make sure that everything is filled out correctly.
-                                            {% endif %}
 
-                                        </div>
-                                    </div>
-                                {% endif %}
-
-                                <div class="uk-width-1-1 uk-text-center">
-                                    <h3>I'm already a member</h3>
-                                    <p>Welcome back!</p>
+                                <div class="uk-width-1-1">
+                                    <h3>Welcome back!</h3>
+                                    <br />
                                 </div>
                                     <div class="uk-width-1-2">
                                         {% include "registration/field_snippet.html" with field=login_form.username %}

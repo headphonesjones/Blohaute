@@ -120,7 +120,8 @@ def checkout(request):
 
                 except ValidationError as e:
                     remember_me_form.add_error(None, e)
-
+            else:
+                messages.error(request, 'There was a problem signing in. Please check the form and make sure that everything is filled out correctly.')
         if 'coupon-coupon_code' in request.POST:
             coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
             if coupon_form.is_valid():

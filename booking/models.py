@@ -202,19 +202,24 @@ class Appointment(BookerModel):
 
 
 class AppointmentManager(object):
+    """
+    work in progress. Should be able to do basic querying operations for appointments
+    """
+
     user = None
+    client = None
 
     def __init__(self, user):
         self.user = user
 
     def all(self, client):
-        return client.get_appointments()
+        return self.client.get_appointments()
 
-    def get(self, client, id):
-        return client.get_appointment(id)
+    def get(self, id):
+        return self.client.get_appointment(id)
 
-    def cancel(self, client, id):
-        return client.cancel_appointment(id)
+    def cancel(self, id):
+        return self.client.cancel_appointment(id)
 
 
 class GenericItem(object):

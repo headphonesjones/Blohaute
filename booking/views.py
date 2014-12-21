@@ -66,7 +66,6 @@ def unavailable_days(request, services_requested=None):
     if services_requested is None:
         services_requested = get_services_from_cart(request)
     client = request.session['client']
-    print("getting unavailable days)")
     unavailable_days = client.get_unavailable_warm_period(services_requested)
     unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
     return HttpResponse(json.dumps(unavailable_days))
@@ -164,7 +163,7 @@ def checkout(request):
 
 
 def thank_you(request):
-    return render(request, 'thank_you.html', {})
+    return render(request, 'thankyou.html', {})
 
 def contact_view(request):
     if request.method == "GET":

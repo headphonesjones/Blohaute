@@ -105,7 +105,8 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
         return date_time.strftime("%Y-%m-%d")
 
     def format_date_for_booker_json(self, start_date):
-        return "/Date(%s%s)/" % (int(time.mktime(start_date.timetuple()) * 1000), "-0500")
+        start_date = start_date - timedelta(hours=1)
+        return "/Date(%s%s)/" % (int(time.mktime(start_date.timetuple()) * 1000), "-0600")
 
     def date_range(self, start_date, end_date):
         for n in range(int((end_date - start_date).days)):
@@ -115,6 +116,7 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
         timepart = datestring.split('(')[1].split(')')[0]
         milliseconds = int(timepart[:-5])
         hours = int(timepart[-5:]) / 100
+        # print("hours is what? %s" % hours)
         timepart = milliseconds / 1000
 
         dt = datetime.utcfromtimestamp(timepart + hours * 3600)

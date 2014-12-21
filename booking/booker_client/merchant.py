@@ -89,6 +89,9 @@ class BookerMerchantMixin(object):
             adjusted_customer.pop('GUID')
         print(itinerary)
         first_treatment = itinerary['TreatmentTimeSlots'][0]
+        end_time_json = self.format_date_for_booker_json(
+            self.parse_date(itinerary['StartDateTime']) + timedelta(minutes=first_treatment['Duration']))
+        # print("booking end time json date: %s" % end_time_json)
         params = {
             'LocationID': self.location_id,
             'ResourceTypeID': 1,
@@ -97,7 +100,7 @@ class BookerMerchantMixin(object):
                     'TreatmentID': first_treatment['TreatmentID'],
                     'StartTime': itinerary['StartDateTime'],
                     'RoomID': first_treatment['RoomID'],
-                    'EndTime': self.format_date_for_booker_json(self.parse_date(itinerary['StartDateTime']) + timedelta(minutes=first_treatment['Duration'])),
+                    'EndTime': end_time_json,
                     'EmployeeID': first_treatment['EmployeeID']
                     # ,
                     # 'GapFinishDuration': 0,  # for multi appts no time between, recovery time after
@@ -117,8 +120,8 @@ class BookerMerchantMixin(object):
         # print(params)
 
         response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
-        print("book response %s" % response)
-        return self.process_response(response)
+        process_response = self.process_response(response)
+        return process_response
 
     def get_availability(self, treatment, start_date, end_date):
         # for treatment in treatments:
@@ -141,18 +144,18 @@ class BookerMerchantMixin(object):
         # print(params)
         request = BookerMerchantRequest('/availability/employee_room', self.merchant_token, params)
         response = request.post()
-        print(response)
+        # print(response)
         process_response = self.process_response(response)
         # print("availability main method response %s" % process_response)
         return process_response
 
     def get_available_times_for_day(self, treatments_requested, start_date):
-        times = []
+        times = set()
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         response = self.get_availability(treatments_requested, start_date, end_date)
-        print("response from times per day %s" % response)
+        # print("response from times per day %s" % response)
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
@@ -169,18 +172,17 @@ class BookerMerchantMixin(object):
             # if len(emp_list) == 1:
 
                 # avail_time_slot.single_employee_slots.append(itinerary_option)
-            times.append(itin_time)
+            times.add(itin_time)
             # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
             #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
         print("times from avail per day: %s" % times)
-        return times
+        return list(times)
 
     def get_available_slots_for_day(self, treatment, date):
         start_date = datetime.strptime(date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         availability = self.get_availability(treatment, start_date, end_date)
-        print("processed slots per day is is :  %r" % availability)
 
         times = set()
         for slot in availability['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
@@ -202,7 +204,6 @@ class BookerMerchantMixin(object):
         for i in range(0, number_of_weeks):
             end_date = current_date + timedelta(weeks=1)
             response = self.get_availability(treatments_requested, current_date, end_date)
-            print("days in range response is %s" % response)
             slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
             dates_to_remove = [self.parse_date(slot['StartDateTime']).date() for slot in slots]
             days = [day for day in days if day not in dates_to_remove]
@@ -211,20 +212,22 @@ class BookerMerchantMixin(object):
         return days
 
     def get_unavailable_warm_period(self, treatments_requested):
+        # print("warm?")
         """
         Returns a list of python dates that are unavailable during the warm periond
         """
-        return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
+        return self.get_unavailable_days_in_range(treatments_requested, date.today() + timedelta(days=1), 3)
 
     def get_itinerary_for_slot(self, treatments_requested, date, time_string):
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
-        print("time %s" % new_time)
-        start_date = datetime(date.year, date.month, date.day, new_time[0] - 1, new_time[1], 0, 0)
+        # print("time for itin request %s" % new_time)
+        start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
+        # That -1 is important and comes from the timezone thing, we shoudl work on timezones
+        # TODO: end_date should be start date + duration of appt
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        print("start %r and end %r" % (start_date, end_date))
+        # print("start %r and end %r" % (start_date, end_date))
         response = self.get_availability(treatments_requested, start_date, end_date)
-        print("slot availability response was %r" % response)
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:

@@ -24,7 +24,6 @@ class TreatmentList(ListView):
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
-            # cart.cart.mode = Cart.NORMAL
             return HttpResponseRedirect(reverse('cart'))
         print form.errors
         return super(TreatmentList, self).get(self, request, *args, **kwargs)
@@ -50,7 +49,6 @@ class TreatmentDetail(DetailView):
                 cart.add(package, package.price, 1)
             if membership:
                 cart.add(membership, membership.price, 1)
-            # cart.cart.mode = Cart.NORMAL
 
             return HttpResponseRedirect(reverse('cart'))
 
@@ -152,10 +150,12 @@ def checkout(request):
                 print("success?:  %s" % appointment['IsSuccess'])
                 if appointment['IsSuccess']:
                     print("sucessful booking")
-                    # return HttpResponseRedirect(reverse('welcome'))
+                    request.cart.clear()
+                    if client.user:
+                        return render(request, 'welcome.html', {})
                     return render(request, 'thankyou.html', {})
                 else:
-                    pass
+                    return render(request, 'failure.html', {})
                     # some kind of error reporting of the appointment booking failure reason then return to checkout below
             else:
                 print checkout_form.errors

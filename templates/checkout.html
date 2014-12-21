@@ -150,13 +150,11 @@ $(document).ready(function() {
                         date: $idCheckoutHidden.val()
                     },
                     success: function(data) {
-                        data.unshift(true);
-                        alert(data);
+{#                        data.unshift(true);#}
                         timePicker.set('disable', data);
                         if (datesLoaded == true) {
                             $('#appointment-loading').fadeOut();
                         }
-
                     }
                 });
             }

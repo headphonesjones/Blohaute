@@ -29,11 +29,13 @@
                                     <i class="uk-icon-calendar"></i> Reschedule
                                 </a>
 
-                                <form class="uk-form" method="post" action=" {% url 'cancel' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="appointment_id" value="{{ appt.appointment_id }}">
-                                    <button class="uk-button bh-button-secondary"><i class="uk-icon-times"></i> Cancel</button>
+                                {% if appt.can_cancel %}
+                                    <form class="uk-form" method="post" action=" {% url 'cancel' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="appointment_id" value="{{ appt.appointment_id }}">
+                                        <button class="uk-button bh-button-secondary"><i class="uk-icon-times"></i> Cancel</button>
                                     </form>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

@@ -61,6 +61,7 @@ INSTALLED_APPS = (
     'localflavor',
     'adminsortable',
     'raven.contrib.django.raven_compat',
+
     #project apps
     'accounts',
     'booking',

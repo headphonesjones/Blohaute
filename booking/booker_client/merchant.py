@@ -1,5 +1,6 @@
 from booking.booker_client.request import BookerMerchantRequest
-from booking.models import AppointmentResult, Appointment, CustomerSeries, Treatment
+from booking.models import CustomerSeries
+from booking.booker_models import Itinerary
 from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
@@ -47,22 +48,8 @@ class BookerMerchantMixin(object):
         }
         response = BookerMerchantRequest('/appointments', self.merchant_token, params).post()
         appointment_results = self.process_response(response)
-        result = AppointmentResult()
-        for itinerary in appointment_results['Results']:
-            for appointment in itinerary['AppointmentTreatments']:
-                if itinerary['Status']['ID'] != 6:
-                    appointment_id = appointment['AppointmentID']
-                    start_time = self.parse_date(appointment['StartDateTime'])
-                    appointment_result = Appointment(appointment_id,
-                                                     self.parse_as_time(start_time),
-                                                     self.parse_as_date(start_time),
-                                                     appointment['Treatment']['ID'],
-                                                     appointment['Treatment']['Name'])
-                    if datetime.now() - start_time > timedelta(minutes=5):
-                        result.past.append(appointment_result)
-                    else:
-                        result.upcoming.append(appointment_result)
-
+        result = [Itinerary(itinerary) for itinerary in appointment_results['Results']]
+        print result
         return result
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,

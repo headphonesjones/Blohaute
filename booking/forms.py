@@ -76,21 +76,34 @@ class CheckoutForm(forms.Form):
     date = forms.DateField()
     time = forms.CharField()
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(CheckoutForm, self).__init__(*args, **kwargs)
+        if self.user.is_authenticated():
+            self.fields['first_name'].widget = forms.HiddenInput()
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].widget = forms.HiddenInput()
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email_address'].widget = forms.HiddenInput()
+            self.fields['email_address']. initial = self.user.email
+            self.fields['phone_number'].widget = forms.HiddenInput()
+            self.fields['phone_number'].initial = self.user.phone_number
+
 
 class SelectAvailableServiceForm(forms.Form):
     series = None
     treatment = None
     treatment_id = forms.IntegerField(widget=forms.HiddenInput())
-    quantity = forms.IntegerField(min_value=0)
+    quantity = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super(SelectAvailableServiceForm, self).__init__(*args, **kwargs)
         self.series = kwargs['initial'].get('series', None)
         self.treatment = self.series.treatment
-        self.fields['quantity'] = forms.IntegerField(max_value=self.series.remaining, min_value=0) 
+        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining)]
 
 #use the factory to create the base model for us
-BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra = 0)
+BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra=0)
 
 
 class AvailableServiceFormset(BaseAvailableServiceFormset):
@@ -99,11 +112,11 @@ class AvailableServiceFormset(BaseAvailableServiceFormset):
     def __init__(self, *args, **kwargs):
         self.series = kwargs.pop('series')
         kwargs['initial'] = [{'treatment_id': s.treatment.pk, 'quantity': 0, 'series': s} for s in self.series]
-        super(AvailableServiceFormset, self).__init__(*args, **kwargs)   
+        super(AvailableServiceFormset, self).__init__(*args, **kwargs)
 
     def _construct_form(self, *args, **kwargs):
         # inject user in each form on the formset
-        #kwargs['user'] = self.user       
+        #kwargs['user'] = self.user
         return super(AvailableServiceFormset, self)._construct_form(*args, **kwargs)
 
 
@@ -121,3 +134,8 @@ class ContactForm(forms.Form):
     name = forms.CharField()
     email = forms.EmailField()
     message = forms.CharField(widget=forms.Textarea())
+
+
+class RescheduleForm(forms.Form):
+    date = forms.DateField()
+    time = forms.CharField()

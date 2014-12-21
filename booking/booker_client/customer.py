@@ -1,6 +1,7 @@
 from booking.booker_client.request import BookerRequest, BookerAuthedRequest
 from booking.models import Treatment, CustomerSeries
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
 
@@ -150,9 +151,11 @@ class BookerCustomerMixin(object):
         """
         resets a forgotten customer password
         """
-        params = {'FirstName': first_name,
+        params = {'Firstname': first_name,
                   'LocationID': self.location_id,
-                  'Email': email}
+                  'Email': email,
+                  'BaseUrlOfHost': "http://blohaute.com%s" % reverse('reset_password')
+                  }
         response = BookerRequest('/forgot_password/custom', self.token, params).post()
         print response.text
         return self.process_response(response)
@@ -168,9 +171,11 @@ class BookerCustomerMixin(object):
 
     def cancel_appointment(self, appointment_id):
         params = {
-            'ID': appointment_id
+            'ID': int(appointment_id)
         }
+        print appointment_id
         response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
+        print response.text
         return self.process_response(response)
 
     # def reschedule_appointment(self):

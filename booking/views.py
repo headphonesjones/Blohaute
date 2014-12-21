@@ -24,7 +24,6 @@ class TreatmentList(ListView):
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
-            # cart.cart.mode = Cart.NORMAL
             return HttpResponseRedirect(reverse('cart'))
         print form.errors
         return super(TreatmentList, self).get(self, request, *args, **kwargs)
@@ -50,7 +49,6 @@ class TreatmentDetail(DetailView):
                 cart.add(package, package.price, 1)
             if membership:
                 cart.add(membership, membership.price, 1)
-            # cart.cart.mode = Cart.NORMAL
 
             return HttpResponseRedirect(reverse('cart'))
 
@@ -64,18 +62,20 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
-def unavailable_days(request):
-    services_requested = get_services_from_cart(request)
+def unavailable_days(request, services_requested=None):
+    if services_requested is None:
+        services_requested = get_services_from_cart(request)
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
     unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
     return HttpResponse(json.dumps(unavailable_days))
 
 
-def available_times_for_day(request):
+def available_times_for_day(request, services_requested=None):
     time_slots = [True]
+    if services_requested is None:
+        services_requested = get_services_from_cart(request)
 
-    services_requested = get_services_from_cart(request)
     client = request.session['client']
     available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
     for time in available_times:
@@ -87,12 +87,7 @@ def available_times_for_day(request):
 
 
 def get_services_from_cart(request):
-    
-    services_requested = []
-    for item in request.cart:
-        if isinstance(item.product, Treatment):
-            services_requested.append(item)
-    return services_requested
+    return [item for item in request.cart if isinstance(item.product, Treatment)]
 
 
 @csrf_protect
@@ -102,7 +97,7 @@ def checkout(request):
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
-    checkout_form = CheckoutForm(prefix="checkout")
+    checkout_form = CheckoutForm(prefix="checkout", user=request.user)
 
     client = request.session['client']
 
@@ -119,11 +114,12 @@ def checkout(request):
                     client.login(user.email, remember_me_form.cleaned_data.get('password'))
                     client.user = user
                     auth_login(request, remember_me_form.get_user())
-                    return HttpResponseRedirect(reverse('welcome'))  # change this to o ther logic
+                    return HttpResponseRedirect(reverse('checkout'))
 
                 except ValidationError as e:
                     remember_me_form.add_error(None, e)
-
+            else:
+                messages.error(request, 'There was a problem signing in. Please check the form and make sure that everything is filled out correctly.')
         if 'coupon-coupon_code' in request.POST:
             coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
             if coupon_form.is_valid():
@@ -133,37 +129,41 @@ def checkout(request):
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
         if 'checkout-address' in request.POST:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout')
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user)
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
                 services_requested = get_services_from_cart(request)
 
-                itinerary = client.get_itinerary_for_slot(services_requested,
+                itinerary = client.get_itinerary_for_slot_multiple(services_requested,
                                                           data['date'], data['time'])
                 print("itin is %s" % itinerary)
                 # get payment method
-                appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                appointment_success = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
                                                       data['city'], data['state'], data['zip_code'],
                                                       data['email_address'], data['phone_number'], data['card_number'],
                                                       data['name_on_card'], data['expiry_date'].year,
                                                       data['expiry_date'].month, data['card_code'],
                                                       data['billing_zip_code'], data['notes'])
-                print("appt result is: %s" % appointment)
-                print("success?:  %s" % appointment['IsSuccess'])
-                if appointment['IsSuccess']:
+                # print("appt result is: %s" % appointment)
+                # print("success?:  %s" % appointment['IsSuccess'])
+                if appointment_success:
                     print("sucessful booking")
-                    # return HttpResponseRedirect(reverse('welcome'))
-                    return render(request, 'thankyou.html', {})
+                    request.cart.clear()
+                    if client.user:
+                    return HttpResponseRedirect(reverse('thank_you'))
                 else:
-                    pass
-                    # some kind of error reporting of the appointment booking failure reason then return to checkout below
-
+                    messages.error(request, "Your booking could not be completed. Please try again.")
+            else:
+                print checkout_form.errors
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,
                                              'checkout_form': checkout_form,
                                              'cart': request.cart})
 
+
+def thank_you(request):
+    return render(request, 'thankyou.html', {})
 
 def contact_view(request):
     if request.method == "GET":

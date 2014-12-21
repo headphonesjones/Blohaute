@@ -1,0 +1,30 @@
+{% extends "minimal_base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block page_title %}Cancel Appointment{% endblock %}
+
+{% block content %}
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid">
+        	<div class="uk-width-1-1 uk-align-center">
+	        	<h3 class="uk-text-center uk-margin-bottom">Are you sure you want to cancel?</h3>
+	        	<h5 class="uk-text-center uk-margin-top">You could always reschedule.</h5>
+				<form method="post" class="uk-text-center">
+				    {% csrf_token %}
+
+				    <a href="{% url 'welcome' %}" class="uk-button bh-button-secondary uk-margin-bottom">Nevermind. Go back.</a>
+
+				    <a href="{% url 'reschedule' appt_id %}" class="uk-button bh-button-secondary uk-margin-bottom">Reschedule Instead</a>
+				    <br/>
+				    <button class="uk-button bh-button-secondary">I'm Sure. Cancel It.</button>
+				</form>
+
+	        </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

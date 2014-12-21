@@ -2,11 +2,7 @@ from django.db import models
 from django.contrib.humanize.templatetags.humanize import apnumber
 from django.template.defaultfilters import floatformat
 from adminsortable.models import Sortable
-
-
-class Setting(models.Model):
-    access_token = models.CharField(max_length=255, null=True, blank=True)
-    merchant_access_token = models.CharField(max_length=255, null=True, blank=True)
+from datetime import timedelta, datetime
 
 
 class Treatment(Sortable):
@@ -86,30 +82,6 @@ class Membership(models.Model):
         return "/ month"
 
 
-class AppointmentResult(object):
-    def __init__(self):
-        self.upcoming = []
-        self.past = []
-
-
-class Appointment(object):
-    appointment_id = None
-    time = None
-    date = None
-    treatment = None
-
-    def __init__(self, appointment_id, appt_time, date, service_id, service_name):
-        self.appointment_id = appointment_id
-        self.date = date
-        self.time = appt_time
-        self.treatment_id = service_id
-        self.treatment_name = service_name
-        self.treatment = Treatment.objects.filter(booker_id=service_id)
-
-    def __str__(self):
-        return self.treatment + " at " + self.time + " on " + self.date
-
-
 class CustomerSeries(object):
     series_id = None
     name = None
@@ -133,3 +105,127 @@ class CustomerSeries(object):
         if self.expiration is None:
             self.expiration = "Never"
         return self.name + " " + str(self.remaining) + " of " + str(self.quantity)
+
+
+class IdCache:
+    TREATMENT_IDS = {'Updo': 1500556, 'Braid': 1500553, 'Blow Out': 1500539}
+    employees = {'Amanda I': 322953,
+                 'Amanda S/D': 319599,
+                 'Jessie Hitzeman': 319544,
+                 'Morgan': 319549,
+                 'Jesse Scheele': 322667,
+                 'April Telman': 322866}
+
+
+class AvailableTimeSlot(object):
+    single_employee_slots = []
+    multiple_employee_slots = []
+    pretty_time = ''
+
+    def __eq__(self, other):
+        return self.pretty_time == other.pretty_time
+
+    def __hash__(self):
+        return hash(self.pretty_time)
+
+    def __str__(self):
+        return "%s has %d single and %d multiple employee slots" % (self.pretty_time,
+                                                                    len(self.single_employee_slots),
+                                                                    len(self.multiple_employee_slots))
+
+
+class BookerModel(object):
+    def parse_date(self, datestring):
+        timepart = datestring.split('(')[1].split(')')[0]
+        milliseconds = int(timepart[:-5])
+        hours = int(timepart[-5:]) / 100
+        # print("hours is what? %s" % hours)
+        timepart = milliseconds / 1000
+
+        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
+        return dt
+
+
+class AppointmentItem(BookerModel):
+    appointment_id = None
+    datetime = None
+    treatment = None
+    employee_name = None
+
+    def __init__(self, data=None):
+        if data:
+            self.appointment_id = data['AppointmentID']
+            self.datetime = self.parse_date(data['StartDateTime'])
+            self.treatment_id = data['Treatment']['ID']
+            self.treatment_name = data['Treatment']['Name']
+            self.employee_name = data['Employee']['FirstName']
+            self.treatment = Treatment.objects.get(booker_id=self.treatment_id)
+            print 'creaeted appointment id %d' % self.appointment_id
+
+    def __unicode__(self):
+        return "%s at %s on %s" % (self.treatment.name, self.datetime.strftime('H:i'), self.datetime.strftime('yyyy-mm-dd'))
+
+
+class Appointment(BookerModel):
+    id = None
+    status = None
+    customer_id = None
+    booking_number = None
+    start_datetime = None
+    end_datetime = None
+    final_total = None
+    can_cancel = None
+    treatments = []
+
+    def __init__(self, data=None):
+        if data:
+            self.id = data['ID']
+            self.booking_number = data['BookingNumber']
+            self.customer_id = data['CustomerID']
+            self.start_datetime = self.parse_date(data['StartDateTime'])
+            self.end_datetime = self.parse_date(data['EndDateTime'])
+            self.final_total = data['FinalTotal']['Amount']
+            self.status = data['Status']['ID']
+            self.can_cancel = data['CanCancel']
+            print "there are %d treatments" % len(data['AppointmentTreatments'])
+            self.treatments = []
+            for appointment in data['AppointmentTreatments']:
+                treatment = AppointmentItem(appointment)
+                self.treatments.append(treatment)
+            print 'creaeted Itinerary id %d' % self.id
+
+    def is_past(self):
+        return datetime.now() - self.start_datetime > timedelta(minutes=5)
+
+    def duration(self):
+        return self.end_datetime - self.start_datetime
+
+
+class AppointmentManager(object):
+    """
+    work in progress. Should be able to do basic querying operations for appointments
+    """
+
+    user = None
+    client = None
+
+    def __init__(self, user):
+        self.user = user
+
+    def all(self, client):
+        return self.client.get_appointments()
+
+    def get(self, id):
+        return self.client.get_appointment(id)
+
+    def cancel(self, id):
+        return self.client.cancel_appointment(id)
+
+
+class GenericItem(object):
+    product = None
+    quantity = 1
+
+    def __init__(self, product, quantity=1):
+        self.product = product
+        self.quantity = quantity

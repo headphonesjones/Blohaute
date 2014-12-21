@@ -24,7 +24,7 @@
                         <li class="uk-width-1-2 uk-active"><a href="#">Upcoming Appointments</a></li>
                         <li class="uk-width-1-2"><a href="#">Past Appointments</a></li>
                     </ul>
-                    <ul id="shop-single-details" class="uk-switcher uk-margin">
+                    <ul id="shop-single-details" class="uk-switcher">
                        {% include 'profile_snippets/upcoming_appointments.html' %}
                        {% include 'profile_snippets/past_appointments.html' %}
                     </ul>
@@ -33,6 +33,7 @@
         </div>
 
         <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                {% if series %}
             <div class="uk-width-1-1">
                     <h2 class="bh-headline-bottom-border"><span>Your Purchased Bookable Appointments to Schedule</span></h2>
                     <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
@@ -60,13 +61,17 @@
                             {% endfor %}
                         </tbody>
                     </table>    
-                </form>            
+                    <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
+                </form>
+
             </div>
+
             <div class="uk-width-medium-1-2">
-                {% include 'form_snippets/appointment_schedule.html' %}
-                <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
             </div>
         </div>
+                {% else %}
+                {% endif %} 
+
         <div class="uk-width-small-1-1">
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
@@ -110,49 +115,4 @@
 </div>
 
 <br /><br />
-<script type="text/javascript">
-    $(document).ready(function() {
-
-    $("#id_checkout-date").pickadate({
-        disable: {{ unavailable_days }},
-        format: 'ddd mmmm d yyyy',
-        formatSubmit: 'yyyy-mm-dd',
-        hiddenName: true,
-        beforeSend: function() {
-                console.log("beforeSend fired");
-                $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
-        },
-        complete: function() {
-                console.log("complete fired");
-                $( "#loading-container" ).remove();
-                $( "#spinning-loader" ).remove();
-        },
-        onSet: function(context) {
-            $.ajax({
-                type: 'POST',
-                url: '/timesforday',
-                dataType: 'json',
-                data: {
-                    date: $("#id_checkout-date_hidden").val()
-                },
-                success: function(data) {
-                    timePicker.set('disable', data);
-                }
-            });
-        }
-    });
-
-    var timeInput = $('#id_checkout-time').pickatime({
-        formatSubmit: 'HH:i',
-        hiddenName: true,
-        min: [7, 0],
-        max: [20, 0]
-    });
-
-    var timePicker = timeInput.pickatime('picker');
-    timePicker.set('disable', true); //start with all times disabled
-
-});
-    
-</script>
 {% endblock %}

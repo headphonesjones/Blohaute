@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view,
-                           checkout, available_times_for_day, unavailable_days)
+                           checkout, available_times_for_day, unavailable_days, thank_you)
 
 urlpatterns = patterns(
     '',
@@ -14,14 +14,15 @@ urlpatterns = patterns(
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
     url(r'^partners/', TemplateView.as_view(template_name="partners.html"), name='partners'),
     url(r'^thankyou/', TemplateView.as_view(template_name="thankyou.html"), name='thankyou'),
-    
+
     url(r'^cart/', include('changuito.urls')),
     url(r'^checkout/', checkout, name='checkout'),
+    url(r'^thank_you/', thank_you, name='thank_you'),
+
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
     url(r'^timesforday/', available_times_for_day, name='timesforday'),
     url(r'^unavailable_days/', unavailable_days, name='unavailable_days'),
 
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
-
 )

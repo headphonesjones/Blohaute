@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 from django.contrib.auth.views import logout
 from accounts import views
 from django.views.generic.base import TemplateView
@@ -14,7 +14,8 @@ urlpatterns = patterns(
 
     url(r'^welcome/', views.profile_view, name='welcome'),
     url(r'^delete/', views.UserDelete.as_view(), name='delete_user'),
-    url(r'^reschedule/', TemplateView.as_view(template_name="registration/reschedule.html"), name='reschedule'),
-    url(r'^cancel/', views.cancel_view, name='cancel')
-
+    url(r'^appointments/(?P<pk>\d+)/cancel/$', views.cancel_view, name='cancel'),
+    url(r'^appointments/(?P<pk>\d+)/reschedule/$', views.reschedule, name='reschedule'),
+    url(r'^appointments/(?P<pk>\d+)/reschedule/days/$', views.reschedule_days, name='reschedule_days'),
+    url(r'^appointments/(?P<pk>\d+)/reschedule/times/$', views.reschedule_times, name='reschedule_times'),
 )

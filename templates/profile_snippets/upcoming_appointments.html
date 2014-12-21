@@ -1,39 +1,49 @@
 {% load staticfiles %}
 
 <li>
-    <div class="uk-width-1-1">
-        <div class="uk-overflow-container">
-            <table class="uk-table uk-table-middle uk-text-nowrap">
-                <thead>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th class="uk-text-center" id="profile-service-table-head">Service</th>
-                        <th class="uk-text-center">Date / Time</th>
-                        <th class="uk-text-center">Reschedule / Cancel</th>
-                    </tr>
-                </thead>
+    <div class="uk-width-1-1 uk-panel uk-panel-box">
+        {% if future_appointments %}
+            <table class="uk-table uk-table-middle uk-text-nowrap appointment-table">
                 <tbody>
-                    {% if appointments %}
-                        {% for appt in appointments.upcoming %}
+                        {% for appt in future_appointments %}
                         <tr>
-                            <td>
-                                <a href="{% url 'treatment_detail' 'blowouts' %}">
-                                    <img src="{% static 'images/blohaute-next.jpg' %}" width="auto" height="75" alt="Product Image">
-                                </a>
+                            <td style="width:120px;">
+                                <div class="calendar-icon">
+                                    <div class="calendar-icon-month">{{appt.start_datetime|date:"M"}}</div>
+                                    <div class="calendar-icon-date">{{appt.start_datetime|date:"j"}}</div>
+                                    <div class="calendar-icon-time">{{appt.start_datetime|date:"g:i A"}}</div>
+                                </div>
                             </td>
                             <td>
-                                <a class="bh-text-uppercase uk-link-reset" href="{% url 'treatment_detail' 'blowouts' %}">{{ appt.treatment_name }}</a><br>
+                                <ul class="appointment-list">
+                                {% for appt_item in appt.treatments %}
+                                    <li>
+                                        <img src="{{appt_item.treatment.thumb_image_url}}" width=40 />
+                                        One {{appt_item.treatment.name}} {% if appt_item.employee_name %} with {{appt_item.employee_name}} {% endif %}
+                                    </li>
+                                {% endfor %}
+                                </ul>
                             </td>
                             <td class="uk-text-center">
-                                {{ appt.date }}<br />
-                                {{ appt.time }}
+                                <a href="{% url 'reschedule' appt.id %}" class="uk-button bh-button-secondary uk-margin-small-bottom ">
+                                    <i class="uk-icon-calendar"></i> Reschedule
+                                </a>
+                                <br/>
+                                {% if appt.can_cancel %}
+                                    <a href="{% url 'cancel' appt.id %}" class="uk-button bh-button-secondary uk-margin-small-bottom "><i class="uk-icon-times"></i> Cancel</a>
+                                {% endif %}
                             </td>
-                            <td class="uk-text-center"><a href="{% url 'reschedule' %}"><i class="uk-icon-calendar"></i></a><form class="uk-form" method="post" action=" {% url 'cancel' %}">{% csrf_token %}<input type="hidden" name="appointment_id" value="{{ appt.appointment_id }}">&nbsp;&nbsp;&nbsp;&nbsp;<button><i class="uk-icon-times"></i></button></form></td>
                         </tr>
                         {% endfor %}
-                    {% endif %}
                 </tbody>
-            </table>
+            </table>    
+        {% else %}
+
+        <div class="uk-text-center">
+            <h3>You don't have any scheduled appointments</h3> <br/>
+            <a href="{% url 'book' %}" class="uk-button bh-button-secondary">Book One Now</a>
         </div>
+        {% endif %}
+
     </div>
 </li>

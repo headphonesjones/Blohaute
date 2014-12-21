@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import send_mail
+from booking.models import Appointment, AppointmentManager
 
 
 class UserManager(BaseUserManager):
@@ -59,6 +60,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        self._appointments = AppointmentManager(self)
+
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.
@@ -76,3 +81,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    @property
+    def appoinments(self):
+        return self._appointments

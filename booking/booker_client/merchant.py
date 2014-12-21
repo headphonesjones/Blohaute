@@ -153,9 +153,11 @@ class BookerMerchantMixin(object):
         times = set()
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_date = start_date + timedelta(hours=6)  # time zone fix
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        end_date = end_date + timedelta(hours=6)  # time zone fix
         response = self.get_availability(treatments_requested, start_date, end_date)
-        # print("response from times per day %s" % response)
+        print("response from times per day %s" % response)
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
@@ -181,7 +183,10 @@ class BookerMerchantMixin(object):
     def get_available_slots_for_day(self, treatment, date):
         start_date = datetime.strptime(date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_date = start_date + timedelta(hours=6)  # time zone fix
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+        end_date = end_date + timedelta(hours=6)  # time zone fix
+
         availability = self.get_availability(treatment, start_date, end_date)
 
         times = set()

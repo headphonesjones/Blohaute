@@ -94,13 +94,13 @@ class SelectAvailableServiceForm(forms.Form):
     series = None
     treatment = None
     treatment_id = forms.IntegerField(widget=forms.HiddenInput())
-    quantity = forms.IntegerField(min_value=0)
+    quantity = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
         super(SelectAvailableServiceForm, self).__init__(*args, **kwargs)
         self.series = kwargs['initial'].get('series', None)
         self.treatment = self.series.treatment
-        self.fields['quantity'] = forms.IntegerField(max_value=self.series.remaining, min_value=0)
+        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining)]
 
 #use the factory to create the base model for us
 BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra=0)

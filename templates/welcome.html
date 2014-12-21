@@ -33,6 +33,7 @@
         </div>
 
         <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                {% if series %}
             <div class="uk-width-1-1">
                     <h2 class="bh-headline-bottom-border"><span>Your Purchased Bookable Appointments to Schedule</span></h2>
                     <!-- BUTTON FOR PEOPLE WHO DONT WANT TO SCHEDULE RIGHT NOT AND JUST WANT TO STORE THEIR APPOINTMENTS UNDER THEIR ACCOUNT -->
@@ -60,13 +61,17 @@
                             {% endfor %}
                         </tbody>
                     </table>    
-                </form>            
+                    <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
+                </form>
+
             </div>
+
             <div class="uk-width-medium-1-2">
-                {% include 'form_snippets/appointment_schedule.html' %}
-                <button class="uk-button uk-button-success">Schedule Now <i class="uk-icon-calendar"></i></button>
             </div>
         </div>
+                {% else %}
+                {% endif %} 
+
         <div class="uk-width-small-1-1">
             <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">

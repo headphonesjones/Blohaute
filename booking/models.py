@@ -2,13 +2,7 @@ from django.db import models
 from django.contrib.humanize.templatetags.humanize import apnumber
 from django.template.defaultfilters import floatformat
 from adminsortable.models import Sortable
-from datetime import timedelta, datetime, date
-from booking.models import Treatment
-
-
-class Setting(models.Model):
-    access_token = models.CharField(max_length=255, null=True, blank=True)
-    merchant_access_token = models.CharField(max_length=255, null=True, blank=True)
+from datetime import timedelta, datetime
 
 
 class Treatment(Sortable):
@@ -167,11 +161,9 @@ class AppointmentItem(BookerModel):
             self.employee_name = data['Employee']['FirstName']
             self.treatment = Treatment.objects.get(booker_id=self.treatment_id)
             print 'creaeted appointment id %d' % self.appointment_id
-    def __str__(self):
-        return self.treatment + " at " + self.time + " on " + self.date
 
     def __unicode__(self):
-        return self.treatment.name + " at " + self.time + " on " + self.date
+        return "%s at %s on %s" % (self.treatment.name, self.datetime.strftime('H:i'), self.datetime.strftime('yyyy-mm-dd'))
 
 
 class Appointment(BookerModel):
@@ -187,7 +179,6 @@ class Appointment(BookerModel):
 
     def __init__(self, data=None):
         if data:
-
             self.id = data['ID']
             self.booking_number = data['BookingNumber']
             self.customer_id = data['CustomerID']
@@ -203,8 +194,33 @@ class Appointment(BookerModel):
                 self.treatments.append(treatment)
             print 'creaeted Itinerary id %d' % self.id
 
-
     def is_past(self):
         return datetime.now() - self.start_datetime > timedelta(minutes=5)
 
+    def duration(self):
+        return self.end_datetime - self.start_datetime
 
+
+class AppointmentManager(object):
+    user = None
+
+    def __init__(self, user):
+        self.user = user
+
+    def all(self, client):
+        return client.get_appointments()
+
+    def get(self, client, id):
+        return client.get_appointment(id)
+
+    def cancel(self, client, id):
+        return client.cancel_appointment(id)
+
+
+class GenericItem(object):
+    product = None
+    quantity = 1
+
+    def __init__(self, product, quantity=1):
+        self.product = product
+        self.quantity = quantity

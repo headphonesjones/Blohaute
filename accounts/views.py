@@ -14,7 +14,8 @@ from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
                             EmailUpdateForm, PasswordResetForm, SetPasswordForm)
 from booking.forms import AvailableServiceFormset, RescheduleForm
-from booking.models import Treatment
+from booking.models import Treatment, GenericItem
+from booking.views import unavailable_days, available_times_for_day
 
 
 @sensitive_post_parameters()
@@ -114,7 +115,7 @@ def reset_forogtten_password(request):
             client = request.session['client']
             try:
                 #update password on server
-                forms.save()
+                form.save()
                 return HttpResponseRedirect(reverse('welcome'))
             except ValidationError as e:
                 form.add_error(None, e)
@@ -196,7 +197,8 @@ def profile_view(request):
         'email_form': email_form,
         'future_appointments': future_appointments,
         'past_appointments': past_appointments,
-        'service_formset': service_formset
+        'service_formset': service_formset,
+        'series': series
     }
     return render(request, 'welcome.html', context)
 
@@ -207,6 +209,9 @@ def cancel_view(request, pk):
     if request.method == 'POST':
         client = request.session['client']
         try:
+            appointment = client.get_appointment(pk)
+            if appointment.customer_id != client.customer_id:  #quick security check
+                raise Exception
             response = client.cancel_appointment(pk)
             if response['isSuccess'] is False:
                 raise Exception
@@ -223,16 +228,22 @@ def reschedule(request, pk):
     form = RescheduleForm()
     client = request.session['client']
     appointment = client.get_appointment(pk)
-    print appointment
+    request.session['reschedule_items'] = [GenericItem(treatment.treatment) for treatment in appointment.treatments]
+    if request.method == 'POST':
+        form = RescheduleForm(request.POST)
+        if form.is_valid():
+            # update the order / delete the old order and create a new one
+            pass
     return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form':form, 'appointment': appointment})
 
 
 def reschedule_days(request, pk):
-    pass
+    client = request.session['client']
+    return unavailable_days(request, request.session['reschedule_items'])
 
 
 def reschedule_times(request, pk):
-    pass
+    return available_times_for_day(request, request.session['reschedule_items'])
 
 
 class UserDelete(DeleteView):

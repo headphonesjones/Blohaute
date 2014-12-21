@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.forms import ValidationError
-from booking.models import Setting
+from settings.models import Setting
 from datetime import timedelta, datetime
 import calendar
 import time

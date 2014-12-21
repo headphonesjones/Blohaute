@@ -71,10 +71,11 @@ def unavailable_days(request, services_requested=None):
     return HttpResponse(json.dumps(unavailable_days))
 
 
-def available_times_for_day(request):
+def available_times_for_day(request, services_requested=None):
     time_slots = [True]
+    if services_requested is None:
+        services_requested = get_services_from_cart(request)
 
-    services_requested = get_services_from_cart(request)
     client = request.session['client']
     available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
     for time in available_times:

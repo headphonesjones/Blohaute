@@ -2,6 +2,11 @@
 {% load widget_tweaks %}
 <h2 class="bh-headline-bottom-border"><span>Schedule Your Appointment</span></h2>
 <div class="uk-grid" id="appointment-schedule">
+	<div id="appointment-loading" class="loading-container">
+		<div class="loading-bg"></div>
+		<div class="loading-text">Checking Availability</div>
+	</div>
+
 	<div class="uk-width-small-6-10" id="booking-datepicker">Pick Date
 		{% render_field checkout_form.date %}
 		{{ checkout_form.date.errors}}

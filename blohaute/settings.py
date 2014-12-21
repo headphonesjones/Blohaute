@@ -65,6 +65,7 @@ INSTALLED_APPS = (
     #project apps
     'accounts',
     'booking',
+    'settings',
 )
 
 MIDDLEWARE_CLASSES = (

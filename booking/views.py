@@ -151,11 +151,9 @@ def checkout(request):
                     print("sucessful booking")
                     request.cart.clear()
                     if client.user:
-                        return render(request, 'welcome.html', {})
-                    return render(request, 'thankyou.html', {})
+                    return HttpResponseRedirect(reverse('thank_you'))
                 else:
-                    return render(request, 'failure.html', {})
-                    # some kind of error reporting of the appointment booking failure reason then return to checkout below
+                    messages.error(request, "Your booking could not be completed. Please try again.")
             else:
                 print checkout_form.errors
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
@@ -163,6 +161,9 @@ def checkout(request):
                                              'checkout_form': checkout_form,
                                              'cart': request.cart})
 
+
+def thank_you(request):
+    return render(request, 'thank_you.html', {})
 
 def contact_view(request):
     if request.method == "GET":

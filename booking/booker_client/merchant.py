@@ -211,30 +211,30 @@ class BookerMerchantMixin(object):
         """
         return self.get_unavailable_days_in_range(treatments_requested, date.today() + timedelta(days=1), 3)
 
-    def get_itinerary_for_slot(self, treatments_requested, date, time_string):
-        time_string = time_string.split(" ")[0]
-        new_time = map(int, time_string.split(":"))
-        start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
-        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        end_date = end_date + timedelta(hours=6)  # time zone fix
-        # print("start %r and end %r" % (start_date, end_date))
-        response = self.get_availability(treatments_requested[0].product, start_date, end_date)
-
-        # When more than one employee, that 0 below goes away and we iterate
-        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            # avail_time_slot = AvailableTimeSlot()
-            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
-            print(itin_time)
-            if time_string == itin_time:
-                print("match")
-                # emp_list = set()
-                # for time_slot in itinerary_option['TreatmentTimeSlots']:
-                #     emp_list.add(time_slot['EmployeeID'])
-                return itinerary_option
-                # break
-            else:
-                print("nope %s vs %s" % (new_time, itin_time))
-        return None
+    # def get_itinerary_for_slot(self, treatments_requested, date, time_string):
+    #     time_string = time_string.split(" ")[0]
+    #     new_time = map(int, time_string.split(":"))
+    #     start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
+    #     end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
+    #     end_date = end_date + timedelta(hours=6)  # time zone fix
+    #     # print("start %r and end %r" % (start_date, end_date))
+    #     response = self.get_availability(treatments_requested[0].product, start_date, end_date)
+    #
+    #     # When more than one employee, that 0 below goes away and we iterate
+    #     for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
+    #         # avail_time_slot = AvailableTimeSlot()
+    #         itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+    #         print(itin_time)
+    #         if time_string == itin_time:
+    #             print("match")
+    #             # emp_list = set()
+    #             # for time_slot in itinerary_option['TreatmentTimeSlots']:
+    #             #     emp_list.add(time_slot['EmployeeID'])
+    #             return itinerary_option
+    #             # break
+    #         else:
+    #             print("nope %s vs %s" % (new_time, itin_time))
+    #     return None
 
     def get_itinerary_for_slot_multiple(self, treatments_requested, date, time_string):
         time_string = time_string.split(" ")[0]

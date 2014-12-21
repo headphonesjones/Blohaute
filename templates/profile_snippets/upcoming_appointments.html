@@ -30,11 +30,7 @@
                                 </a>
 
                                 {% if appt.can_cancel %}
-                                    <form class="uk-form" method="post" action=" {% url 'cancel' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="appointment_id" value="{{ appt.appointment_id }}">
-                                        <button class="uk-button bh-button-secondary"><i class="uk-icon-times"></i> Cancel</button>
-                                    </form>
+                                    <a href="{% url 'cancel' appt.id %}" class="uk-button bh-button-secondary uk-margin-small-bottom "><i class="uk-icon-times"></i> Cancel</a>
                                 {% endif %}
                             </td>
                         </tr>

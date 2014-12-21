@@ -81,6 +81,17 @@
                     {# if paying with series, order summary left, empty div right#}
                     {% if cart.cart.needs_payment %}
                     <div class="uk-width-medium-1-2">
+                        {% if user.is_authenticated %}
+                        {% else %}
+                        <h2>Create an account password so you can return to login and manage your appointments.</h2>
+                        <div class="uk-width-medium-1-2" id="order-summary-container">
+                            <label class="uk-form-label" for="password-set">Password</label>
+                            <input type="text" id="password-set" class="uk-form-large uk-width-1-1">
+                            <label class="uk-form-label" for="password-set-confirm">Confirm Password</label>
+                            <input type="text" id="password-set-confirm" class="uk-form-large uk-width-1-1">
+                        </div>
+                        {% endif %}
+
                         {% include 'form_snippets/appointment_payment.html' %}
                     </div>
                     {% endif %}

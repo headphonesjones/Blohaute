@@ -90,7 +90,7 @@ class Item(models.Model):
         if self.series_id:
             return "Package"
         else:
-            return "$%s %s" % (floatformat(self.total_price, -2), self.product.price_units())
+            return "$%s %s" % (floatformat(self.total_price(), -2), self.product.price_units())
 
     # product
     def get_product(self):

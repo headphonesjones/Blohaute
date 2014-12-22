@@ -107,7 +107,7 @@ class SelectAvailableServiceForm(forms.Form):
         super(SelectAvailableServiceForm, self).__init__(*args, **kwargs)
         self.series = kwargs['initial'].get('series', None)
         self.treatment = self.series.treatment
-        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining)]
+        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining+1)]
 
 #use the factory to create the base model for us
 BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra=0)

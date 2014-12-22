@@ -48,6 +48,9 @@ class Cart(models.Model):
             print("NEEDS PAY id %s " % item.series_id)
         return all(item.series_id is None for item in self.item_set.all())
 
+    def has_schedule_only_items(self):
+        return any(item.series_id is not None for item in self.item_set.all())
+
 class ItemManager(models.Manager):
     def get(self, *args, **kwargs):
         if 'product' in kwargs:

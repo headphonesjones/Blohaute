@@ -64,6 +64,11 @@ class CartProxy:
         return cart
 
     def add(self, product, unit_price, quantity=1, series_id=None):
+        #mode switch when adding items
+        if series_id and self.cart.needs_payment():
+            self.clear()
+        if series_id is None and self.cart.has_schedule_only_items():
+            self.clear()
         try:
             ctype = ContentType.objects.get_for_model(type(product), for_concrete_model=False)
             item = models.Item.objects.get(cart=self.cart, product=product, content_type=ctype)

@@ -195,6 +195,14 @@ nav > div > ul > li > .active{
   }
 }
 
+#home-image{
+  width: 100%;
+}
+#home_image_overlay{
+  position: absolute;
+  top: 20%;
+}
+
 
 
 

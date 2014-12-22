@@ -5,13 +5,15 @@
 
 {% block content %}
 <div class="home_main_image">
-    <img src="{% static 'images/fbg.jpg' %}" id="home-image" width="1200" height="auto" alt="Blohaute Home Page" data-demo-style>
-    <p class="bh-teaser-subtitle-primary bh-text-uppercase uk-animation-slide-top bh-animation-delay-300">Treat yourself, don't cheat yourself</p>
-    <h1 class="bh-teaser-headline uk-margin-remove uk-animation-fade bh-animation-delay-200">Lust-have styles</h1>
-    <p class="bh-teaser-subtitle-secondary bh-text-uppercase uk-visible-large uk-animation-slide-bottom bh-animation-delay-300">to your front door</p>
-    <p class="uk-margin-bottom-remove">
-        <a href="{% url 'book' %}" class="uk-button uk-button-large bh-button-secondary uk-animation-fade bh-animation-delay-500">Book Now</a>
-    </p>
+    <img src="{% static 'images/fbg.jpg' %}" id="home-image" alt="Blohaute Home Page">
+    <div class="home_image_overlay">
+        <p class="bh-teaser-subtitle-primary bh-text-uppercase uk-animation-slide-top bh-animation-delay-300">Treat yourself, don't cheat yourself</p>
+        <h1 class="bh-teaser-headline uk-margin-remove uk-animation-fade bh-animation-delay-200">Lust-have styles</h1>
+        <p class="bh-teaser-subtitle-secondary bh-text-uppercase uk-visible-large uk-animation-slide-bottom bh-animation-delay-300">to your front door</p>
+        <p class="uk-margin-bottom-remove">
+            <a href="{% url 'book' %}" class="uk-button uk-button-large bh-button-secondary uk-animation-fade bh-animation-delay-500">Book Now</a>
+        </p>
+    </div>
 </div>
 <div class="bh-position-slideshow" data-uk-slideshow="{animation: 'fade', duration: 700}">
     <ul class="uk-slideshow bh-slideshow">

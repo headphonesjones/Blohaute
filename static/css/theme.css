@@ -208,8 +208,12 @@ nav > div > ul > li > .active{
   }
 }
 
+@media (max-width: 768px) {
+  .home_image_overlay{
+    zoom: .7;
+  }
 
-
+}
 
 /* Links
  ========================================================================== */

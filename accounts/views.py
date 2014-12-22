@@ -1,11 +1,16 @@
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, \
-    update_session_auth_hash
+    update_session_auth_hash, REDIRECT_FIELD_NAME
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import resolve_url
+from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import login_required
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.template.response import TemplateResponse
+from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -86,6 +91,43 @@ def login(request):
                 form.add_error(None, e)
 
     return render(request, 'registration/login_page.html', {'login_form': form})
+
+
+
+def logout(request, next_page=None,
+           template_name='registration/logged_out.html',
+           redirect_field_name=REDIRECT_FIELD_NAME,
+           current_app=None, extra_context=None):
+    """
+    Logs out the user and displays 'You are logged out' message.
+    """
+    auth_logout(request)
+    request.cart.clear()
+    if next_page is not None:
+        next_page = resolve_url(next_page)
+
+    if (redirect_field_name in request.POST or
+            redirect_field_name in request.GET):
+        next_page = request.POST.get(redirect_field_name,
+                                     request.GET.get(redirect_field_name))
+        # Security check -- don't allow redirection to a different host.
+        if not is_safe_url(url=next_page, host=request.get_host()):
+            next_page = request.path
+
+    if next_page:
+        # Redirect to this page until the session has been cleared.
+        return HttpResponseRedirect(next_page)
+
+    current_site = get_current_site(request)
+    context = {
+        'site': current_site,
+        'site_name': current_site.name,
+        'title': _('Logged out')
+    }
+    if extra_context is not None:
+        context.update(extra_context)
+    return TemplateResponse(request, template_name, context,
+        current_app=current_app)
 
 
 @csrf_protect

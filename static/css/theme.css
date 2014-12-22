@@ -183,6 +183,10 @@ nav > div > ul > li > .active{
 .bh-grid-img-cover > * > img.bh-img-height-1-1 {
     height: 200%;
 }
+#login-thank-you-link{
+  text-decoration: underline;
+  color: #9e314e !important;
+}
 
 
 

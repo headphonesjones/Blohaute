@@ -187,6 +187,26 @@ nav > div > ul > li > .active{
   text-decoration: underline;
   color: #9e314e !important;
 }
+.home_main_image{
+  text-align: center;
+
+  h1,p,h2{
+    text-align: center;
+  }
+}
+
+#home-image{
+  width: 100%;
+}
+.home_image_overlay{
+  position: relative;
+  bottom: 575px;
+  text-align: center;
+
+  h1,p,h2{
+    text-align: center;
+  }
+}
 
 
 

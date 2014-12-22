@@ -115,6 +115,18 @@ $(document).ready(function() {
 
     var datesLoaded = false;
 
+    var $idCheckoutTime = $('#id_checkout-time');
+    var timeInput = $idCheckoutTime.pickatime({
+        formatSubmit: 'HH:i',
+        hiddenName: true,
+        min: [7, 0],
+        max: [20, 0],
+        interval: 15
+    });
+
+    var timePicker = timeInput.pickatime('picker');
+    timePicker.set('disable', true); //start with all times disabled
+
     var $idCheckout = $("#id_checkout-date");
     var datePicker = $idCheckout.pickadate({
         disable: null,
@@ -164,17 +176,6 @@ $(document).ready(function() {
     }
     picker.open(false);
 
-    var $idCheckoutTime = $('#id_checkout-time');
-    var timeInput = $idCheckoutTime.pickatime({
-        formatSubmit: 'HH:i',
-        hiddenName: true,
-        min: [7, 0],
-        max: [20, 0],
-        interval: 15
-    });
-
-    var timePicker = timeInput.pickatime('picker');
-    timePicker.set('disable', true); //start with all times disabled
 
     if ($idCheckoutTime.val() != "") {
         timePicker.set('select', $idCheckoutTime.val(), { format: 'HH:i' })

@@ -174,7 +174,7 @@ def checkout(request):
                     print("successful booking")
                     request.cart.clear()
                     if client.user:
-                        request.session['appointments'] = [Appointment(appointment) for appointment in appointments]
+                        request.session['appointments'] = appointments
                         return HttpResponseRedirect(reverse('thank_you'))
                 else:
                     messages.error(request, "Your booking could not be completed. Please try again.")

@@ -181,10 +181,11 @@ def profile_view(request):
                 schedule_items = []
                 for form in service_formset:
                     quantity = form.cleaned_data['quantity']
-                    if quantity >  0:
+                    if quantity > 0:
                         treatment = Treatment.objects.get(pk=form.cleaned_data['treatment_id'])
                         schedule_items.append({'treatment': treatment, quantity: 'quantity', 'source': form.series})
-                        cart.add(treatment, treatment.price, quantity)
+                        print("Series id from ACCOUNTS IS %s" % form.series.series_id)
+                        cart.add(treatment, treatment.price, quantity, form.series.series_id)
 
                 return HttpResponseRedirect(reverse('checkout'))
 

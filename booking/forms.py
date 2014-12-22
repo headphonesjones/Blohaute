@@ -63,11 +63,11 @@ class CheckoutForm(forms.Form):
                             widget=forms.Textarea(attrs={'rows': 3}))
 
     #billing Information
-    name_on_card = forms.CharField(required=True, error_messages={'required': 'Enter the name on your credit card'})
-    card_number = CreditCardField(required=True, error_messages={'required': 'Enter your credit card number'})
-    expiry_date = ExpiryDateField(required=True)
-    card_code = VerificationValueField(required=True, label="CVV")
-    billing_zip_code = USZipCodeField(label="Billing Zip", error_messages={'required': 'ZIP is required'})
+    name_on_card = forms.CharField(required=False, error_messages={'required': 'Enter the name on your credit card'})
+    card_number = CreditCardField(required=False, error_messages={'required': 'Enter your credit card number'})
+    expiry_date = ExpiryDateField(required=False)
+    card_code = VerificationValueField(required=False, label="CVV")
+    billing_zip_code = USZipCodeField(required=False, label="Billing Zip", error_messages={'required': 'ZIP is required'})
 
     email_address = forms.EmailField()
     phone_number = USPhoneNumberField()

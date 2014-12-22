@@ -63,14 +63,14 @@ class CartProxy:
         request.session[CART_ID] = cart.id
         return cart
 
-    def add(self, product, unit_price, quantity=1, series_id = None):
+    def add(self, product, unit_price, quantity=1, series_id=None):
         try:
             ctype = ContentType.objects.get_for_model(type(product), for_concrete_model=False)
             item = models.Item.objects.get(cart=self.cart, product=product, content_type=ctype)
         except models.Item.DoesNotExist:
             item = models.Item()
             item.cart = self.cart
-            item.cart.series_id = series_id
+            item.series_id = series_id
             item.product = product
             item.unit_price = unit_price
             item.quantity = quantity

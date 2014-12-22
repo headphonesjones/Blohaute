@@ -61,7 +61,7 @@ class BookerMerchantMixin(object):
         return Appointment(self.process_response(response)['Appointment'])
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
-                         email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
+                         email, phone, payment_items, notes):
         if self.customer:
             adjusted_customer = self.customer.copy()
         else:
@@ -84,6 +84,7 @@ class BookerMerchantMixin(object):
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
         appointments = []
+        print("payment items = %s" % payment_items)
         for idx, treatment in enumerate(itinerary):
 
             end_time_json = self.format_date_for_booker_json(
@@ -107,15 +108,15 @@ class BookerMerchantMixin(object):
                 'AppointmentDate': treatment['StartDateTime'],  # Date needs to be itinerary start date
                 'AppointmentPayment': {
                     'CouponCode': '',
-                    'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
-                                                                            name_on_card)
+                    'PaymentItem': payment_items[idx]
                 },
                 'Customer': adjusted_customer,
                 'Notes': notes
             }
 
-            # print(params)
+            print("BOOK PARAMS IS %s" % params)
             response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
+            print(response)
             appointment = self.process_response(response)
             # print("appt result is: %s" % appointment)
 
@@ -196,6 +197,7 @@ class BookerMerchantMixin(object):
         return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
 
     def get_itinerary_for_slot_multiple(self, treatments_requested, date, time_string):
+        print("get itin")
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
         start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)

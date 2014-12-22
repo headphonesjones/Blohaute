@@ -89,17 +89,28 @@ def available_times_for_day(request, services_requested=None):
 def get_services_from_cart(request):
     return [item for item in request.cart if isinstance(item.product, Treatment)]
 
+def get_payment_from_cart(request):
+    return [item for item in request.cart if isinstance(item.product, Treatment)]
+
 
 @csrf_protect
 def checkout(request):
     if request.cart.is_empty():
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
 
+    print("cart stuff is %s" % request.cart.cart)
+
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout", user=request.user)
 
+    print("after forms")
+
     client = request.session['client']
+    services_requested = get_services_from_cart(request)
+    print("after serv")
+    for item in services_requested:
+        print("item is %r %s" % (item, item.series_id))
 
     if request.method == 'POST':
         if 'login-password' in request.POST:
@@ -130,23 +141,34 @@ def checkout(request):
 
         if 'checkout-address' in request.POST:
             checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user)
+            print("in form")
+            print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():
 
                 data = checkout_form.cleaned_data
-                services_requested = get_services_from_cart(request)
 
                 itinerary = client.get_itinerary_for_slot_multiple(services_requested,
                                                           data['date'], data['time'])
+                payment_items = []
                 print("itin is %s" % itinerary)
                 # get payment method
+                for item in services_requested:
+                    print("item is %r %s" % (item, item.series_id))
+                    if item.series_id:
+                        payment_items.append(client.get_booker_series_payment_item(item.series_id))
+                    else:
+                        payment_items.append(client.get_booker_credit_card_payment_item(data['billing_zip_code'],
+                                                                                        data['card_code'],
+                                                                                        data['card_number'],
+                                                                                        data['expiry_date'].month,
+                                                                                        data['expiry_date'].year,
+                                                                                        data['name_on_card']))
+                print("final payment items is %s" % payment_items)
                 appointments = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
-                                                      data['city'], data['state'], data['zip_code'],
-                                                      data['email_address'], data['phone_number'], data['card_number'],
-                                                      data['name_on_card'], data['expiry_date'].year,
-                                                      data['expiry_date'].month, data['card_code'],
-                                                      data['billing_zip_code'], data['notes'])
-                # print("appt result is: %s" % appointment)
-                # print("success?:  %s" % )
+                                                       data['city'], data['state'], data['zip_code'],
+                                                       data['email_address'], data['phone_number'], payment_items, data['notes'])
+                print("appt result is: %s" % appointments)
+                print("success?:  %s" % appointments[0]['IsSuccess'])
                 if appointments is not None:
                     print("successful booking")
                     request.cart.clear()
@@ -157,6 +179,7 @@ def checkout(request):
                     messages.error(request, "Your booking could not be completed. Please try again.")
             else:
                 print checkout_form.errors
+    # print("cart is %s" % request.cart.cart)
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,
                                              'checkout_form': checkout_form,

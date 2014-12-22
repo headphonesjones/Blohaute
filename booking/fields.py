@@ -22,11 +22,12 @@ class CreditCardField(forms.CharField):
     }
 
     def clean(self, value):
-        value = value.replace(' ', '').replace('-', '')
-        if self.required and not value:
-            raise forms.ValidationError(self.error_messages['required'])
-        if value and not re.match(CREDIT_CARD_RE, value):
-            raise forms.ValidationError(self.error_messages['invalid'])
+        if value is not None:
+            value = value.replace(' ', '').replace('-', '')
+            if self.required and not value:
+                raise forms.ValidationError(self.error_messages['required'])
+            if value and not re.match(CREDIT_CARD_RE, value):
+                raise forms.ValidationError(self.error_messages['invalid'])
         return value
 
 
@@ -71,10 +72,13 @@ class ExpiryDateField(forms.MultiValueField):
         self.widget = ExpiryDateWidget(widgets=[fields[0].widget, fields[1].widget])
 
     def clean(self, value):
-        expiry_date = super(ExpiryDateField, self).clean(value)
-        if date.today() > expiry_date:
-            raise forms.ValidationError(self.error_messages['date_passed'])
-        return expiry_date
+        if value is not None:
+            expiry_date = super(ExpiryDateField, self).clean(value)
+            if expiry_date is not None:
+                if date.today() > expiry_date:
+                    raise forms.ValidationError(self.error_messages['date_passed'])
+                return expiry_date
+        return None
 
     def compress(self, data_list):
         if data_list:
@@ -109,9 +113,10 @@ class VerificationValueField(forms.CharField):
     }
 
     def clean(self, value):
-        value = value.replace(' ', '')
-        if not value and self.required:
-            raise forms.ValidationError(self.error_messages['required'])
-        if value and not re.match(VERIFICATION_VALUE_RE, value):
-            raise forms.ValidationError(self.error_messages['invalid'])
+        if value is not None:
+            value = value.replace(' ', '')
+            if not value and self.required:
+                raise forms.ValidationError(self.error_messages['required'])
+            if value and not re.match(VERIFICATION_VALUE_RE, value):
+                raise forms.ValidationError(self.error_messages['invalid'])
         return value

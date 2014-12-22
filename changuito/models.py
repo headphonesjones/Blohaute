@@ -44,6 +44,8 @@ class Cart(models.Model):
         return sum(i.quantity for i in self.item_set.all())
 
     def needs_payment(self):
+        for item in self.item_set.all():
+            print("NEEDS PAY id %s " % item.series_id)
         return all(item.series_id is None for item in self.item_set.all())
 
 class ItemManager(models.Manager):
@@ -74,8 +76,8 @@ class Item(models.Model):
         app_label = 'changuito'
 
     def __unicode__(self):
-        return u'{0} units of {1} {2}'.format(self.quantity, self.product.__class__.__name__,
-                                              self.product.pk)
+        return u'{0} units of {1} series is {2}'.format(self.quantity, self.product.__class__.__name__,
+                                              self.series_id)
 
     def total_price(self):
         return float(self.quantity) * float(self.unit_price)

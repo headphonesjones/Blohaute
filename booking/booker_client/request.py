@@ -39,6 +39,7 @@ class BookerRequest(Request):
         self.data = json.dumps(self.params)
         self.original_params = self.params
         self.params = None
+        print("post data: %s" % self.data)
         return self.send()
 
     def put(self):

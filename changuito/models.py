@@ -38,7 +38,7 @@ class Cart(models.Model):
         if any(item.series_id is not None for item in self.item_set.all()):
             return "Package"
         else:
-            return "$%s" % (floatformat(self.total_price, -2))
+            return "$%s" % (floatformat(self.total_price(), -2))
 
     def total_quantity(self):
         return sum(i.quantity for i in self.item_set.all())

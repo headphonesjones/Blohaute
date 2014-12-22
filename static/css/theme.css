@@ -198,9 +198,9 @@ nav > div > ul > li > .active{
 #home-image{
   width: 100%;
 }
-#home_image_overlay{
-  position: fixed;
-  top: 20%;
+.home_image_overlay{
+  position: relative;
+  bottom: 575px;
   text-align: center;
 
   h1,p,h2{

@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, QuickBookForm, ContactForm, CheckoutForm, CouponForm
-from booking.models import Treatment
+from booking.models import Treatment, Appointment
 from accounts.forms import AuthenticationRememberMeForm
 from changuito.models import Cart
 import json
@@ -174,7 +174,7 @@ def checkout(request):
                     print("successful booking")
                     request.cart.clear()
                     if client.user:
-                        request.session['appointments'] = appointments
+                        request.session['appointments'] = [Appointment(appointment) for appointment in appointments]
                         return HttpResponseRedirect(reverse('thank_you'))
                 else:
                     messages.error(request, "Your booking could not be completed. Please try again.")
@@ -187,11 +187,9 @@ def checkout(request):
                                              'cart': request.cart})
 
 
-def thank_you(request):
-    if request.method == "GET":
-        form = ContactForm()
-
-        return render(request, 'thankyou.html', {'contact_form': form})
+def thank_you(request, pk):
+    appointments = request.session['appointments']
+    form = ContactForm()
 
     if request.method == "POST":
         form = ContactForm(request.POST)
@@ -202,7 +200,7 @@ def thank_you(request):
 
             messages.success(request, 'Thank you. Your message has been sent successfully')
             form = ContactForm()
-    return render(request, 'thankyou.html', {'contact_form': form})
+    return render(request, 'thankyou.html', {'contact_form': form, 'appointments': appointments})
 
 
 def contact_view(request):

@@ -54,7 +54,7 @@
             {% endfor %}
             <tr>
                 <td colspan=2><b>Order Total Price</b></td>
-                <td class="uk-text-center"><b>${{cart.cart.total_price|floatformat:"-2"}}</b></td>
+                <td class="uk-text-center">{{cart.cart.total_price_display}}</b></td>
             </tr>
 
         </tbody>

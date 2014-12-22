@@ -89,6 +89,7 @@ def available_times_for_day(request, services_requested=None):
 def get_services_from_cart(request):
     return [item for item in request.cart if isinstance(item.product, Treatment)]
 
+
 def get_payment_from_cart(request):
     return [item for item in request.cart if isinstance(item.product, Treatment)]
 
@@ -102,7 +103,7 @@ def checkout(request):
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
-    checkout_form = CheckoutForm(prefix="checkout", user=request.user)
+    checkout_form = CheckoutForm(prefix="checkout", user=request.user, payment_required=request.cart.cart.needs_payment())
 
     print("after forms")
 
@@ -140,7 +141,7 @@ def checkout(request):
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
         if 'checkout-address' in request.POST:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user)
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user, payment_required=request.cart.cart.needs_payment())
             print("in form")
             print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():

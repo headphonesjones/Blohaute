@@ -63,11 +63,11 @@ class CheckoutForm(forms.Form):
                             widget=forms.Textarea(attrs={'rows': 3}))
 
     #billing Information
-    name_on_card = forms.CharField(required=False, error_messages={'required': 'Enter the name on your credit card'})
-    card_number = CreditCardField(required=False, error_messages={'required': 'Enter your credit card number'})
-    expiry_date = ExpiryDateField(required=False)
-    card_code = VerificationValueField(required=False, label="CVV")
-    billing_zip_code = USZipCodeField(required=False, label="Billing Zip", error_messages={'required': 'ZIP is required'})
+    name_on_card = forms.CharField(required=True, error_messages={'required': 'Enter the name on your credit card'})
+    card_number = CreditCardField(required=True, error_messages={'required': 'Enter your credit card number'})
+    expiry_date = ExpiryDateField(required=True)
+    card_code = VerificationValueField(required=True, label="CVV")
+    billing_zip_code = USZipCodeField(required=True, label="Billing Zip", error_messages={'required': 'ZIP is required'})
 
     email_address = forms.EmailField()
     phone_number = USPhoneNumberField()
@@ -78,6 +78,7 @@ class CheckoutForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
+        self.payment_required = kwargs.pop('payment_required')
         super(CheckoutForm, self).__init__(*args, **kwargs)
         if self.user.is_authenticated():
             self.fields['first_name'].widget = forms.HiddenInput()
@@ -88,6 +89,12 @@ class CheckoutForm(forms.Form):
             self.fields['email_address']. initial = self.user.email
             self.fields['phone_number'].widget = forms.HiddenInput()
             self.fields['phone_number'].initial = self.user.phone_number
+        if self.payment_required is False:
+            self['name_on_card'].required = False
+            self['card_number'].required = False
+            self['expiry_date'].required = False
+            self['card_code'].required = False
+            self['billing_zip_code'].required = False
 
 
 class SelectAvailableServiceForm(forms.Form):

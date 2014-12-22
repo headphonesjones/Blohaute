@@ -179,12 +179,14 @@ class Appointment(BookerModel):
 
     def __init__(self, data=None):
         if data:
+            print('data is %s' % data)
             self.id = data['ID']
             self.booking_number = data['BookingNumber']
             self.customer_id = data['CustomerID']
             self.start_datetime = self.parse_date(data['StartDateTime'])
             self.end_datetime = self.parse_date(data['EndDateTime'])
             self.final_total = data['FinalTotal']['Amount']
+            print("STATUS FOUND IS %s" % data['Status'])
             self.status = data['Status']['ID']
             self.can_cancel = data['CanCancel']
             print "there are %d treatments" % len(data['AppointmentTreatments'])

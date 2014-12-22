@@ -61,7 +61,7 @@ class BookerMerchantMixin(object):
         return Appointment(self.process_response(response)['Appointment'])
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
-                         email, phone, payment_items, notes):
+                         email, phone, payment_item, notes):
         if self.customer:
             adjusted_customer = self.customer.copy()
         else:
@@ -83,52 +83,44 @@ class BookerMerchantMixin(object):
 
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
-        appointments = []
-        print("payment items = %s" % payment_items)
+        treatments = []
+        first_treatment = itinerary[0]
         for idx, treatment in enumerate(itinerary):
 
             end_time_json = self.format_date_for_booker_json(
                 self.parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
-            treatmentDTO = {
+            treatments.append({
                 'TreatmentID': treatment['TreatmentID'],
                 'StartTime': treatment['StartDateTime'],
                 'RoomID': treatment['RoomID'],
                 'EndTime': end_time_json,
                 'EmployeeID': treatment['EmployeeID']
-            }
-            # if idx == len(itinerary) - 1:
-            #     add a busy period at end of itin
-            #     treatmentDTO['GapFinishDuration'] = 45
-            params = {
-                'LocationID': self.location_id,
-                'ResourceTypeID': 1,
-                'AppointmentTreatmentDTOs': [
-                    treatmentDTO
-                ],
-                'AppointmentDate': treatment['StartDateTime'],  # Date needs to be itinerary start date
-                'AppointmentPayment': {
-                    'CouponCode': '',
-                    'PaymentItem': payment_items[idx]
-                },
-                'Customer': adjusted_customer,
-                'Notes': notes
-            }
+            })
 
-            print("BOOK PARAMS IS %s" % params)
-            response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
-            print(response)
-            appointment = self.process_response(response)
-            # print("appt result is: %s" % appointment)
+        params = {
+            'LocationID': self.location_id,
+            'ResourceTypeID': 1,
+            'AppointmentTreatmentDTOs': treatments,
+            'AppointmentDate': first_treatment['StartDateTime'],  # Date needs to be itinerary start date
+            'AppointmentPayment': {
+                'CouponCode': '',
+                'PaymentItem': payment_item
+            },
+            'Customer': adjusted_customer,
+            'Notes': notes
+        }
 
-            success = appointment['IsSuccess']
-            # print("success?:  %s" % success)
-            if not success:
-                print("On no, we died on booking, params was %s and appointment was %s" % (params, appointment))
-                return None
-            else:
-                appointments.append(appointment)
+        print("BOOK PARAMS IS %s" % params)
+        response = BookerMerchantRequest('/appointment', self.merchant_token, params).post()
+        print(response)
+        appointment = self.process_response(response)
 
-        return appointments
+        success = appointment['IsSuccess']
+        if not success:
+            print("On no, we died on booking, params was %s and appointment was %s" % (params, appointment))
+            return None
+
+        return Appointment(appointment['Appointment'])
 
     def cancel_appointment(self, appointment_id):
         params = {

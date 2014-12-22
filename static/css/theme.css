@@ -187,13 +187,12 @@ nav > div > ul > li > .active{
   text-decoration: underline;
   color: #9e314e !important;
 }
+.home_main_image{
+  text-align: center;
 
-.banner { position: relative; overflow: auto; }
-.banner li { list-style: none; }
-.banner ul li { float: left; }
-
-#slide1{
-  background-image: url({% static 'images/fbg.jpg' %});
+  h1,p,h2{
+    text-align: center;
+  }
 }
 
 

@@ -37,9 +37,6 @@
                                 <tr>
                                 <td colspan="6">There are no items in the shopping cart. Add items to your cart to book and schedule your appointment(s).</td>
                                 </tr>
-                                <br /><br /><br />
-                                {% treatment_slider %}
-
                                 {% else %}
                                 {% for item in cart %}
                                 <tr>
@@ -81,8 +78,11 @@
 
                             </tbody>
                         </table>
+
                     </div>
                 </div>
+                                <br /><br /><br />
+                                {% treatment_slider %}
 
                 <div class="uk-push-1-2 uk-width-medium-1-2">
                     <div class="uk-panel uk-panel-box uk-panel-header">

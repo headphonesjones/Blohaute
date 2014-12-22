@@ -179,7 +179,7 @@ def checkout(request):
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:
-                    email_form.add_error(None, error)
+                    checkout_form.add_error(None, error)
             else:
                 print checkout_form.errors
     # print("cart is %s" % request.cart.cart)

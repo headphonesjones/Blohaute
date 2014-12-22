@@ -199,8 +199,13 @@ nav > div > ul > li > .active{
   width: 100%;
 }
 #home_image_overlay{
-  position: absolute;
+  position: fixed;
   top: 20%;
+  text-align: center;
+
+  h1,p,h2{
+    text-align: center;
+  }
 }
 
 

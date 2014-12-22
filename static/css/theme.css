@@ -188,6 +188,14 @@ nav > div > ul > li > .active{
   color: #9e314e !important;
 }
 
+.banner { position: relative; overflow: auto; }
+.banner li { list-style: none; }
+.banner ul li { float: left; }
+
+#slide1{
+  background-image: url("{% static 'images/fbg.jpg' %}");
+}
+
 
 
 

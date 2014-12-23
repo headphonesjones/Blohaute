@@ -166,10 +166,9 @@ def checkout(request):
                                                           data['notes'])
                     if appointment is not None:
                         request.cart.clear()
-                        if client.user:
-                            print("redirecting to the view with appointment %s" % appointment)
-                            request.session['appointment'] = appointment
-                            return HttpResponseRedirect(reverse('thankyou'))
+                        print("redirecting to the view with appointment %s" % appointment)
+                        request.session['appointment'] = appointment
+                        return HttpResponseRedirect(reverse('thankyou'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:
@@ -182,7 +181,7 @@ def checkout(request):
                                              'cart': request.cart})
 
 
-def thank_you(request, pk):
+def thank_you(request):
     appointment = request.session['appointment']
     print("in view appointment is: %s" % appointment)
     form = ContactForm()

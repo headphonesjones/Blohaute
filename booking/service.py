@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.forms import ValidationError
 from settings.models import Setting
-from datetime import timedelta, datetime
 import calendar
-import time
+from booking.booker_client.dates import *
 from booking.booker_client.merchant import BookerMerchantMixin
 from booking.booker_client.customer import BookerCustomerMixin
 from booking.booker_client.request import BookerRequest, BookerAuthedRequest, BookerMerchantRequest
@@ -98,29 +97,9 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
                    formatted_response['ErrorMessage']))
         return formatted_response
 
-    def parse_as_time(self, date_time):
-        return date_time.strftime("%H:%M")
-
-    def parse_as_date(self, date_time):
-        return date_time.strftime("%Y-%m-%d")
-
-    def format_date_for_booker_json(self, start_date):
-        start_date = start_date - timedelta(hours=1)
-        return "/Date(%s%s)/" % (int(time.mktime(start_date.timetuple()) * 1000), "-0600")
-
     def date_range(self, start_date, end_date):
         for n in range(int((end_date - start_date).days)):
             yield start_date + timedelta(n)
-
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        # print("hours is what? %s" % hours)
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
 
     def credit_card_type(self, credit_card_number):
         first_character = int(credit_card_number[0])
@@ -137,7 +116,7 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
             'CreditCard': {
                 'BillingZip': billingzip,
                 'NameOnCard': name_on_card,
-                'ExpirationDate': self.format_date_for_booker_json(
+                'ExpirationDate': format_date_for_booker_json(
                     datetime(expyear, expmonth, calendar.monthrange(expyear, expmonth)[1])),
                 'Number': ccnum,
                 'SecurityCode': cccode,

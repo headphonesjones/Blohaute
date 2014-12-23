@@ -99,17 +99,12 @@ def checkout(request):
     if request.cart.is_empty():
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
 
-    print("cart stuff is %s" % request.cart.cart)
-
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout", user=request.user, payment_required=request.cart.cart.needs_payment())
 
-    print("after forms")
-
     client = request.session['client']
     services_requested = get_services_from_cart(request)
-    print("after serv")
     for item in services_requested:
         print("item is %r %s" % (item, item.series_id))
 
@@ -169,13 +164,11 @@ def checkout(request):
                                                           data['city'], data['state'], data['zip_code'],
                                                           data['email_address'], data['phone_number'], payment_item,
                                                           data['notes'])
-                    print("appt result is: %s" % appointment)
                     if appointment is not None:
-                        print("successful booking")
                         request.cart.clear()
                         if client.user:
+                            print("redirecting to the view with appointment %s" % appointment)
                             request.session['appointment'] = appointment
-                            print("for the session, I put in: %s" % appointment)
                             return HttpResponseRedirect(reverse('thankyou'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
@@ -190,7 +183,8 @@ def checkout(request):
 
 
 def thank_you(request, pk):
-    appointments = request.session['appointments']
+    appointment = request.session['appointment']
+    print("in view appointment is: %s" % appointment)
     form = ContactForm()
 
     if request.method == "POST":
@@ -202,7 +196,7 @@ def thank_you(request, pk):
 
             messages.success(request, 'Thank you. Your message has been sent successfully')
             form = ContactForm()
-    return render(request, 'thankyou.html', {'contact_form': form, 'appointments': appointments})
+    return render(request, 'thankyou.html', {'contact_form': form, 'appointment': appointment})
 
 
 def contact_view(request):

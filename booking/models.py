@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.humanize.templatetags.humanize import apnumber
 from django.template.defaultfilters import floatformat
 from adminsortable.models import Sortable
-from datetime import timedelta, datetime
+from booking.booker_client.dates import *
 
 
 class Treatment(Sortable):
@@ -135,15 +135,7 @@ class AvailableTimeSlot(object):
 
 
 class BookerModel(object):
-    def parse_date(self, datestring):
-        timepart = datestring.split('(')[1].split(')')[0]
-        milliseconds = int(timepart[:-5])
-        hours = int(timepart[-5:]) / 100
-        # print("hours is what? %s" % hours)
-        timepart = milliseconds / 1000
-
-        dt = datetime.utcfromtimestamp(timepart + hours * 3600)
-        return dt
+    pass
 
 
 class AppointmentItem(BookerModel):
@@ -155,7 +147,7 @@ class AppointmentItem(BookerModel):
     def __init__(self, data=None):
         if data:
             self.appointment_id = data['AppointmentID']
-            self.datetime = self.parse_date(data['StartDateTime'])
+            self.datetime = parse_date(data['StartDateTime'])
             self.treatment_id = data['Treatment']['ID']
             self.treatment_name = data['Treatment']['Name']
             self.employee_name = data['Employee']['FirstName']
@@ -179,22 +171,18 @@ class Appointment(BookerModel):
 
     def __init__(self, data=None):
         if data:
-            print('data is %s' % data)
             self.id = data['ID']
             self.booking_number = data['BookingNumber']
             self.customer_id = data['CustomerID']
-            self.start_datetime = self.parse_date(data['StartDateTime'])
-            self.end_datetime = self.parse_date(data['EndDateTime'])
+            self.start_datetime = parse_date(data['StartDateTime'])
+            self.end_datetime = parse_date(data['EndDateTime'])
             self.final_total = data['FinalTotal']['Amount']
-            print("STATUS FOUND IS %s" % data['Status'])
             self.status = data['Status']['ID']
             self.can_cancel = data['CanCancel']
-            print "there are %d treatments" % len(data['AppointmentTreatments'])
             self.treatments = []
             for appointment in data['AppointmentTreatments']:
                 treatment = AppointmentItem(appointment)
                 self.treatments.append(treatment)
-            print 'creaeted Itinerary id %d' % self.id
 
     def is_past(self):
         return datetime.now() - self.start_datetime > timedelta(minutes=5)

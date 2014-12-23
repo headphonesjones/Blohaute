@@ -79,7 +79,6 @@ class CheckoutForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         self.payment_required = kwargs.pop('payment_required')
-        print "payment requiredis %s" % self.payment_required
         super(CheckoutForm, self).__init__(*args, **kwargs)
         if self.user.is_authenticated():
             self.fields['first_name'].widget = forms.HiddenInput()

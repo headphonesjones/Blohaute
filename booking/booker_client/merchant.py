@@ -1,9 +1,9 @@
 from booking.booker_client.request import BookerMerchantRequest
-from booking.models import CustomerSeries, Appointment
-from booking.models import CustomerSeries
+from booking.models import Appointment, CustomerSeries
 from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
+from booking.booker_client.dates import *
 
 
 # noinspection PyUnresolvedReferences
@@ -87,8 +87,8 @@ class BookerMerchantMixin(object):
         first_treatment = itinerary[0]
         for idx, treatment in enumerate(itinerary):
 
-            end_time_json = self.format_date_for_booker_json(
-                self.parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
+            end_time_json = format_date_for_booker_json(
+                parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
             treatments.append({
                 'TreatmentID': treatment['TreatmentID'],
                 'StartTime': treatment['StartDateTime'],
@@ -136,8 +136,8 @@ class BookerMerchantMixin(object):
             'ServiceID': treatment.booker_id,  # product.booker_id
             'ServiceTypeID': 1,
             'Quantity': 1,  # test if quantity would work and what it returns
-            'StartDateTime': self.format_date_for_booker_json(start_date),
-            'EndDateTime': self.format_date_for_booker_json(end_date),
+            'StartDateTime': format_date_for_booker_json(start_date),
+            'EndDateTime': format_date_for_booker_json(end_date),
         }
         print(params)
         request = BookerMerchantRequest('/availability/employee_room', self.merchant_token, params)
@@ -156,7 +156,7 @@ class BookerMerchantMixin(object):
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            itin_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
             emp_list = set()
             for time_slot in itinerary_option['TreatmentTimeSlots']:
                 emp_list.add(time_slot['EmployeeID'])
@@ -176,7 +176,7 @@ class BookerMerchantMixin(object):
             end_date = current_date + timedelta(weeks=1)
             response = self.get_availability(treatment, start_date, end_date)
             slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
-            dates_to_remove = [self.parse_date(slot['StartDateTime']).date() for slot in slots]
+            dates_to_remove = [parse_date(slot['StartDateTime']).date() for slot in slots]
             days = [day for day in days if day not in dates_to_remove]
             current_date = end_date
         print("days unavail is %s" % days)
@@ -189,7 +189,6 @@ class BookerMerchantMixin(object):
         return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
 
     def get_itinerary_for_slot_multiple(self, treatments_requested, date, time_string):
-        print("get itin")
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
         start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
@@ -210,9 +209,9 @@ class BookerMerchantMixin(object):
         employee_in_all_set = set()
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             # avail_time_slot = AvailableTimeSlot()
-            parsed_date = self.parse_date(itinerary_option['StartDateTime'])
-            itin_time = self.parse_as_time(parsed_date)
-            # self.parse_as_time(self.parse_date(itinerary_option['EndDateTime']))
+            parsed_date = parse_date(itinerary_option['StartDateTime'])
+            itin_time = parse_as_time(parsed_date)
+            # parse_as_time(parse_date(itinerary_option['EndDateTime']))
             print(itin_time)
             if current_time_string == itin_time:
                 print("match")
@@ -227,19 +226,18 @@ class BookerMerchantMixin(object):
                     employee_in_all_set = employee_in_all_set.intersection(emp_list)
                 if len(times_to_slot_by_employee.keys()) == total_treatments:
                     break
-                current_time_string = self.parse_as_time(new_date)
+                current_time_string = parse_as_time(new_date)
             else:
                 print("nope %s vs %s" % (current_time_string, itin_time))
         result = []
         if len(employee_in_all_set) <= 0:
+            # what should we do here - this means no appointment is available with one employee for all services?
             print("OH FUCK NOOOOOOOO")
         else:
             employee = employee_in_all_set.pop()
             for time in times_to_slot_by_employee:
                 by_emp = times_to_slot_by_employee.get(time)
-                print("by_emp is: %s" % by_emp)
                 for_emp = by_emp.get(employee)
-                print("for emp is: %s" % for_emp)
                 result.append(for_emp)
         return result
 

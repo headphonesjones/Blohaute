@@ -170,12 +170,13 @@ def reset_forogtten_password(request):
 @csrf_protect
 @login_required
 def profile_view(request):
+    CANCELLED_STATUS = 6
     password_form = PasswordUpdateForm(user=request.user, prefix='password')
     email_form = EmailUpdateForm(prefix='update_email')
     client = request.session['client']
     appointments = client.get_appointments()
-    future_appointments = [appt for appt in appointments if appt.is_past() is False]
-    past_appointments = [appt for appt in appointments if appt.is_past()]
+    future_appointments = [appt for appt in appointments if appt.is_past() is False and appt.status is not CANCELLED_STATUS]
+    past_appointments = [appt for appt in appointments if appt.is_past() and appt.status is not CANCELLED_STATUS]
     series = client.get_customer_series()
     service_formset = AvailableServiceFormset(series=series, prefix="services")
 
@@ -256,7 +257,8 @@ def cancel_view(request, pk):
             if appointment.customer_id != client.customer_id:  #quick security check
                 raise Exception
             response = client.cancel_appointment(pk)
-            if response['isSuccess'] is False:
+            print("cancel response on view is %s " % response)
+            if response['IsSuccess'] is False:
                 raise Exception
             return HttpResponseRedirect(reverse('welcome'))
         except:

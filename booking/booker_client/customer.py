@@ -3,7 +3,8 @@ from booking.models import Treatment, CustomerSeries
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import ValidationError
-from datetime import timedelta, datetime, date
+from datetime import date
+from booking.booker_client.dates import *
 
 
 class BookerCustomerMixin(object):
@@ -190,8 +191,8 @@ class BookerCustomerMixin(object):
         itinerary = [{'IsPackage': False,
                       'Treatments': treatments}]
 
-        params = {'StartDateTime': self.format_date_for_booker_json(start_date),
-                  'EndDateTime': self.format_date_for_booker_json(end_date),
+        params = {'StartDateTime': format_date_for_booker_json(start_date),
+                  'EndDateTime': format_date_for_booker_json(end_date),
                   'Itineraries': itinerary,
                   'LocationID': self.location_id}
 
@@ -211,7 +212,7 @@ class BookerCustomerMixin(object):
             end_date = current_date + timedelta(weeks=1)
             response = self.get_availability(treatments_requested, current_date, end_date)
             slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
-            dates_to_remove = [self.parse_date(slot['StartDateTime']).date() for slot in slots]
+            dates_to_remove = [parse_date(slot['StartDateTime']).date() for slot in slots]
             days = [day for day in days if day not in dates_to_remove]
             current_date = end_date
         return days
@@ -232,9 +233,9 @@ class BookerCustomerMixin(object):
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             # avail_time_slot = AvailableTimeSlot()
-            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            itin_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
             # avail_time_slot.raw_time = itin_time
-            # avail_time_slot.pretty_time = self.parse_as_time(itin_time)
+            # avail_time_slot.pretty_time = parse_as_time(itin_time)
             # print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
             emp_list = set()
             for time_slot in itinerary_option['TreatmentTimeSlots']:
@@ -261,7 +262,7 @@ class BookerCustomerMixin(object):
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
             # avail_time_slot = AvailableTimeSlot()
-            itin_time = self.parse_as_time(self.parse_date(itinerary_option['StartDateTime']))
+            itin_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
             if time_string == itin_time:
                 # emp_list = set()
                 # for time_slot in itinerary_option['TreatmentTimeSlots']:

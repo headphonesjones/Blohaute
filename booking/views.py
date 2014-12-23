@@ -99,17 +99,12 @@ def checkout(request):
     if request.cart.is_empty():
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
 
-    print("cart stuff is %s" % request.cart.cart)
-
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout", user=request.user, payment_required=request.cart.cart.needs_payment())
 
-    print("after forms")
-
     client = request.session['client']
     services_requested = get_services_from_cart(request)
-    print("after serv")
     for item in services_requested:
         print("item is %r %s" % (item, item.series_id))
 
@@ -141,7 +136,8 @@ def checkout(request):
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
         if 'checkout-address' in request.POST:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user, payment_required=request.cart.cart.needs_payment())
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user,
+                                         payment_required=request.cart.cart.needs_payment())
             print("in form")
             print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():
@@ -149,48 +145,45 @@ def checkout(request):
                 data = checkout_form.cleaned_data
                 try:
                     itinerary = client.get_itinerary_for_slot_multiple(services_requested,
-                                                              data['date'], data['time'])
-                    payment_items = []
+                                                                       data['date'], data['time'])
                     print("itin is %s" % itinerary)
                     # get payment method
+                    payment_item = client.get_booker_credit_card_payment_item(data['billing_zip_code'],
+                                                                              data['card_code'],
+                                                                              data['card_number'],
+                                                                              data['expiry_date'].month,
+                                                                              data['expiry_date'].year,
+                                                                              data['name_on_card'])
                     for item in services_requested:
                         print("item is %r %s" % (item, item.series_id))
-                        if item.series_id:
-                            payment_items.append(client.get_booker_series_payment_item(item.series_id))
-                        else:
-                            payment_items.append(client.get_booker_credit_card_payment_item(data['billing_zip_code'],
-                                                                                            data['card_code'],
-                                                                                            data['card_number'],
-                                                                                            data['expiry_date'].month,
-                                                                                            data['expiry_date'].year,
-                                                                                            data['name_on_card']))
-                    print("final payment items is %s" % payment_items)
-                    appointments = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
-                                                           data['city'], data['state'], data['zip_code'],
-                                                           data['email_address'], data['phone_number'], payment_items, data['notes'])
-                    print("appt result is: %s" % appointments)
-                    print("success?:  %s" % appointments[0]['IsSuccess'])
-                    if appointments is not None:
-                        print("successful booking")
+                        # if item.series_id:
+                        #     payment_items.append(client.get_booker_series_payment_item(item.series_id))
+                        # else:
+                        # # BOOKER DOES NOT ACCEPT SERIES AS PAYMENT - Waiting on feedback, but CC for now
+                    appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                                                          data['city'], data['state'], data['zip_code'],
+                                                          data['email_address'], data['phone_number'], payment_item,
+                                                          data['notes'])
+                    if appointment is not None:
                         request.cart.clear()
-                        if client.user:
-                            request.session['appointments'] = appointments
-                            return HttpResponseRedirect(reverse('thank_you'))
+                        print("redirecting to the view with appointment %s" % appointment)
+                        request.session['appointment'] = appointment
+                        return HttpResponseRedirect(reverse('thankyou'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:
                     checkout_form.add_error(None, error)
             else:
                 print checkout_form.errors
-    # print("cart is %s" % request.cart.cart)
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'login_form': remember_me_form,
                                              'checkout_form': checkout_form,
                                              'cart': request.cart})
 
 
-def thank_you(request, pk):
-    appointments = request.session['appointments']
+def thank_you(request):
+    appointment = request.session['appointment']
+    print("in view appointment is: %s" % appointment)
     form = ContactForm()
 
     if request.method == "POST":
@@ -202,7 +195,7 @@ def thank_you(request, pk):
 
             messages.success(request, 'Thank you. Your message has been sent successfully')
             form = ContactForm()
-    return render(request, 'thankyou.html', {'contact_form': form, 'appointments': appointments})
+    return render(request, 'thankyou.html', {'contact_form': form, 'appointment': appointment})
 
 
 def contact_view(request):

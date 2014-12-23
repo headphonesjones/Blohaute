@@ -44,8 +44,6 @@ class Cart(models.Model):
         return sum(i.quantity for i in self.item_set.all())
 
     def needs_payment(self):
-        for item in self.item_set.all():
-            print("NEEDS PAY id %s " % item.series_id)
         return all(item.series_id is None for item in self.item_set.all())
 
     def has_schedule_only_items(self):

@@ -124,7 +124,7 @@ $( document ).ready(function() {
         input2.name = 'csrfmiddlewaretoken';
         form.appendChild(input1);
         form.appendChild(input2);
-        form.submit()
+        $(form).appendTo('body').submit()
     });
 });
 </script>

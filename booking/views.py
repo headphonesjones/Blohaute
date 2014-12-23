@@ -153,10 +153,6 @@ def checkout(request):
                         request.cart.clear()
                         messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
                         return HttpResponseRedirect(reverse('welcome'))
-
-                        print("redirecting to the view with appointment %s" % appointment)
-                        request.session['appointment'] = appointment
-                        return HttpResponseRedirect(reverse('thankyou'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:

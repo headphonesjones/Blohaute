@@ -53,10 +53,8 @@ class CouponForm(forms.Form):
     coupon_code = forms.CharField()
 
 
-class CheckoutForm(forms.Form, PasswordValidationMixin):
+class CheckoutForm(forms.Form):
     #appointment location
-    first_name = forms.CharField(error_messages={'required': 'Enter your first name'})
-    last_name = forms.CharField(error_messages={'required': 'Enter your last name'})
     address = forms.CharField(error_messages={'required': 'Enter your address'})
     city = forms.CharField(error_messages={'required': 'Enter a city'})
     state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}), error_messages={'required': 'Enter state'})
@@ -71,18 +69,6 @@ class CheckoutForm(forms.Form, PasswordValidationMixin):
     card_code = VerificationValueField(label="CVV")
     billing_zip_code = USZipCodeField(label="Billing Zip", error_messages={'required': 'ZIP is required'})
 
-    email_address = forms.EmailField()
-    phone_number = USPhoneNumberField()
-
-    password1 = forms.CharField(label=_("Password"),
-                                widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
-                                required=False)
-    password2 = forms.CharField(label=_("Password confirmation"),
-                                widget=forms.PasswordInput(attrs={
-                                    'placeholder': 'Password Confirmation'}),
-                                help_text=_("Enter the same password as above, for verification."),
-                                required=False)
-
     date = forms.DateField()
     time = forms.CharField()
 
@@ -90,15 +76,6 @@ class CheckoutForm(forms.Form, PasswordValidationMixin):
         self.user = kwargs.pop('user')
         self.payment_required = kwargs.pop('payment_required')
         super(CheckoutForm, self).__init__(*args, **kwargs)
-        if self.user.is_authenticated():
-            self.fields['first_name'].widget = forms.HiddenInput()
-            self.fields['first_name'].initial = self.user.first_name
-            self.fields['last_name'].widget = forms.HiddenInput()
-            self.fields['last_name'].initial = self.user.last_name
-            self.fields['email_address'].widget = forms.HiddenInput()
-            self.fields['email_address']. initial = self.user.email
-            self.fields['phone_number'].widget = forms.HiddenInput()
-            self.fields['phone_number'].initial = self.user.phone_number
         if self.payment_required is False:
             self.fields['name_on_card'].required = False
             self.fields['card_number'].required = False

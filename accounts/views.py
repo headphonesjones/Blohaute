@@ -57,6 +57,7 @@ def register(request):
             new_user = authenticate(email=request.POST['email'],
                                     password=request.POST['password1'])
             auth_login(request, new_user)
+            request.cart.replace(request.session.get('CART-ID'), new_user)
 
             # store the user password for the length of the session
             client.user = new_user

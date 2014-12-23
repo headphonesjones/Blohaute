@@ -68,6 +68,9 @@ class Package(models.Model):
     def slug(self):
         return self.treatment.slug
 
+    def thumb_image_url(self):
+        return self.treatment.thumb_image_url
+
 
 class Membership(models.Model):
     booker_id = models.IntegerField(null=True, blank=True)
@@ -86,6 +89,9 @@ class Membership(models.Model):
 
     def slug(self):
         return self.treatment.slug
+
+    def thumb_image_url(self):
+        return self.treatment.thumb_image_url
 
 
 class CustomerSeries(object):

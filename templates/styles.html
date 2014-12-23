@@ -29,10 +29,12 @@
 $.ajax({ 
     type: 'GET', 
     url: 'https://api.instagram.com/v1/users/1278339987/media/recent/?client_id=1892f8ef853b43d9b60dad83a57c498a', 
-    dataType: 'json',
-    done: function (data) { 
-        $.each(data, function(index, instagram) {
-            $('instagram-feed-container').append($('<div class="uk-width-1-3"><img src=' + instagram.thumbnail_url + ' alt="Blohaute Instagram Feed" /></div>'));
+    dataType: 'jsonp',
+    // jsonp : "callback",
+    // jsonpCallback: "jsonpcallback",
+    success: function (data) { 
+        $.each(data.data, function(index, instagram) {
+            $('#instagram-feed-container').append($('<div class="uk-width-1-3"><img src=' + instagram.images.low_resolution.url + ' alt="Blohaute Instagram Feed" /></div>'));
         });
     }
 });

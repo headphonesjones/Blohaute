@@ -33,7 +33,7 @@ $.ajax({
     dataType: 'json',
     done: function (data) { 
         $.each(data, function(index, instagram) {
-            $('#instagram-feed-container').append($('<div class="uk-width-1-3"><img src="instagram.thumbnail_url" alt="Blohaute Instagram Feed" /></div>'
+            $('instagram-feed-container').append($('<div class="uk-width-1-3"><img src=' + instagram.thumbnail_url + ' alt="Blohaute Instagram Feed" /></div>'));
         }));
     });
 });

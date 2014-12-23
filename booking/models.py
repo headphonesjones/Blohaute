@@ -65,6 +65,9 @@ class Package(models.Model):
     def price_units(self):
         return ""
 
+    def slug(self):
+        return self.product.slug
+
 
 class Membership(models.Model):
     booker_id = models.IntegerField(null=True, blank=True)
@@ -80,6 +83,9 @@ class Membership(models.Model):
 
     def price_units(self):
         return "/ month"
+
+    def slug(self):
+        return self.product.slug
 
 
 class CustomerSeries(object):

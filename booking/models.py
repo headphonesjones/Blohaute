@@ -66,7 +66,7 @@ class Package(models.Model):
         return ""
 
     def slug(self):
-        return self.product.slug
+        return self.treatment.slug
 
 
 class Membership(models.Model):
@@ -85,7 +85,7 @@ class Membership(models.Model):
         return "/ month"
 
     def slug(self):
-        return self.product.slug
+        return self.treatment.slug
 
 
 class CustomerSeries(object):

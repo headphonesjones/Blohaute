@@ -4,13 +4,46 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from accounts.models import User
 
 
-class RegistrationForm(forms.ModelForm):
+class PasswordValidationMixin(object):
     MIN_LENGTH = 8
     MAX_LENGTH = 25
-
-    error_messages = {
+    password_messages = {
         'password_mismatch': _("The two password fields didn't match."),
         'password_length': _("The new password must be between 8 and 25 characters long."),
+    }
+
+    def clean_password1(self):
+        # clean the new password to match API requirements
+        password1 = self.cleaned_data.get('password1')
+        if password1:
+            # Between MIN_LENGTH and MAX_LENGTH
+            if len(password1) < self.MIN_LENGTH or len(password1) > self.MAX_LENGTH:
+                raise forms.ValidationError(
+                    self.password_messages['password_length'],
+                    code='password_length'
+                )
+
+            #At least one letter and one non-letter
+            first_isalpha = password1[0].isalpha()
+            if all(c.isalpha() == first_isalpha for c in password1):
+                raise forms.ValidationError("The new password must contain at least one letter and at "
+                                            "least one digit or punctuation character.")
+
+            return password1
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.password_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        return password2
+
+class RegistrationForm(forms.ModelForm, PasswordValidationMixin):
+
+    error_messages = {
         'phone_length': _("Phone number must be 10 digits and include the area code."),
         'existing_account': _('An account with this email address already exists.')
     }
@@ -39,34 +72,6 @@ class RegistrationForm(forms.ModelForm):
             )
         return self.cleaned_data.get('email')
 
-    def clean_password1(self):
-        # clean the new password to match API requirements
-        password1 = self.cleaned_data.get('password1')
-
-        # Between MIN_LENGTH and MAX_LENGTH
-        if len(password1) < self.MIN_LENGTH or len(password1) > self.MAX_LENGTH:
-            raise forms.ValidationError(
-                self.error_messages['password_length'],
-                code='password_length'
-            )
-
-        #At least one letter and one non-letter
-        first_isalpha = password1[0].isalpha()
-        if all(c.isalpha() == first_isalpha for c in password1):
-            raise forms.ValidationError("The new password must contain at least one letter and at "
-                                        "least one digit or punctuation character.")
-
-        return password1
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'],
-                code='password_mismatch',
-            )
-        return password2
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')

@@ -97,10 +97,13 @@ def get_payment_from_cart(request):
 @csrf_protect
 def checkout(request):
     if request.cart.is_empty():
+        print 'cart is empty at checkout'
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
+
 
     coupon_form = CouponForm(prefix='coupon')
-    remember_me_form = AuthenticationRememberMeForm(prefix='login')
     checkout_form = CheckoutForm(prefix="checkout", user=request.user, payment_required=request.cart.cart.needs_payment())
 
     client = request.session['client']
@@ -109,24 +112,6 @@ def checkout(request):
         print("item is %r %s" % (item, item.series_id))
 
     if request.method == 'POST':
-        if 'login-password' in request.POST:
-            remember_me_form = AuthenticationRememberMeForm(data=request.POST or None,
-                                                            prefix='login')
-            if remember_me_form.is_valid():
-                if not remember_me_form.cleaned_data.get('remember_me'):
-                    request.session.set_expiry(0)
-
-                user = remember_me_form.get_user()
-                try:
-                    client.login(user.email, remember_me_form.cleaned_data.get('password'))
-                    client.user = user
-                    auth_login(request, remember_me_form.get_user())
-                    return HttpResponseRedirect(reverse('checkout'))
-
-                except ValidationError as e:
-                    remember_me_form.add_error(None, e)
-            else:
-                messages.error(request, 'There was a problem signing in. Please check the form and make sure that everything is filled out correctly.')
         if 'coupon-coupon_code' in request.POST:
             coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
             if coupon_form.is_valid():
@@ -141,7 +126,6 @@ def checkout(request):
             print("in form")
             print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():
-
                 data = checkout_form.cleaned_data
                 try:
                     itinerary = client.get_itinerary_for_slot_multiple(services_requested,
@@ -165,14 +149,10 @@ def checkout(request):
                                                           data['email_address'], data['phone_number'], payment_item,
                                                           data['notes'])
                     if appointment is not None:
-                        request.cart.clear()
-                        if request.user.is_authenticated():
-                            messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
-                            return HttpResponseRedirect(reverse('welcome'))
 
-                        print("redirecting to the view with appointment %s" % appointment)
-                        request.session['appointment'] = appointment
-                        return HttpResponseRedirect(reverse('thankyou'))
+                        request.cart.clear()
+                        messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
+                        return HttpResponseRedirect(reverse('welcome'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:
@@ -180,7 +160,6 @@ def checkout(request):
             else:
                 print checkout_form.errors
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
-                                             'login_form': remember_me_form,
                                              'checkout_form': checkout_form,
                                              'cart': request.cart})
 

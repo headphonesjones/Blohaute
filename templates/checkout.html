@@ -32,38 +32,7 @@
                     </div>
                 {% endif %}
                 <div class="uk-width-1-1">
-                    {% if user.is_authenticated %}
-                    {% else %}
-                    <div class="uk-alert uk-margin-bottom-remove">
-                        <i class="uk-icon-info-circle uk-margin-right"></i>Returning customer? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-login', animation: 'uk-animation-fade'}">Click here to login</a>
-                    </div>
-                    <div class="uk-panel uk-panel-space uk-hidden" id="checkout-login">
-                        <form method="POST" class="uk-form" id="login-form">
-                            {% csrf_token %}
-                            <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
 
-                                <div class="uk-width-1-1">
-                                    <h3>Welcome back!</h3>
-                                    <br />
-                                </div>
-                                    <div class="uk-width-1-2">
-                                        {% include "registration/field_snippet.html" with field=login_form.username %}
-                                    </div>
-                                    <div class="uk-width-1-2">
-                                        {% include "registration/field_snippet.html" with field=login_form.password %}
-                                    </div>
-                                <div class="uk-width-1-1">
-                                    <button class="uk-button uk-text-center">Login</button>
-                                        <label class="uk-margin-left">{{login_form.remember_me}} {{login_form.remember_me.label}}</label>
-
-
-                                    <a class="uk-margin-left" href="{% url 'forgot_password' %}">Lost Password?</a>
-                                </div>
-                            </div>
-                        </form>
-                     </div>
-                </div>
-                  {% endif %}
 
             {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
             <form method="POST" class="uk-form">
@@ -82,19 +51,9 @@
 
                 <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                     {# if paying with series, order summary left, empty div right#}
+                    
                     {% if cart.cart.needs_payment %}
                     <div class="uk-width-medium-1-2">
-                        {% if user.is_authenticated %}
-                        {% else %}
-                        <h2>Create an account password so you can return to login and manage your appointments.</h2>
-                        <div class="uk-width-medium-1-2" id="order-summary-container">
-                            <label class="uk-form-label" for="password-set">Password</label>
-                            <input type="text" id="password-set" class="uk-form-large uk-width-1-1">
-                            <label class="uk-form-label" for="password-set-confirm">Confirm Password</label>
-                            <input type="text" id="password-set-confirm" class="uk-form-large uk-width-1-1">
-                        </div>
-                        {% endif %}
-
                         {% include 'form_snippets/appointment_payment.html' %}
                     </div>
                     {% endif %}

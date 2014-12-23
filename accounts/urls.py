@@ -8,6 +8,7 @@ urlpatterns = patterns(
     url(r'^registration/', views.register, name='register'),
     url(r'^logout/', views.logout, {'next_page': '/'}, name='logout'),
     url(r'^login/', views.login, name='login'),
+    url(r'^login_register', views.login_register, name='login_register'),
     url(r'^forgot_password/', views.forgot_password, name='forgot_password'),
     url(r'^forgot_success/', TemplateView.as_view(template_name="registration/forgot_success.html"), name='forgot_success'),
     url(r'^reset_password/', views.reset_forogtten_password, name='reset_password'),

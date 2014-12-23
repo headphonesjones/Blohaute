@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block page_title %}Login{% endblock %}
+
+{% block content %}
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+    	<div class="uk-width-1-1 uk-text-center"><h1>Sign in or create an account to book your treatment</h1></div>
+        <div class="uk-grid uk-grid-divider" data-uk-grid-margin data-uk-grid-match>
+            <div class="uk-width-medium-1-2">
+	           {% include "registration/login.html" %} 
+            </div>
+            <div class="uk-width-medium-1-2">
+	           {% include "registration/registration.html" %} 
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

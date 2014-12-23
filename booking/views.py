@@ -97,7 +97,11 @@ def get_payment_from_cart(request):
 @csrf_protect
 def checkout(request):
     if request.cart.is_empty():
+        print 'cart is empty at checkout'
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
+
 
     coupon_form = CouponForm(prefix='coupon')
     remember_me_form = AuthenticationRememberMeForm(prefix='login')
@@ -165,6 +169,7 @@ def checkout(request):
                                                           data['email_address'], data['phone_number'], payment_item,
                                                           data['notes'])
                     if appointment is not None:
+
                         request.cart.clear()
                         if request.user.is_authenticated():
                             messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")

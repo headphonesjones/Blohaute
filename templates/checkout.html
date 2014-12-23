@@ -82,16 +82,24 @@
 
                 <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                     {# if paying with series, order summary left, empty div right#}
+                    
                     {% if cart.cart.needs_payment %}
                     <div class="uk-width-medium-1-2">
-                        {% if user.is_authenticated %}
-                        {% else %}
+                        {% if not user.is_authenticated %}
                         <h2>Create an account password so you can return to login and manage your appointments.</h2>
-                        <div class="uk-width-medium-1-2" id="order-summary-container">
+                        <div class="uk-width-medium-1-1 uk-grid">
+                            <div class="uk-width-small-1-2">
+
                             <label class="uk-form-label" for="password-set">Password</label>
-                            <input type="text" id="password-set" class="uk-form-large uk-width-1-1">
+                            {% render_field checkout_form.password1 class+="uk-form-large uk-width-1-1" %}
+                            {{checkout_form.password1.errors}}
+                            </div>
+                            <div class="uk-width-small-1-2">
+
                             <label class="uk-form-label" for="password-set-confirm">Confirm Password</label>
-                            <input type="text" id="password-set-confirm" class="uk-form-large uk-width-1-1">
+                            {% render_field checkout_form.password2 class+="uk-form-large uk-width-1-1" %}
+                            {{checkout_form.password2.errors}}
+                            </div>
                         </div>
                         {% endif %}
 

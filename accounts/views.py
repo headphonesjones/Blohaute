@@ -26,6 +26,7 @@ from booking.views import unavailable_days, available_times_for_day
 @sensitive_post_parameters()
 @csrf_protect
 def register(request):
+    next_url = request.GET.get('next', None)
     if request.method == 'GET':
         form = RegistrationForm()
         return render(request, 'registration/registration_page.html', {'registration_form': form})
@@ -33,7 +34,7 @@ def register(request):
     if request.method == 'POST':
 
         # create a form instance and populate it with data from the request
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, )
         if form.is_valid():
 
             client = request.session['client']
@@ -63,17 +64,22 @@ def register(request):
             messages.info(request, 'Thanks for registering. You are now logged in.')
 
             # redirect user the profile page
+            if next_url:
+                return HttpResponseRedirect(next_url)
             return HttpResponseRedirect(reverse('welcome'))
 
-        return render(request, 'registration/registration_page.html', {'registration_form': form})
+        return render(request, 'registration/registration_page.html', {'registration_form': form, 'next': next_url})
 
 
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
 def login(request):
+    next_url = request.GET.get('next', None)
+    print "next url is %s" % next_url
+    print request.GET
     form = AuthenticationRememberMeForm(data=request.POST or None)
-
+    print "cart is empty %s" % request.cart.is_empty()
     if request.method == 'POST':
         if form.is_valid():
             if not form.cleaned_data.get('remember_me'):
@@ -85,14 +91,29 @@ def login(request):
                 client.login(user.email, request.POST['password'])
                 client.user = user
                 auth_login(request, form.get_user())
+                print "cart is empty %s" % request.cart.is_empty()
+                request.cart.replace(request.session.get('CART-ID'), user)
+                print next_url
+                if next_url:
+                    return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse('welcome'))
 
             except ValidationError as e:
                 form.add_error(None, e)
 
-    return render(request, 'registration/login_page.html', {'login_form': form})
+    return render(request, 'registration/login_page.html', {'login_form': form, 'next': next_url})
 
 
+@sensitive_post_parameters()
+@csrf_protect
+@never_cache
+def login_register(request):
+    login_form = AuthenticationRememberMeForm()
+    registration_form = RegistrationForm()
+    next_url = reverse('checkout')
+    return render(request, 'registration/login_register.html',
+                  {'login_form': login_form, 'registration_form': registration_form,
+                   'next': next_url})
 
 def logout(request, next_page=None,
            template_name='registration/logged_out.html',

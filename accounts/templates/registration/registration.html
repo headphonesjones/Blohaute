@@ -1,5 +1,5 @@
 
-<form action="{% url 'register' %}" method="post" class="uk-form" id="registration-form">
+<form action="{% url 'register' %}{% if next %}?next={{next}}{% endif%}" method="post" class="uk-form" id="registration-form">
     {% csrf_token %}
     <div class="uk-grid" data-uk-margin="{cls:'uk-margin-top'}">
         {% if registration_form.errors %}

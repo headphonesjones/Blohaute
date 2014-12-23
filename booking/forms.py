@@ -1,9 +1,11 @@
 from django import forms
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import floatformat
+from django.utils.translation import ugettext_lazy as _
 from localflavor.us.forms import USZipCodeField, USPhoneNumberField, USStateField
 from booking.models import Package, Membership, Treatment
 from booking.fields import CreditCardField, ExpiryDateField, VerificationValueField
+from accounts.forms import PasswordValidationMixin
 
 
 class QuickBookForm(forms.Form):
@@ -51,7 +53,7 @@ class CouponForm(forms.Form):
     coupon_code = forms.CharField()
 
 
-class CheckoutForm(forms.Form):
+class CheckoutForm(forms.Form, PasswordValidationMixin):
     #appointment location
     first_name = forms.CharField(error_messages={'required': 'Enter your first name'})
     last_name = forms.CharField(error_messages={'required': 'Enter your last name'})
@@ -71,7 +73,15 @@ class CheckoutForm(forms.Form):
 
     email_address = forms.EmailField()
     phone_number = USPhoneNumberField()
-    create_account = forms.BooleanField(initial=False, required=False)
+
+    password1 = forms.CharField(label=_("Password"),
+                                widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+                                required=False)
+    password2 = forms.CharField(label=_("Password confirmation"),
+                                widget=forms.PasswordInput(attrs={
+                                    'placeholder': 'Password Confirmation'}),
+                                help_text=_("Enter the same password as above, for verification."),
+                                required=False)
 
     date = forms.DateField()
     time = forms.CharField()

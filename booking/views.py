@@ -166,6 +166,10 @@ def checkout(request):
                                                           data['notes'])
                     if appointment is not None:
                         request.cart.clear()
+                        if request.user.is_authenticated():
+                            messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
+                            return HttpResponseRedirect(reverse('welcome'))
+
                         print("redirecting to the view with appointment %s" % appointment)
                         request.session['appointment'] = appointment
                         return HttpResponseRedirect(reverse('thankyou'))

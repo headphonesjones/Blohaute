@@ -16,6 +16,7 @@ urlpatterns = patterns(
 
     url(r'^cart/', include('changuito.urls')),
     url(r'^checkout/', checkout, name='checkout'),
+    url(r'^package_checkout/', TemplateView.as_view(template_name="package_checkout.html"), name='package_checkout'),
     url(r'^thankyou/$', thank_you, name='thank_you'),
 
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),

@@ -1,0 +1,183 @@
+{% extends "minimal_base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block page_title %}Checkout{% endblock %}
+
+{% block content %}
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+
+        <ul class="uk-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'book' %}">Book</a></li>
+            <li class="uk-active"><span>Checkout</span></li>
+        </ul>
+
+        <article class="uk-article">
+            <div class="uk-grid" data-uk-grid-margin>
+                {% if checkout_form.errors %}
+                    <div class="uk-width-1-1">
+                        <div class="uk-alert uk-alert-danger ">
+                            {% if checkout_form.non_field_errors %}
+                                {% for error in checkout_form.non_field_errors %}
+                                    <p>{{error}}</p>
+                                {% endfor %}
+                            {% else %}
+                                There was a problem booking your order. Please correct the errors below and try again.
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% endif %}
+            <div class="uk-width-1-1">
+            <h1>You will be able to schedule your appointements after checking out</h1>
+            {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
+            <form method="POST" class="uk-form">
+                <!-- FOR NORMAL CHECKOUT, REMOVED FOR PACKAGE CHECKOUT 
+                {% for hidden in checkout_form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
+                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_location.html' %}
+                    </div>
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_schedule.html' %}
+                    </div>
+                </div>
+                -->
+                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                    {# if paying with series, order summary left, empty div right#}
+                    
+                    {% if cart.cart.needs_payment %}
+                    <div class="uk-width-medium-1-2">
+                        {% include 'form_snippets/appointment_payment.html' %}
+                    </div>
+                    {% endif %}
+                    <div class="uk-width-medium-1-2" id="order-summary-container">
+                        {% include 'form_snippets/order_summary.html' %}
+                    </div>
+                </div>
+            </form>   
+            {% endwith %}
+            </div>
+        </article>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.date.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.time.css' %}">
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static 'js/pickadate/picker.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.date.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.time.js' %}"></script>
+<script src="{% static 'js/pickadate/legacy.js' %}"></script>
+
+
+<script>
+$(document).ready(function() {
+
+    var datesLoaded = false;
+
+    var $idCheckoutTime = $('#id_checkout-time');
+    var timeInput = $idCheckoutTime.pickatime({
+        formatSubmit: 'HH:i',
+        hiddenName: true,
+        min: [7, 0],
+        max: [20, 0],
+        interval: 15
+    });
+
+    var timePicker = timeInput.pickatime('picker');
+    timePicker.set('disable', true); //start with all times disabled
+
+    var $idCheckout = $("#id_checkout-date");
+    var datePicker = $idCheckout.pickadate({
+        disable: null,
+        format: 'ddd mmmm d yyyy',
+        formatSubmit: 'yyyy-mm-dd',
+        hiddenName: true,
+        close: '',
+        today: '',
+        clear: '',
+        min: new  Date(),
+
+        beforeSend: function() {
+                console.log("beforeSend fired");
+                $( "#spinner" ).append( "<div id='loading-container'><img src='{% static 'images/loading.gif' %}' id='spinning-loader' alt='loading' /></div>" );
+        },
+        complete: function() {
+                console.log("complete fired");
+                $( "#loading-container" ).remove();
+                $( "#spinning-loader" ).remove();
+        },
+        onSet: function(context) {
+            var $idCheckoutHidden = $("#id_checkout-date_hidden");
+            if (context['select'] && $idCheckoutHidden.val()) {
+                $('#appointment-loading').fadeIn();
+                timePicker.set('disable', true);
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "timesforday" %}',
+                    dataType: 'json',
+                    data: {
+                        date: $idCheckoutHidden.val()
+                    },
+                    success: function(data) {
+                        timePicker.set('disable', data);
+                        if (datesLoaded == true) {
+                            $('#appointment-loading').fadeOut();
+                        }
+                    }
+                });
+            }
+        }
+    });
+    var picker = datePicker.pickadate('picker');
+
+    if ($idCheckout.val() != "") {
+        picker.set('select', $idCheckout.val(), { format: 'yyyy-mm-dd' })
+    }
+    picker.open(false);
+
+
+    if ($idCheckoutTime.val() != "") {
+        timePicker.set('select', $idCheckoutTime.val(), { format: 'HH:i' })
+    }
+
+
+    $('#appointment-schedule').css({position: 'relative'});
+    var spinner = new Spinner().spin();
+    $(spinner.el).appendTo(document.getElementById('appointment-loading'));
+
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'unavailable_days' %}",
+        dataType: 'json',
+        success: function(data) {
+            picker.set('disable', data);
+            datesLoaded = true;
+            $('#appointment-loading').fadeOut();
+        }
+    });
+
+    //make time and date borders red if there are errors
+    if ($idCheckout.hasClass('uk-form-danger')) {
+        $("#id_checkout-date_root").find('.picker__holder').addClass('uk-form-danger');
+    }
+    if ($idCheckoutTime.hasClass('uk-form-danger')) {
+        $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
+    }
+});
+
+</script>
+{% endblock %}

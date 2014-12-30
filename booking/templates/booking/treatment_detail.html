@@ -87,11 +87,13 @@
                                                 {% endfor %}
                                         </div>
                                         {% endif %}
+                                            {% if treatment.packages.all %}
                                             <div class="uk-width-1-1" data-uk-margin>
                                                  <label for="blowoutPackages"><b>{{treatment.name}} Packages</b></label><br />
 
                                                 {{add_to_cart_form.package}}
                                             </div>
+                                            {% endif %}
                                             <br/>
                                             {% if treatment.memberships.all %}
                                             <div class="uk-width-1-1" data-uk-margin>

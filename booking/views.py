@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, CheckoutForm, CheckoutScheduleForm, CouponForm, QuickBookForm
-from booking.models import Treatment, Package, GenericItem
+from booking.models import Treatment, Package
 import json
 
 
@@ -92,7 +92,7 @@ def checkout(request):
         return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
 
     coupon_form = CouponForm(prefix='coupon')
-    checkout_form = CheckoutScheduleForm(prefix="checkout", 
+    checkout_form = CheckoutScheduleForm(prefix="checkout",
                                          payment_required=request.cart.cart.needs_payment())
 
     client = request.session['client']
@@ -155,11 +155,47 @@ def checkout(request):
 
 def package_checkout(request, slug, pk):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
+        return HttpResponseRedirect("%s?next=%s" % (reverse('login_register'), reverse('package_checkout', args=[slug, pk])))  # if there's no user, ask them to login or register
 
     package = Package.objects.get(pk=pk)
     coupon_form = CouponForm(prefix='coupon')
     checkout_form = CheckoutForm(prefix="checkout", payment_required=True)
+
+    if request.method == 'POST':
+        print 'request method was post'
+        if 'coupon-coupon_code' in request.POST:
+            print 'coupon'
+            coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
+            if coupon_form.is_valid():
+                coupon = coupon_form.cleaned_data.get('coupon_code')
+                client = request.session['client']
+                print('coupon is %s' % coupon)
+                # find out if its good or not and do stuff?  Get and print value?  Whatever
+
+        else:
+            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout',
+                                         payment_required=True)
+            print("in form")
+            print("valid: %s" % checkout_form.is_valid())
+            if checkout_form.is_valid():
+                data = checkout_form.cleaned_data
+                try:
+                    # get payment method
+                    payment_item = client.get_booker_credit_card_payment_item(data['billing_zip_code'],
+                                                                              data['card_code'],
+                                                                              data['card_number'],
+                                                                              data['expiry_date'].month,
+                                                                              data['expiry_date'].year,
+                                                                              data['name_on_card'])
+
+                    #make the payment create the series
+
+                    messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
+                    return HttpResponseRedirect(reverse('welcome'))
+                except ValidationError as error:
+                    checkout_form.add_error(None, error)
+            else:
+                print checkout_form.errors
 
     return render(request, 'package_checkout.html', {'coupon_form': coupon_form,
                                                      'checkout_form': checkout_form,

@@ -77,8 +77,6 @@ def register(request):
 @never_cache
 def login(request):
     next_url = request.GET.get('next', None)
-    print "next url is %s" % next_url
-    print request.GET
     form = AuthenticationRememberMeForm(data=request.POST or None)
     print "cart is empty %s" % request.cart.is_empty()
     if request.method == 'POST':
@@ -111,7 +109,7 @@ def login(request):
 def login_register(request):
     login_form = AuthenticationRememberMeForm()
     registration_form = RegistrationForm()
-    next_url = reverse('checkout')
+    next_url = request.GET.get('next', reverse('checkout'))
     return render(request, 'registration/login_register.html',
                   {'login_form': login_form, 'registration_form': registration_form,
                    'next': next_url})

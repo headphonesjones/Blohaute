@@ -34,7 +34,6 @@
             <div class="uk-width-1-1">
             <h1>You will be able to schedule your appointements after checking out</h1>
             {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
-            <form method="POST" class="uk-form">
                 {% for hidden in checkout_form.hidden_fields %}
                     {{ hidden }}
                 {% endfor %}
@@ -42,18 +41,30 @@
                 <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                     {# if paying with series, order summary left, empty div right#}
                     
-                    <div class="uk-width-medium-1-2">
+                    <form id="checkout-form" method="POST" class="uk-form uk-width-medium-1-2">
+                        {% csrf_token %}
                         {% include 'form_snippets/appointment_payment.html' %}
-                    </div>
+                    </form>   
+    
                     <div class="uk-width-medium-1-2" id="order-summary-container">
                         {% include 'form_snippets/single_item_order_summary.html' %}
                     </div>
                 </div>
-            </form>   
             {% endwith %}
             </div>
         </article>
 
     </div>
 </div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$(document).ready(function() {
+    $("#place-order-button").click(function() {
+        $("#checkout-form").submit();
+    });
+});
+
+</script>
 {% endblock %}

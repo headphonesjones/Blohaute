@@ -104,10 +104,12 @@
                                             <br />
 
                                         <br />
+                                    {% if treatment.packages.all %}
                                     <div class="uk-button-group">
                                         <button class="uk-button uk-button-primary uk-button-large">Buy Now</button>
                                         <button class="uk-button uk-button-primary uk-button-large"><i class="uk-icon-star"></i></button>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </form>
                             {% else %}

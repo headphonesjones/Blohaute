@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.contrib.auth import login as auth_login
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.forms import ValidationError
@@ -8,30 +7,24 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from booking.forms import AddToCartForm, QuickBookForm, ContactForm, CheckoutForm, CouponForm
-from booking.models import Treatment, Appointment
-from accounts.forms import AuthenticationRememberMeForm
-from changuito.models import Cart
+from booking.forms import AddToCartForm, ContactForm, CheckoutForm, CheckoutScheduleForm, CouponForm, QuickBookForm
+from booking.models import Treatment, Package
 import json
 
 
 class TreatmentList(ListView):
     model = Treatment
 
-    def post(self, request, *args, **kwargs):
+
+def add_treatment_to_cart(request, slug):
+    if request.method == 'POST':
         form = QuickBookForm(request.POST)
         if form.is_valid():
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
             return HttpResponseRedirect(reverse('cart'))
-        print form.errors
-        return super(TreatmentList, self).get(self, request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = {}
-        context['form'] = QuickBookForm()
-        return super(TreatmentList, self).get_context_data(**context)
+    return HttpResponseRedirect(reverse('treatment_detail', args=[slug]))
 
 
 class TreatmentDetail(DetailView):
@@ -46,9 +39,9 @@ class TreatmentDetail(DetailView):
             package = self.form.cleaned_data['package']
             membership = self.form.cleaned_data['membership']
             if package:
-                cart.add(package, package.price, 1)
+                return HttpResponseRedirect(reverse('package_checkout'))
             if membership:
-                cart.add(membership, membership.price, 1)
+                pass
 
             return HttpResponseRedirect(reverse('cart'))
 
@@ -57,7 +50,7 @@ class TreatmentDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = {}
         if self.form is None:
-            self.form = AddToCartForm(treatment=self.object)
+            self.form = AddToCartForm(treatment=self.object,)
         context['add_to_cart_form'] = self.form
         return super(TreatmentDetail, self).get_context_data(**context)
 
@@ -102,9 +95,9 @@ def checkout(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
 
-
     coupon_form = CouponForm(prefix='coupon')
-    checkout_form = CheckoutForm(prefix="checkout", user=request.user, payment_required=request.cart.cart.needs_payment())
+    checkout_form = CheckoutScheduleForm(prefix="checkout", 
+                                         payment_required=request.cart.cart.needs_payment())
 
     client = request.session['client']
     services_requested = get_services_from_cart(request)
@@ -121,7 +114,7 @@ def checkout(request):
                 # find out if its good or not and do stuff?  Get and print value?  Whatever
 
         if 'checkout-address' in request.POST:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout', user=request.user,
+            checkout_form = CheckoutScheduleForm(data=request.POST or None, prefix='checkout',
                                          payment_required=request.cart.cart.needs_payment())
             print("in form")
             print("valid: %s" % checkout_form.is_valid())
@@ -164,21 +157,17 @@ def checkout(request):
                                              'cart': request.cart})
 
 
-def thank_you(request):
-    appointment = request.session['appointment']
-    print("in view appointment is: %s" % appointment)
-    form = ContactForm()
+def package_checkout(request, pk):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
 
-    if request.method == "POST":
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            send_mail('New Message received from %s' % form.cleaned_data['name'],
-                      form.cleaned_data['message'], 'contact@blohaute.com',
-                      ['ajsporinsky@gmail.com'], fail_silently=True)
+    package = Package.objects.get(pk=pk)
+    coupon_form = CouponForm(prefix='coupon')
+    checkout_form = CheckoutForm(prefix="checkout", payment_required=True)
 
-            messages.success(request, 'Thank you. Your message has been sent successfully')
-            form = ContactForm()
-    return render(request, 'thankyou.html', {'contact_form': form, 'appointment': appointment})
+    return render(request, 'package_checkout.html', {'coupon_form': coupon_form,
+                                                     'checkout_form': checkout_form,
+                                                     'package': package})
 
 
 def contact_view(request):

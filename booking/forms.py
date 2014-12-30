@@ -1,11 +1,8 @@
 from django import forms
 from django.forms.formsets import formset_factory
-from django.template.defaultfilters import floatformat
-from django.utils.translation import ugettext_lazy as _
-from localflavor.us.forms import USZipCodeField, USPhoneNumberField, USStateField
+from localflavor.us.forms import USZipCodeField, USStateField
 from booking.models import Package, Membership, Treatment
 from booking.fields import CreditCardField, ExpiryDateField, VerificationValueField
-from accounts.forms import PasswordValidationMixin
 
 
 class QuickBookForm(forms.Form):
@@ -25,9 +22,7 @@ class AddToCartForm(forms.Form):
 
         if self.treatment:
             packages = Package.objects.filter(treatment=self.treatment)
-            choices = [('', 'Select a Package'),
-                       (0, 'Single %s - $%s' % (self.treatment.name, floatformat(self.treatment.price, -2)))
-                       ]
+            choices = [('', 'Select a Package'), ]
 
             choices.extend([(package.id, package.__unicode__()) for package in packages])
             self.fields['package'].choices = choices
@@ -43,9 +38,6 @@ class AddToCartForm(forms.Form):
         package = self.cleaned_data['package']
         if package == '':
             return None
-        if package == '0':
-            return self.treatment
-
         return Package.objects.filter(treatment=self.treatment).get(pk=package)
 
 
@@ -73,7 +65,6 @@ class CheckoutForm(forms.Form):
     time = forms.CharField()
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
         self.payment_required = kwargs.pop('payment_required')
         super(CheckoutForm, self).__init__(*args, **kwargs)
         if self.payment_required is False:
@@ -82,6 +73,16 @@ class CheckoutForm(forms.Form):
             self.fields['expiry_date'].required = False
             self.fields['card_code'].required = False
             self.fields['billing_zip_code'].required = False
+
+
+class ScheduleMixin(object):
+    date = forms.DateField()
+    time = forms.CharField()
+
+
+class CheckoutScheduleForm(ScheduleMixin, CheckoutForm):
+    date = forms.DateField()
+    time = forms.CharField()
 
 
 class SelectAvailableServiceForm(forms.Form):
@@ -94,7 +95,7 @@ class SelectAvailableServiceForm(forms.Form):
         super(SelectAvailableServiceForm, self).__init__(*args, **kwargs)
         self.series = kwargs['initial'].get('series', None)
         self.treatment = self.series.treatment
-        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining+1)]
+        self.fields['quantity'].choices = [(x, x) for x in range(0, self.series.remaining + 1)]
 
 #use the factory to create the base model for us
 BaseAvailableServiceFormset = formset_factory(SelectAvailableServiceForm, extra=0)

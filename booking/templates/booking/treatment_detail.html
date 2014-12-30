@@ -71,6 +71,12 @@
                             <p>{{treatment.description}}</p>
                             <hr>
                             {% if treatment.booker_id %}
+                            <form method="POST" action="{% url 'treatment_book' treatment.slug %}">
+                                {% csrf_token %}
+                                <input name="treatment" type="hidden" value={{treatment.pk}} />
+                                <button class="uk-button bh-button-secondary">Book a {{treatment.name}}</button>
+                            </form>
+
                             <form class="uk-form uk-grid" method="post">
                                     {% csrf_token %}
                                 <div class="uk-width-1-1" data-uk-margin>

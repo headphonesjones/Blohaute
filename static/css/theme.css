@@ -9172,6 +9172,7 @@ a.bh-link-primary:focus {
 }
 .bh-grid-img-cover > * > img.bh-img-height-1-1 {
   min-height: 100%;
+  width: 95%;
 }
 /* Large screen and bigger */
 @media (min-width: 1220px) {

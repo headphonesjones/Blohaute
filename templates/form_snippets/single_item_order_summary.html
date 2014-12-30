@@ -1,0 +1,56 @@
+{% load widget_tweaks %}
+<div class="uk-panel uk-panel-box uk-panel-header">
+    <h3 class="uk-panel-title">Order Summary</h3>
+    <div class="uk-width-1-1">
+        <div class="uk-alert uk-margin-bottom-remove">
+            <i class="uk-icon-info-circle uk-margin-right"></i>Have a Coupon? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-coupon', animation: 'uk-animation-fade'}">Click here to enter your code</a>
+        </div>
+        <div class="uk-panel uk-panel-space uk-hidden" id="checkout-coupon">
+            <form class="uk-form" id="coupon-form" method="POST">
+                {% csrf_token %}
+                {% if coupon_form.errors %}
+                    <div class="uk-width-1-1">
+                        <div class="uk-alert uk-alert-danger ">
+                            {% if coupon_form.non_field_errors %}
+                                {% for error in coupon_form.non_field_errors %}
+                                    <p>{{error}}</p>
+                                {% endfor %}
+                            {% else %}
+                                There was a problem checking your coupon. Please check the form and make sure that everything is filled out correctly.
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                <label class="uk-form-label" for="coupon_code">{{coupon_form.coupon_code.label}}</label>
+                {% if coupon_form.coupon_code.errors %}
+                    {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2 uk-form-danger" %}
+                    {{coupon_form.coupon_code.errors}}
+                {% else %}
+                    {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2" %}
+                {% endif %}
+                <button class="uk-button">Apply Coupon</button>
+            </form>
+        </div>
+    </div>
+     <table class="uk-table uk-table-middle uk-text-nowrap">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th class="uk-text-center">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    {{ item.cart_description }}<br>
+                </td>
+                <td class="uk-text-center">${{ item.price|floatformat:"-2" }}</td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="uk-width-1-1">
+        <button class="uk-button uk-button-primary" id="place-order-button">Place order</button>
+    </div>
+
+</div>

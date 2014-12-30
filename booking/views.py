@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, CheckoutForm, CheckoutScheduleForm, CouponForm, QuickBookForm
-from booking.models import Treatment, Package
+from booking.models import Treatment, Package, GenericItem
 import json
 
 
@@ -35,16 +35,12 @@ class TreatmentDetail(DetailView):
         self.form = AddToCartForm(request.POST, treatment=self.get_object())
 
         if self.form.is_valid():
-            cart = request.cart
             package = self.form.cleaned_data['package']
             membership = self.form.cleaned_data['membership']
             if package:
-                return HttpResponseRedirect(reverse('package_checkout'))
+                return HttpResponseRedirect(reverse('package_checkout', args=[kwargs['slug'], package.pk]))
             if membership:
                 pass
-
-            return HttpResponseRedirect(reverse('cart'))
-
         return super(TreatmentDetail, self).get(self, request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -157,7 +153,7 @@ def checkout(request):
                                              'cart': request.cart})
 
 
-def package_checkout(request, pk):
+def package_checkout(request, slug, pk):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
 
@@ -167,7 +163,7 @@ def package_checkout(request, pk):
 
     return render(request, 'package_checkout.html', {'coupon_form': coupon_form,
                                                      'checkout_form': checkout_form,
-                                                     'package': package})
+                                                     'item': package })
 
 
 def contact_view(request):

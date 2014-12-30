@@ -24,5 +24,5 @@ urlpatterns = patterns(
 
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
     url(r'^(?P<slug>\w+)/add/$', add_treatment_to_cart, name='treatment_book'),
-    url(r'^(?P<slug>\w+)/package/(P<id>\d+)/checkout/$', package_checkout, name='package_checkout'),
+    url(r'^(?P<slug>\w+)/package/(?P<pk>\d+)/checkout/$', package_checkout, name='package_checkout'),
 )

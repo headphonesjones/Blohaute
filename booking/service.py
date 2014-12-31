@@ -86,6 +86,7 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
         if error_code == 1000:
             return self.resubmit_denied_request(response)
         if error_code == 200:
+            print("error 200 formatted: %s" % formatted_response)
             for error in formatted_response['ArgumentErrors']:
                 raise ValidationError(
                     '%s: %s' % (error['ArgumentName'], error['ErrorMessage']),

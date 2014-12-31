@@ -17,7 +17,7 @@
 
         <article class="uk-article">
             <div class="uk-grid" data-uk-grid-margin>
-                {% if checkout_form.errors %}
+                    {% if checkout_form.errors %}
                     <div class="uk-width-1-1">
                         <div class="uk-alert uk-alert-danger ">
                             {% if checkout_form.non_field_errors %}
@@ -30,39 +30,38 @@
 
                         </div>
                     </div>
-                {% endif %}
-                <div class="uk-width-1-1">
-
-
-            {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
-            <form method="POST" class="uk-form">
-                {% for hidden in checkout_form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
-
-                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
-                    <div class="uk-width-medium-1-2">
-                        {% include 'form_snippets/appointment_location.html' %}
-                    </div>
-                    <div class="uk-width-medium-1-2">
-                        {% include 'form_snippets/appointment_schedule.html' %}
-                    </div>
-                </div>
-
-                <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
-                    {# if paying with series, order summary left, empty div right#}
-                    
-                    {% if cart.cart.needs_payment %}
-                    <div class="uk-width-medium-1-2">
-                        {% include 'form_snippets/appointment_payment.html' %}
-                    </div>
                     {% endif %}
-                    <div class="uk-width-medium-1-2" id="order-summary-container">
-                        {% include 'form_snippets/order_summary.html' %}
+                    <div class="uk-width-1-1">
+                        {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
+                        <form method="POST" class="uk-form">
+                        {% for hidden in checkout_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                            <div class="uk-width-medium-1-2">
+                                {% include 'form_snippets/appointment_location.html' %}
+                            </div>
+                            <div class="uk-width-medium-1-2">
+                                {% include 'form_snippets/appointment_schedule.html' %}
+                            </div>
+                        </div>
+
+                        <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                            {# if paying with series, order summary left, empty div right#}
+                            
+                            {% if cart.cart.needs_payment %}
+                            <div class="uk-width-medium-1-2">
+                                {% include 'form_snippets/appointment_payment.html' %}
+                            </div>
+                            {% endif %}
+                            <div class="uk-width-medium-1-2" id="order-summary-container">
+                                {% include 'form_snippets/order_summary.html' %}
+                            </div>
+                        </div>
+                        </form>
+                        {% endwith %}
                     </div>
-                </div>
-            </form>   
-            {% endwith %}
             </div>
         </article>
 
@@ -177,6 +176,22 @@ $(document).ready(function() {
     if ($idCheckoutTime.hasClass('uk-form-danger')) {
         $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
     }
+
+    $("#apply-coupon-button").click(function() {
+        var code = $('#id_coupon-coupon_code').val();
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'check_coupon' %}",
+            dataType: 'json',
+            data: {
+                coupon_code: code
+            },
+            success: function(data) {
+{#                alert(data);#}
+            }
+        });
+{#        $("#checkout-form").submit();#}
+    });
 });
 
 </script>

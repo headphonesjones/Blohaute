@@ -60,6 +60,17 @@ def unavailable_days(request, services_requested=None):
     return HttpResponse(json.dumps(unavailable_days))
 
 
+def check_coupon(request):
+    result = None
+    client = request.session['client']
+    coupon_code = request.GET['coupon_code']
+    if coupon_code:
+        # Do I need some kind of csrf protection here?  this isn't by form right now
+        result = client.check_coupon_code(coupon_code)
+        print("result in view is %s" % result)
+    return HttpResponse(json.dumps(result))
+
+
 def available_times_for_day(request, services_requested=None):
     time_slots = [True]
     if services_requested is None:
@@ -160,6 +171,7 @@ def package_checkout(request, slug, pk):
     package = Package.objects.get(pk=pk)
     coupon_form = CouponForm(prefix='coupon')
     checkout_form = CheckoutForm(prefix="checkout", payment_required=True)
+    client = request.session['client']
 
     if request.method == 'POST':
         print 'request method was post'

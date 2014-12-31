@@ -59,7 +59,7 @@
                                 {% include 'form_snippets/order_summary.html' %}
                             </div>
                         </div>
-                        </form>   
+                        </form>
                         {% endwith %}
                     </div>
             </div>
@@ -176,6 +176,22 @@ $(document).ready(function() {
     if ($idCheckoutTime.hasClass('uk-form-danger')) {
         $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
     }
+
+    $("#apply-coupon-button").click(function() {
+        var code = $('#id_coupon-coupon_code').val();
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'check_coupon' %}",
+            dataType: 'json',
+            data: {
+                coupon_code: code
+            },
+            success: function(data) {
+{#                alert(data);#}
+            }
+        });
+{#        $("#checkout-form").submit();#}
+    });
 });
 
 </script>

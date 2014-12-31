@@ -6,30 +6,30 @@
             <i class="uk-icon-info-circle uk-margin-right"></i>Have a Coupon? <br class="uk-visible-small"><a href="#" data-uk-toggle="{target:'#checkout-coupon', animation: 'uk-animation-fade'}">Click here to enter your code</a>
         </div>
         <div class="uk-panel uk-panel-space uk-hidden" id="checkout-coupon">
-            <form class="uk-form" id="coupon-form" method="POST">
-                {% csrf_token %}
-                {% if coupon_form.errors %}
-                    <div class="uk-width-1-1">
-                        <div class="uk-alert uk-alert-danger ">
-                            {% if coupon_form.non_field_errors %}
-                                {% for error in coupon_form.non_field_errors %}
-                                    <p>{{error}}</p>
-                                {% endfor %}
-                            {% else %}
-                                There was a problem checking your coupon. Please check the form and make sure that everything is filled out correctly.
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-                <label class="uk-form-label" for="coupon_code">{{coupon_form.coupon_code.label}}</label>
+{#            <form class="uk-form" id="coupon-form" method="POST">#}
+{#                {% csrf_token %}#}
+{#                {% if coupon_form.errors %}#}
+{#                    <div class="uk-width-1-1">#}
+{#                        <div class="uk-alert uk-alert-danger ">#}
+{#                            {% if coupon_form.non_field_errors %}#}
+{#                                {% for error in coupon_form.non_field_errors %}#}
+{#                                    <p>{{error}}</p>#}
+{#                                {% endfor %}#}
+{#                            {% else %}#}
+{#                                There was a problem checking your coupon. Please check the form and make sure that everything is filled out correctly.#}
+{#                            {% endif %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endif %}#}
+                <label class="uk-form-label" for="coupon_code">{{ coupon_form.coupon_code.label }}</label>
                 {% if coupon_form.coupon_code.errors %}
                     {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2 uk-form-danger" %}
                     {{coupon_form.coupon_code.errors}}
                 {% else %}
                     {% render_field coupon_form.coupon_code placeholder="Coupon Code..." class+="uk-width-1-2" %}
                 {% endif %}
-                <button class="uk-button">Apply Coupon</button>
-            </form>
+                <button class="uk-button" id="apply-coupon-button" type="button">Apply Coupon</button>
+{#            </form>#}
         </div>
     </div>
      <table class="uk-table uk-table-middle uk-text-nowrap">
@@ -54,13 +54,13 @@
             {% endfor %}
             <tr>
                 <td colspan=2><b>Order Total Price</b></td>
-                <td class="uk-text-center">{{cart.cart.total_price_display}}</b></td>
+                <td class="uk-text-center"><b>{{ cart.cart.total_price_display }}</b></td>
             </tr>
 
         </tbody>
     </table>
 
-    <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i><br />Also stylists do not carry cash on them so they can not break large bills</span>
+    <span class="uk-float-left"><i class="uk-icon-money uk-text-large"></i> ALL TIPS SHOULD BE MADE IN CASH <i class="uk-icon-money uk-text-large"></i><br />Stylists do not carry cash to break large bills</span>
 
     <div class="uk-width-1-1">
         <button class="uk-button uk-button-primary" id="place-order-button">Place order</button>

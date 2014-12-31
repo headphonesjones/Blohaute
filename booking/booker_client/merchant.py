@@ -16,6 +16,29 @@ class BookerMerchantMixin(object):
     def get_locations(self):
         return BookerMerchantRequest('/locations', self.merchant_token).post()
 
+    def check_coupon_code(self, coupon_code):
+        params = {
+            # 'LocationID': self.location_id,
+            'CouponCode': coupon_code
+            # 'ValidateSpecial': True
+            # ,'BookingDate':
+            # ,'AppointmentDate':
+        }
+        response = BookerMerchantRequest('/special/location/%s' % self.location_id, self.merchant_token, params).get(params)
+        coupon_result = self.process_response(response)
+        if coupon_result['IsSuccess']:
+            coupon_result = {
+                'description': coupon_result['Description'],
+                'amount': coupon_result['DiscountAmount'],
+                'available': coupon_result['AvailableRedemptions'],
+                'name': coupon_result['Name']
+            }
+            print("Coupon result is %s for code %s" % (coupon_result, coupon_code))
+            return coupon_result
+        else:
+            print("I don't know how to exception handle yet and we broke booking with result: %s" % coupon_result)
+            return None
+
     def get_customer_series(self, treatment_id=None):
         """
         Gets a list series for the customer, optionally filtered by a specific treatment.

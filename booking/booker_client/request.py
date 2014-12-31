@@ -51,10 +51,13 @@ class BookerRequest(Request):
         self.params = None
         return self.send()
 
-    def get(self):
+    def get(self, params=None):
         self.method = 'GET'
         if self.token:
             self.params['access_token'] = self.token
+        if params is not None:
+            self.params.update(params)
+        # print("params in get is %s" % self.params)
         return self.send()
 
     def delete(self):

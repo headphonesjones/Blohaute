@@ -2,13 +2,14 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.forms import ValidationError
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic.base import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, PaymentForm, CouponForm, QuickBookForm, ScheduleServiceForm
-from booking.models import Treatment, Package, Order
+from booking.models import Treatment, Package, Order, GenericItem
 import json
 
 
@@ -109,109 +110,90 @@ def schedule(request):
     return render(request, 'booking/schedule.html', {'schedule_form': schedule_form})
 
 
-@csrf_protect
-def payment(request):
-    order = request.session['order']
-
+class PaymentView(View):
     coupon_form = CouponForm(prefix='coupon')
     payment_form = PaymentForm(prefix='payment')
 
-    if request.method == 'POST':
-        order = request.session['order']
-        client = request.session['client']
+    def get(self, request, *args, **kwargs):
+        self.get_order(request)
+        self.client = request.session['client']
+        return render(request, 'booking/payment.html', {'coupon_form': self.coupon_form,
+                                                        'payment_form': self.payment_form,
+                                                        'order': self.order})
 
+    def post(self, request, *args, **kwargs):
+        self.get_order(request)
+        self.client = request.session['client']
         if 'coupon-coupon_code' in request.POST:
-            coupon_form = CouponForm(data=request.POST, prefix='coupon')
-            if coupon_form.is_valid():
-                try:
-                    coupon_code = coupon_form.cleaned_data.get('coupon_code')
-                    coupon_data = client.check_coupon_code(coupon_code)
-                    order.discount_text = coupon_data['description']
-                    order.discount_amount = coupon_data['amount']
-                except ValidationError as error:
-                    coupon_form.add_error(None, error)
-
+            self.process_coupon_form(request)
         else:
-            payment_form = PaymentForm(data=request.POST, prefix='payment')
-            if payment_form.is_valid():
-                data = payment_form.cleaned_data
-                try:
-                    payment_item = client.get_booker_credit_card_payment_item(data['billing_zip_code'],
-                                                                              data['card_code'],
-                                                                              data['card_number'],
-                                                                              data['expiry_date'].month,
-                                                                              data['expiry_date'].year,
-                                                                              data['name_on_card'])
-                    
-                    appointment = client.book_appointment(order.itinerary, request.user.first_name, request.user.last_name, order.address,
-                                                          order.city. order.state, order.zip_code,
-                                                          request.user.email, request.user.phone_number, payment_item,
-                                                          order.notes)
+            self.process_payment_form(request)
+        return render(request, 'booking/payment.html', {'coupon_form': self.coupon_form,
+                                                        'payment_form': self.payment_form,
+                                                        'order': self.order})
 
-                    if appointment is not None:
+    def get_order(self, request):
+        self.order = request.session['order']
 
-                        request.cart.clear()
-                        request.session['order'] = None
-                        messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
-                        return HttpResponseRedirect(reverse('welcome'))
-                    else:
-                        messages.error(request, "Your booking could not be completed. Please try again.")
-                except ValidationError as error:
-                    checkout_form.add_error(None, error)
+    def process_coupon_form(self, request):
+        self.coupon_form = CouponForm(data=request.POST, prefix='coupon')
+        if self.coupon_form.is_valid():
+            try:
+                coupon_code = self.coupon_form.cleaned_data.get('coupon_code')
+                coupon_data = self.client.check_coupon_code(coupon_code)
+                self.order.discount_text = coupon_data['description']
+                self.order.discount_amount = coupon_data['amount']
+            except ValidationError as error:
+                self.coupon_form.add_error(None, error)
 
-    return render(request, 'booking/payment.html', {'coupon_form': coupon_form,
-                                                    'payment_form': payment_form,
-                                                    'order': order})
+    def process_payment_form(self, request):
+        self.payment_form = PaymentForm(data=request.POST, prefix='payment')
+        if self.payment_form.is_valid():
+            data = self.payment_form.cleaned_data
+            try:
+                payment_item = self.client.get_booker_credit_card_payment_item(data['billing_zip_code'],
+                                                                          data['card_code'],
+                                                                          data['card_number'],
+                                                                          data['expiry_date'].month,
+                                                                          data['expiry_date'].year,
+                                                                          data['name_on_card'])
+                
+                appointment = self.client.book_appointment(self.order.itinerary, request.user.first_name, request.user.last_name, self.order.address,
+                                                      self.order.city. self.order.state, self.order.zip_code,
+                                                      request.user.email, request.user.phone_number, payment_item,
+                                                      self.order.notes)
 
+                if appointment is not None:
 
-def package_checkout(request, slug, pk):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect("%s?next=%s" % (reverse('login_register'), reverse('package_checkout', args=[slug, pk])))  # if there's no user, ask them to login or register
-
-    package = Package.objects.get(pk=pk)
-    coupon_form = CouponForm(prefix='coupon')
-    checkout_form = CheckoutForm(prefix="checkout", payment_required=True)
-    client = request.session['client']
-
-    if request.method == 'POST':
-        print 'request method was post'
-        if 'coupon-coupon_code' in request.POST:
-            print 'coupon'
-            coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
-            if coupon_form.is_valid():
-                coupon = coupon_form.cleaned_data.get('coupon_code')
-                client = request.session['client']
-                print('coupon is %s' % coupon)
-                # find out if its good or not and do stuff?  Get and print value?  Whatever
-
-        else:
-            checkout_form = CheckoutForm(data=request.POST or None, prefix='checkout',
-                                         payment_required=True)
-            print("in form")
-            print("valid: %s" % checkout_form.is_valid())
-            if checkout_form.is_valid():
-                data = checkout_form.cleaned_data
-                try:
-                    # get payment method
-                    payment_item = client.get_booker_credit_card_payment_item(data['billing_zip_code'],
-                                                                              data['card_code'],
-                                                                              data['card_number'],
-                                                                              data['expiry_date'].month,
-                                                                              data['expiry_date'].year,
-                                                                              data['name_on_card'])
-
-                    #make the payment create the series
-
+                    request.cart.clear()
+                    request.session['order'] = None
                     messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
                     return HttpResponseRedirect(reverse('welcome'))
-                except ValidationError as error:
-                    checkout_form.add_error(None, error)
-            else:
-                print checkout_form.errors
+                else:
+                    messages.error(request, "Your booking could not be completed. Please try again.")
+            except ValidationError as error:
+                self.payment_form.add_error(None, error)
 
-    return render(request, 'package_checkout.html', {'coupon_form': coupon_form,
-                                                     'checkout_form': checkout_form,
-                                                     'item': package})
+
+class PackagePaymentView(PaymentView):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect("%s?next=%s" % (reverse('login_register'), reverse('package_checkout', args=[self.kwargs['slug'], self.kwargs['pk']])))  # if there's no user, ask them to login or register
+        return super(PackagePaymentView, self).get(request, args, kwargs)
+
+    def get_order(self, request):
+        package = Package.objects.get(pk=self.kwargs['pk'])
+        
+        self.order = request.session.get('order', None)
+        if not self.order or (self.order and (len(self.order.items) != 1 or self.order.items[0].product != package)):
+            request.session['order'] = Order()
+            self.order = request.session['order']
+            self.order.items = [GenericItem(product=package, quantity=1)]
+
+    def process_payment_form(self, request):
+        self.payment_form = PaymentForm(data=request.POST, prefix='payment')
+        if self.payment_form.is_valid():
+            pass
 
 
 def contact_view(request):

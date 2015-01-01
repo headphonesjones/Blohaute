@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
-from booking.views import (TreatmentList, TreatmentDetail, contact_view, package_checkout, schedule,
-                           payment, available_times_for_day, unavailable_days, add_treatment_to_cart)
+from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
+                           PaymentView, available_times_for_day, unavailable_days, add_treatment_to_cart)
 
 urlpatterns = patterns(
     '',
@@ -16,7 +16,7 @@ urlpatterns = patterns(
 
     url(r'^cart/', include('changuito.urls')),
     url(r'^schedule/', schedule, name='schedule'),
-    url(r'^payment/', payment, name='payment'),
+    url(r'^payment/', PaymentView.as_view(), name='payment'),
 
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
@@ -25,5 +25,5 @@ urlpatterns = patterns(
 
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
     url(r'^(?P<slug>\w+)/add/$', add_treatment_to_cart, name='treatment_book'),
-    url(r'^(?P<slug>\w+)/package/(?P<pk>\d+)/checkout/$', package_checkout, name='package_checkout'),
+    url(r'^(?P<slug>\w+)/package/(?P<pk>\d+)/checkout/$', PackagePaymentView.as_view(), name='package_checkout'),
 )

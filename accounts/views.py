@@ -109,7 +109,7 @@ def login(request):
 def login_register(request):
     login_form = AuthenticationRememberMeForm()
     registration_form = RegistrationForm()
-    next_url = request.GET.get('next', reverse('checkout'))
+    next_url = request.GET.get('next', reverse('schedule'))
     return render(request, 'registration/login_register.html',
                   {'login_form': login_form, 'registration_form': registration_form,
                    'next': next_url})
@@ -250,7 +250,7 @@ def profile_view(request):
                         print("Series id from ACCOUNTS IS %s" % form.series.series_id)
                         cart.add(treatment, treatment.price, quantity, form.series.series_id)
 
-                return HttpResponseRedirect(reverse('checkout'))
+                return HttpResponseRedirect(reverse('schedule'))
 
             else:
                 messages.error(request, "There was a problem scheduling your appointment. Please check the form and try again.")

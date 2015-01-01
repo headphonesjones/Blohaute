@@ -234,7 +234,7 @@ class GenericItem(object):
         self.price = price
 
     def total_price(self):
-        return float(self.quantity) * float(self.price)
+        return float(self.quantity) * float(self.product.price)
     total_price = property(total_price)
 
 

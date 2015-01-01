@@ -127,7 +127,9 @@ class PaymentView(View):
         if 'coupon-coupon_code' in request.POST:
             self.process_coupon_form(request)
         else:
-            self.process_payment_form(request)
+            results = self.process_payment_form(request)
+            if results:
+                return results
         return render(request, 'booking/payment.html', {'coupon_form': self.coupon_form,
                                                         'payment_form': self.payment_form,
                                                         'order': self.order})
@@ -182,19 +184,30 @@ class PackagePaymentView(PaymentView):
         return super(PackagePaymentView, self).get(request, args, kwargs)
 
     def get_order(self, request):
-        package = Package.objects.get(pk=self.kwargs['pk'])
+        self.package = Package.objects.get(pk=self.kwargs['pk'])
         
         self.order = request.session.get('order', None)
-        if not self.order or (self.order and (len(self.order.items) != 1 or self.order.items[0].product != package)):
+        if not self.order or (self.order and (len(self.order.items) != 1 or self.order.items[0].product != self.package)):
             request.session['order'] = Order()
             self.order = request.session['order']
-            self.order.items = [GenericItem(product=package, quantity=1)]
+            self.order.items = [GenericItem(product=self.package, quantity=1)]
 
     def process_payment_form(self, request):
         self.payment_form = PaymentForm(data=request.POST, prefix='payment')
         if self.payment_form.is_valid():
-            pass
-
+            data = self.payment_form.cleaned_data
+            try:
+                self.client.buy_series(self.package.booker_id, 
+                                       data['card_number'],
+                                       data['name_on_card'],
+                                       data['expiry_date'].year,
+                                       data['expiry_date'].month,
+                                       data['card_code'],
+                                       data['billing_zip_code'])
+            except Exception as error:
+                print error
+        else:
+            print self.payment_form.errors
 
 def contact_view(request):
     if request.method == "GET":

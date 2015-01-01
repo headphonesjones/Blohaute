@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from booking.forms import AddToCartForm, ContactForm, CheckoutForm, CheckoutScheduleForm, CouponForm, QuickBookForm
+from booking.forms import AddToCartForm, ContactForm, PaymentForm, CouponForm, QuickBookForm, ScheduleServiceForm
 from booking.models import Treatment, Package, Order
 import json
 
@@ -60,20 +60,6 @@ def unavailable_days(request, services_requested=None):
     return HttpResponse(json.dumps(unavailable_days))
 
 
-def check_coupon(request):
-    coupon_code = request.GET['coupon_code']
-    if coupon_code:
-        try:
-            client = request.session['client']
-            coupon_data = client.check_coupon_code(coupon_code)
-            order = request.session['order']
-            order.discount_text = coupon_data['description']
-            order.discount_amount = coupon_data['amount']
-            return HttpResponse(json.dumps(coupon_data))
-        except ValidationError:
-            return HttpResponseNotFound(json.dumps({'description': 'No matching coupon was found'}))
-
-
 def available_times_for_day(request, services_requested=None):
     time_slots = [True]
     if services_requested is None:
@@ -93,68 +79,89 @@ def get_services_from_cart(request):
     return [item for item in request.cart if isinstance(item.product, Treatment)]
 
 
-def get_payment_from_cart(request):
-    return [item for item in request.cart if isinstance(item.product, Treatment)]
-
-
 @csrf_protect
-def checkout(request):
+def schedule(request):
     if request.cart.is_empty():
-        print 'cart is empty at checkout'
         return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
 
-    coupon_form = CouponForm(prefix='coupon')
-    checkout_form = CheckoutScheduleForm(prefix="checkout",
-                                         payment_required=request.cart.cart.needs_payment())
-
-    client = request.session['client']
-    order = Order()
-    order.items = get_services_from_cart(request)
-    request.session['order'] = order
+    if request.method == 'GET':
+        order = Order()
+        order.items = get_services_from_cart(request)
+        request.session['order'] = order
+        schedule_form = ScheduleServiceForm()
 
     if request.method == 'POST':
-        if 'checkout-address' in request.POST:
-            checkout_form = CheckoutScheduleForm(data=request.POST or None, prefix='checkout',
-                                                 payment_required=request.cart.cart.needs_payment())
-            if checkout_form.is_valid():
-                data = checkout_form.cleaned_data
+        client = request.session['client']
+        schedule_form = ScheduleServiceForm(data=request.POST)
+        if schedule_form.is_valid():
+            data = schedule_form.cleaned_data
+            request.session['order'].itinerary = client.get_itinerary_for_slot_multiple(order.items,
+                                                                                        data['date'], data['time'])
+            request.session['order'].address = data['address']
+            request.session['order'].city = data['city']
+            request.session['order'].state = data['state']
+            request.session['order'].zip_code = data['zip_code']
+            request.session['order'].notes = data['notes']
+            return HttpResponseRedirect(reverse('payment'))
+
+    return render(request, 'booking/schedule.html', {'schedule_form': schedule_form})
+
+
+@csrf_protect
+def payment(request):
+    order = request.session['order']
+
+    coupon_form = CouponForm(prefix='coupon')
+    payment_form = PaymentForm(prefix='payment')
+
+    if request.method == 'POST':
+        order = request.session['order']
+        client = request.session['client']
+
+        if 'coupon-coupon_code' in request.POST:
+            coupon_form = CouponForm(data=request.POST, prefix='coupon')
+            if coupon_form.is_valid():
                 try:
-                    itinerary = client.get_itinerary_for_slot_multiple(order.items,
-                                                                       data['date'], data['time'])
-                    print("itin is %s" % itinerary)
-                    # get payment method
+                    coupon_code = coupon_form.cleaned_data.get('coupon_code')
+                    coupon_data = client.check_coupon_code(coupon_code)
+                    order.discount_text = coupon_data['description']
+                    order.discount_amount = coupon_data['amount']
+                except ValidationError as error:
+                    coupon_form.add_error(None, error)
+
+        else:
+            payment_form = PaymentForm(data=request.POST, prefix='payment')
+            if payment_form.is_valid():
+                data = payment_form.cleaned_data
+                try:
                     payment_item = client.get_booker_credit_card_payment_item(data['billing_zip_code'],
                                                                               data['card_code'],
                                                                               data['card_number'],
                                                                               data['expiry_date'].month,
                                                                               data['expiry_date'].year,
                                                                               data['name_on_card'])
-                    for item in order.items:
-                        print("item is %r %s" % (item, item.series_id))
-                        # if item.series_id:
-                        #     payment_items.append(client.get_booker_series_payment_item(item.series_id))
-                        # else:
-                        # # BOOKER DOES NOT ACCEPT SERIES AS PAYMENT - Waiting on feedback, but CC for now
-                    appointment = client.book_appointment(itinerary, request.user.first_name, request.user.last_name, data['address'],
-                                                          data['city'], data['state'], data['zip_code'],
+                    
+                    appointment = client.book_appointment(order.itinerary, request.user.first_name, request.user.last_name, order.address,
+                                                          order.city. order.state, order.zip_code,
                                                           request.user.email, request.user.phone_number, payment_item,
-                                                          data['notes'])
+                                                          order.notes)
+
                     if appointment is not None:
 
                         request.cart.clear()
+                        request.session['order'] = None
                         messages.success(request, "Your order was successfully placed! Edit your order(s) below and information below.")
                         return HttpResponseRedirect(reverse('welcome'))
                     else:
                         messages.error(request, "Your booking could not be completed. Please try again.")
                 except ValidationError as error:
                     checkout_form.add_error(None, error)
-            else:
-                print checkout_form.errors
-    return render(request, 'checkout.html', {'coupon_form': coupon_form,
-                                             'checkout_form': checkout_form,
-                                             'order': order})
+
+    return render(request, 'booking/payment.html', {'coupon_form': coupon_form,
+                                                    'payment_form': payment_form,
+                                                    'order': order})
 
 
 def package_checkout(request, slug, pk):

@@ -4,35 +4,35 @@
     {# If series available but not selected, add radio or drop down to be able to use one? #}
     {# Same with memberships? #}
     <div class="uk-width-1-1">
-        <label class="uk-form-label" for="card-number">{{checkout_form.name_on_card.label}}</label>
-        {% render_field checkout_form.name_on_card class+="uk-form-large uk-width-1-1" %}
-        {{checkout_form.name_on_card.errors}}
+        <label class="uk-form-label" for="card-number">{{payment_form.name_on_card.label}}</label>
+        {% render_field payment_form.name_on_card class+="uk-form-large uk-width-1-1" %}
+        {{payment_form.name_on_card.errors}}
     </div>
 
     <div class="uk-width-1-1">
-        <label class="uk-form-label" for="card-number">{{checkout_form.card_number.label}}</label>
-        {% render_field checkout_form.card_number class+="uk-form-large uk-width-1-1" %}
-        {{checkout_form.card_number.errors}}
+        <label class="uk-form-label" for="card-number">{{payment_form.card_number.label}}</label>
+        {% render_field payment_form.card_number class+="uk-form-large uk-width-1-1" %}
+        {{payment_form.card_number.errors}}
     </div>
     <div class="uk-width-1-1 uk-width-small-1-2">
-        <label class="uk-form-label" for="expiry_date">{{checkout_form.expiry_date.label}}</label>
-        {% render_field checkout_form.expiry_date class+="uk-form-large" %}
-        {{checkout_form.expiry_date.errors}}
+        <label class="uk-form-label" for="expiry_date">{{payment_form.expiry_date.label}}</label>
+        {% render_field payment_form.expiry_date class+="uk-form-large" %}
+        {{payment_form.expiry_date.errors}}
     </div>
 
     <div class="uk-width-2-10">
-        <label class="uk-form-label" for="card_code">{{checkout_form.card_code.label}}</label>
-        {% if checkout_form.card_code.errors %}
-            {% render_field checkout_form.card_code class+="uk-form-large" %}
+        <label class="uk-form-label" for="card_code">{{payment_form.card_code.label}}</label>
+        {% if payment_form.card_code.errors %}
+            {% render_field payment_form.card_code class+="uk-form-large" %}
         {% else %}
-            {% render_field checkout_form.card_code class+="uk-form-large uk-width-1-1" %}
+            {% render_field payment_form.card_code class+="uk-form-large uk-width-1-1" %}
         {% endif %}
-        {{checkout_form.card_code.errors}}
+        {{payment_form.card_code.errors}}
     </div>
     <div class="uk-width-3-10">
-        <label class="uk-form-label" for="zip_code">{{checkout_form.billing_zip_code.label}}</label>
-            {% render_field checkout_form.billing_zip_code class+="uk-form-large uk-width-1-1" %}
-        {{checkout_form.billing_zip_code.errors}}
+        <label class="uk-form-label" for="zip_code">{{payment_form.billing_zip_code.label}}</label>
+            {% render_field payment_form.billing_zip_code class+="uk-form-large uk-width-1-1" %}
+        {{payment_form.billing_zip_code.errors}}
     </div>
 
 

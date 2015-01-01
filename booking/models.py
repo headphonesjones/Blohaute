@@ -246,10 +246,14 @@ class Order(object):
     items = []
     discount_text = None
     discount_amount = None
+    itenerary = None
     appointment = None
 
     def total_price(self):
-        return sum(i.total_price for i in self.items)
+        total = sum(i.total_price for i in self.items)
+        if self.discount_amount:
+            total -= self.discount_amount
+        return total
 
     def total_price_display(self):
         return "$%s" % (floatformat(self.total_price(), -2))

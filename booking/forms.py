@@ -45,44 +45,12 @@ class CouponForm(forms.Form):
     coupon_code = forms.CharField()
 
 
-class CheckoutForm(forms.Form):
-    #appointment location
-    address = forms.CharField(error_messages={'required': 'Enter your address'})
-    city = forms.CharField(error_messages={'required': 'Enter a city'})
-    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}), error_messages={'required': 'Enter state'})
-    zip_code = USZipCodeField(error_messages={'required': 'ZIP is required'})
-    notes = forms.CharField(required=False, label="Other Notes",
-                            widget=forms.Textarea(attrs={'rows': 3}))
-
-    #billing Information
+class PaymentForm(forms.Form):
     name_on_card = forms.CharField(error_messages={'required': 'Enter the name on your credit card'})
     card_number = CreditCardField(error_messages={'required': 'Enter your credit card number'})
     expiry_date = ExpiryDateField()
     card_code = VerificationValueField(label="CVV")
     billing_zip_code = USZipCodeField(label="Billing Zip", error_messages={'required': 'ZIP is required'})
-
-    date = forms.DateField()
-    time = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
-        self.payment_required = kwargs.pop('payment_required')
-        super(CheckoutForm, self).__init__(*args, **kwargs)
-        if self.payment_required is False:
-            self.fields['name_on_card'].required = False
-            self.fields['card_number'].required = False
-            self.fields['expiry_date'].required = False
-            self.fields['card_code'].required = False
-            self.fields['billing_zip_code'].required = False
-
-
-class ScheduleMixin(object):
-    date = forms.DateField()
-    time = forms.CharField()
-
-
-class CheckoutScheduleForm(ScheduleMixin, CheckoutForm):
-    date = forms.DateField()
-    time = forms.CharField()
 
 
 class SelectAvailableServiceForm(forms.Form):

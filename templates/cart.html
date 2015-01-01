@@ -64,7 +64,7 @@
                                     <td colspan="6">
                                         <form class="uk-form uk-grid" data-uk-margin>
                                             <div class="uk-width-3-3 uk-text-right">
-                                                <a href="{% if user.is_authenticated %}{% url 'checkout' %}{% else %}{% url 'login_register' %}{% endif %}" class="uk-button uk-button-primary" id="checkout-button">Checkout</a>
+                                                <a href="{% if user.is_authenticated %}{% url 'schedule' %}{% else %}{% url 'login_register' %}{% endif %}" class="uk-button uk-button-primary" id="checkout-button">Checkout</a>
                                             </div>
                                         </form>
                                     </td>

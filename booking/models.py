@@ -228,6 +228,28 @@ class GenericItem(object):
     product = None
     quantity = 1
 
-    def __init__(self, product, quantity=1):
+    def __init__(self, product, quantity=1, price=None):
         self.product = product
         self.quantity = quantity
+        self.price = price
+
+    def total_price(self):
+        return float(self.quantity) * float(self.price)
+    total_price = property(total_price)
+
+
+    def total_price_display(self):
+        return "$%s %s" % (floatformat(self.total_price, -2), self.product.price_units())
+
+
+class Order(object):
+    items = []
+    discount_text = None
+    discount_amount = None
+    appointment = None
+
+    def total_price(self):
+        return sum(i.total_price for i in self.items)
+
+    def total_price_display(self):
+        return "$%s" % (floatformat(self.total_price(), -2))

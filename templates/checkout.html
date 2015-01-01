@@ -51,11 +51,10 @@
                         <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
                             {# if paying with series, order summary left, empty div right#}
                             
-                            {% if cart.cart.needs_payment %}
                             <div class="uk-width-medium-1-2">
                                 {% include 'form_snippets/appointment_payment.html' %}
                             </div>
-                            {% endif %}
+
                             <div class="uk-width-medium-1-2" id="order-summary-container">
                                 {% include 'form_snippets/order_summary.html' %}
                             </div>
@@ -189,6 +188,9 @@ $(document).ready(function() {
             },
             success: function(data) {
 {#                alert(data);#}
+            },
+            failure: function(data) {
+                alert(data);
             }
         });
 {#        $("#checkout-form").submit();#}

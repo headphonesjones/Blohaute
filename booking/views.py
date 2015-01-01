@@ -2,13 +2,13 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.forms import ValidationError
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, CheckoutForm, CheckoutScheduleForm, CouponForm, QuickBookForm
-from booking.models import Treatment, Package
+from booking.models import Treatment, Package, Order
 import json
 
 
@@ -61,14 +61,17 @@ def unavailable_days(request, services_requested=None):
 
 
 def check_coupon(request):
-    result = None
-    client = request.session['client']
     coupon_code = request.GET['coupon_code']
     if coupon_code:
-        # Do I need some kind of csrf protection here?  this isn't by form right now
-        result = client.check_coupon_code(coupon_code)
-        print("result in view is %s" % result)
-    return HttpResponse(json.dumps(result))
+        try:
+            client = request.session['client']
+            coupon_data = client.check_coupon_code(coupon_code)
+            order = request.session['order']
+            order.discount_text = coupon_data['description']
+            order.discount_amount = coupon_data['amount']
+            return HttpResponse(json.dumps(coupon_data))
+        except ValidationError:
+            return HttpResponseNotFound(json.dumps({'description': 'No matching coupon was found'}))
 
 
 def available_times_for_day(request, services_requested=None):
@@ -107,28 +110,18 @@ def checkout(request):
                                          payment_required=request.cart.cart.needs_payment())
 
     client = request.session['client']
-    services_requested = get_services_from_cart(request)
-    for item in services_requested:
-        print("item is %r %s" % (item, item.series_id))
+    order = Order()
+    order.items = get_services_from_cart(request)
+    request.session['order'] = order
 
     if request.method == 'POST':
-        if 'coupon-coupon_code' in request.POST:
-            coupon_form = CouponForm(data=request.POST or None, prefix='coupon')
-            if coupon_form.is_valid():
-                coupon = coupon_form.cleaned_data.get('coupon_code')
-                client = request.session['client']
-                print('coupon is %s' % coupon)
-                # find out if its good or not and do stuff?  Get and print value?  Whatever
-
         if 'checkout-address' in request.POST:
             checkout_form = CheckoutScheduleForm(data=request.POST or None, prefix='checkout',
                                                  payment_required=request.cart.cart.needs_payment())
-            print("in form")
-            print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():
                 data = checkout_form.cleaned_data
                 try:
-                    itinerary = client.get_itinerary_for_slot_multiple(services_requested,
+                    itinerary = client.get_itinerary_for_slot_multiple(order.items,
                                                                        data['date'], data['time'])
                     print("itin is %s" % itinerary)
                     # get payment method
@@ -138,7 +131,7 @@ def checkout(request):
                                                                               data['expiry_date'].month,
                                                                               data['expiry_date'].year,
                                                                               data['name_on_card'])
-                    for item in services_requested:
+                    for item in order.items:
                         print("item is %r %s" % (item, item.series_id))
                         # if item.series_id:
                         #     payment_items.append(client.get_booker_series_payment_item(item.series_id))
@@ -161,7 +154,7 @@ def checkout(request):
                 print checkout_form.errors
     return render(request, 'checkout.html', {'coupon_form': coupon_form,
                                              'checkout_form': checkout_form,
-                                             'cart': request.cart})
+                                             'order': order})
 
 
 def package_checkout(request, slug, pk):

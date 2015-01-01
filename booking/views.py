@@ -122,7 +122,7 @@ def checkout(request):
 
         if 'checkout-address' in request.POST:
             checkout_form = CheckoutScheduleForm(data=request.POST or None, prefix='checkout',
-                                         payment_required=request.cart.cart.needs_payment())
+                                                 payment_required=request.cart.cart.needs_payment())
             print("in form")
             print("valid: %s" % checkout_form.is_valid())
             if checkout_form.is_valid():
@@ -144,9 +144,9 @@ def checkout(request):
                         #     payment_items.append(client.get_booker_series_payment_item(item.series_id))
                         # else:
                         # # BOOKER DOES NOT ACCEPT SERIES AS PAYMENT - Waiting on feedback, but CC for now
-                    appointment = client.book_appointment(itinerary, data['first_name'], data['last_name'], data['address'],
+                    appointment = client.book_appointment(itinerary, request.user.first_name, request.user.last_name, data['address'],
                                                           data['city'], data['state'], data['zip_code'],
-                                                          data['email_address'], data['phone_number'], payment_item,
+                                                          request.user.email, request.user.phone_number, payment_item,
                                                           data['notes'])
                     if appointment is not None:
 
@@ -211,13 +211,12 @@ def package_checkout(request, slug, pk):
 
     return render(request, 'package_checkout.html', {'coupon_form': coupon_form,
                                                      'checkout_form': checkout_form,
-                                                     'item': package })
+                                                     'item': package})
 
 
 def contact_view(request):
     if request.method == "GET":
         form = ContactForm()
-
         return render(request, 'contact.html', {'contact_form': form})
 
     if request.method == "POST":

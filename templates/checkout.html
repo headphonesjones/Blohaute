@@ -34,6 +34,7 @@
                     <div class="uk-width-1-1">
                         {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
                         <form method="POST" class="uk-form">
+                        {% csrf_token %}
                         {% for hidden in checkout_form.hidden_fields %}
                             {{ hidden }}
                         {% endfor %}

@@ -96,6 +96,7 @@ class BookerMerchantMixin(object):
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
                          email, phone, payment_item, notes, coupon_code):
+        # print("Booking with coupon code: %s" % coupon_code)
         if self.customer:
             adjusted_customer = self.customer.copy()
         else:
@@ -117,6 +118,9 @@ class BookerMerchantMixin(object):
 
         if 'GUID' in adjusted_customer:
             adjusted_customer.pop('GUID')
+        adjusted_customer['ID'] = self.customer_id
+
+        # print("Adjusted customer is: %s" % adjusted_customer)
         treatments = []
         first_treatment = itinerary[0]
         for idx, treatment in enumerate(itinerary):
@@ -135,7 +139,7 @@ class BookerMerchantMixin(object):
             'LocationID': self.location_id,
             'ResourceTypeID': 1,
             'AppointmentTreatmentDTOs': treatments,
-            'AppointmentDate': first_treatment['StartDateTime'],  # Date needs to be itinerary start date
+            'AppointmentDate': first_treatment['StartDateTime'],
             'AppointmentPayment': {
                 'CouponCode': coupon_code,
                 'PaymentItem': payment_item
@@ -301,7 +305,7 @@ class BookerMerchantMixin(object):
         result = []
         if len(employee_in_all_set) <= 0:
             # what should we do here - this means no appointment is available with one employee for all services?
-            print("OH FUCK NOOOOOOOO")
+            print("No timeslot actually had the same employee back to back. We don't handle this yet")
         else:
             employee = employee_in_all_set.pop()
             for time in times_to_slot_by_employee:

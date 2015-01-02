@@ -123,6 +123,7 @@ class PaymentView(View):
     payment_form = PaymentForm(prefix='payment')
     order = None
     client = None
+    coupon_code = None
 
     def get(self, request, *args, **kwargs):
         self.get_order(request)
@@ -155,6 +156,7 @@ class PaymentView(View):
                 coupon_data = self.client.check_coupon_code(coupon_code)
                 self.order.discount_text = coupon_data['description']
                 self.order.discount_amount = coupon_data['amount']
+                self.order.coupon_code = coupon_code
             except ValidationError as error:
                 self.coupon_form.add_error(None, error)
 
@@ -169,13 +171,10 @@ class PaymentView(View):
                                                                           data['expiry_date'].month,
                                                                           data['expiry_date'].year,
                                                                           data['name_on_card'])
-                coupon_code = self.coupon_form.cleaned_data.get('coupon_code')
-                if not coupon_code:
-                    coupon_code = ''
                 appointment = self.client.book_appointment(
                     self.order.itinerary, request.user.first_name, request.user.last_name, self.order.address,
                     self.order.city, self.order.state, self.order.zip_code, request.user.email,
-                    request.user.phone_number, payment_item, None, coupon_code)
+                    request.user.phone_number, payment_item, None, self.order.coupon_code)
 
                 if appointment is not None:
 

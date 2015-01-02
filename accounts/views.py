@@ -295,12 +295,36 @@ def reschedule(request, pk):
     form = RescheduleForm()
     client = request.session['client']
     appointment = client.get_appointment(pk)
+    if appointment.customer_id != client.customer_id:  #quick security check
+        raise Exception
+
     request.session['reschedule_items'] = [GenericItem(treatment.treatment) for treatment in appointment.treatments]
     if request.method == 'POST':
         form = RescheduleForm(request.POST)
         if form.is_valid():
-            # update the order / delete the old order and create a new one
-            pass
+            client = request.session['client']
+            data = form.cleaned_data
+            itinerary = client.get_itinerary_for_slot_multiple(request.session['reschedule_items'], data['date'], data['time'])
+            print("got slot %s" % itinerary)
+            payment_item = appointment.payment
+            print("payment item is %s" % payment_item)
+            appointment = client.book_appointment(itinerary, request.user.first_name, request.user.last_name,
+                                                  appointment.address['Street1'], appointment.address['City'],
+                                                  appointment.address['State'], appointment.address['Zip'],
+                                                  request.user.email, request.user.phone_number,
+                                                  payment_item['PaymentItem'], None, payment_item['CouponCode'])
+            print("past book")
+            if appointment is not None:
+                # request.cart.clear()
+                request.session['order'] = None
+                response = client.cancel_appointment(pk)
+                print("cancel response on view is %s " % response)
+                if response['IsSuccess'] is False:
+                    raise Exception
+                messages.success(request, "Your appointment was successfully rescheduled!")
+                return HttpResponseRedirect(reverse('welcome'))
+            else:
+                messages.error(request, "Your appointment could not be rescheduled. Please try again.")
     return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form': form, 'appointment': appointment})
 
 

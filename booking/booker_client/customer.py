@@ -282,46 +282,6 @@ class BookerCustomerMixin(object):
                 print("nope %s vs %s" % (new_time, itin_time))
         return None
 
-    def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
-                         email, phone, ccnum, name_on_card, expyear, expmonth, cccode, billingzip, notes):
-        if self.customer:
-            adjusted_customer = self.customer.copy()
-        else:
-            adjusted_customer = {
-                'LocationID': self.location_id,
-                'Email': email,
-                'FirstName': first_name,
-                'LastName': last_name,
-                'HomePhone': phone
-            }
-
-        adjusted_customer['Address'] = {
-            'Street1': address,
-            # 'Street2': notes,
-            'City': city,
-            'State': state,
-            'Zip': zipcode
-        }
-
-        adjusted_customer.pop('GUID')
-        params = {
-            'LocationID': self.location_id,
-            'ItineraryTimeSlotList': [itinerary],
-            'AppointmentPayment': {
-                'CouponCode': '',
-                'PaymentItem': self.get_booker_credit_card_payment_item(billingzip, cccode, ccnum, expmonth, expyear,
-                                                                        name_on_card)
-            },
-            'Customer': adjusted_customer,
-            'Notes': notes
-        }
-
-        # print(params)
-
-        response = BookerAuthedRequest('/appointment/create', self.customer_token, params).post()
-        print("book response %s" % response)
-        return self.process_response(response)
-
     def buy_series(self, series_id, ccnum, name_on_card, expyear, expmonth, cccode, billingzip):
         params = {
             'LocationID': self.location_id,

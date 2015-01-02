@@ -19,9 +19,10 @@ from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
                             EmailUpdateForm, PasswordResetForm, SetPasswordForm)
 from booking.forms import AvailableServiceFormset, RescheduleForm
-from booking.models import Treatment, GenericItem
+from booking.models import Treatment, GenericItem, Order
 from booking.views import unavailable_days, available_times_for_day
 from changuito.proxy import CartDoesNotExist
+
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -239,19 +240,16 @@ def profile_view(request):
         if 'services-TOTAL_FORMS' in request.POST:
             service_formset = AvailableServiceFormset(series=series, prefix="services", data=request.POST)
             if service_formset.is_valid():
-                cart = request.cart
-                cart.clear()
-                schedule_items = []
+                request.session['order'] = Order()
+                order = request.session['order']
                 for form in service_formset:
                     quantity = form.cleaned_data['quantity']
                     if quantity > 0:
                         treatment = Treatment.objects.get(pk=form.cleaned_data['treatment_id'])
-                        schedule_items.append({'treatment': treatment, quantity: 'quantity', 'source': form.series})
-                        print("Series id from ACCOUNTS IS %s" % form.series.series_id)
-                        cart.add(treatment, treatment.price, quantity, form.series.series_id)
-
-                return HttpResponseRedirect(reverse('schedule'))
-
+                        item = GenericItem(treatment, quantity=quantity)
+                        item.source = form.series
+                        order.items.append(item)
+                return HttpResponseRedirect("%s?series=true" % reverse('schedule'))
             else:
                 messages.error(request, "There was a problem scheduling your appointment. Please check the form and try again.")
 

@@ -227,6 +227,7 @@ class AppointmentManager(object):
 class GenericItem(object):
     product = None
     quantity = 1
+    source = None
 
     def __init__(self, product, quantity=1, price=None):
         self.product = product
@@ -236,7 +237,6 @@ class GenericItem(object):
     def total_price(self):
         return float(self.quantity) * float(self.product.price)
     total_price = property(total_price)
-
 
     def total_price_display(self):
         return "$%s %s" % (floatformat(self.total_price, -2), self.product.price_units())

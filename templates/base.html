@@ -155,16 +155,13 @@
             </div>
         </div>
 
-             {% if messages %}
+        {% for message in messages %}
             <div class="uk-width-1-1">
-                <div class="uk-alert">
-                    {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endfor %}
+                <div class="uk-alert {{ message.tags }}">
+                    <li>{{ message }}</li>
 
                 </div>
-            </div>
-        {% endif %}
+            </div>            {% endfor %}
 
 {% block content %}{% endblock %}
 
@@ -344,4 +341,3 @@
             </div>
     </body>
 </html>
-

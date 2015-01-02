@@ -82,18 +82,25 @@ def get_services_from_cart(request):
 
 @csrf_protect
 def schedule(request):
-    if request.cart.is_empty():
-        return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('login_register'))  # if there's no user, ask them to login or register
+    series = False
+    if request.GET.get('series', None):
+        series = True
 
     if request.method == 'GET':
-        order = Order()
-        order.items = get_services_from_cart(request)
-        request.session['order'] = order
+        if series:
+            order = request.session['order']
+        else:  # use the cart
+            if request.cart.is_empty():
+                return HttpResponseRedirect(reverse('book'))  # if there's nothing in the cart, go to book
+            order = Order()
+            order.items = get_services_from_cart(request)
+            request.session['order'] = order
         schedule_form = ScheduleServiceForm()
 
     if request.method == 'POST':
+        print request
         client = request.session['client']
         schedule_form = ScheduleServiceForm(data=request.POST)
         if schedule_form.is_valid():
@@ -107,7 +114,7 @@ def schedule(request):
             request.session['order'].notes = data['notes']
             return HttpResponseRedirect(reverse('payment'))
 
-    return render(request, 'booking/schedule.html', {'schedule_form': schedule_form})
+    return render(request, 'booking/schedule.html', {'schedule_form': schedule_form, 'series':series})
 
 
 class PaymentView(View):
@@ -208,6 +215,7 @@ class PackagePaymentView(PaymentView):
                 print error
         else:
             print self.payment_form.errors
+
 
 def contact_view(request):
     if request.method == "GET":

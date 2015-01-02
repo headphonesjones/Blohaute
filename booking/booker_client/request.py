@@ -1,5 +1,6 @@
 import json
 from requests import Request, Session
+from django.conf import settings
 
 
 class BookerRequest(Request):

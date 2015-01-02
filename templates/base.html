@@ -156,12 +156,15 @@
         </div>
 
         {% for message in messages %}
+        <div class="uk-grid" data-uk-grid-margin>
             <div class="uk-width-1-1">
-                <div class="uk-alert {{ message.tags }}">
+                <div class="uk-success {{ message.tags }}">
                     <li>{{ message }}</li>
 
                 </div>
-            </div>            {% endfor %}
+            </div>            
+        </div>
+        {% endfor %}
 
 {% block content %}{% endblock %}
 

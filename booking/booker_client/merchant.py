@@ -4,14 +4,14 @@ from django.conf import settings
 from django.forms import ValidationError
 from datetime import timedelta, datetime, date
 from booking.booker_client.dates import *
-
+from os import environ
 
 # noinspection PyUnresolvedReferences
 class BookerMerchantMixin(object):
 
     merchant_token = None
-    merchant_password = 'Test123!'
-    merchant_user = 'blohauteweb'
+    merchant_user = environ['merchant_user']
+    merchant_password = environ['merchant_password']
 
     def get_locations(self):
         return BookerMerchantRequest('/locations', self.merchant_token).post()

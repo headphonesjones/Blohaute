@@ -126,6 +126,7 @@ class SetPasswordForm(forms.Form):
                                     widget=forms.PasswordInput)
     new_password2 = forms.CharField(label=_("New password confirmation"),
                                     widget=forms.PasswordInput)
+    key = forms.CharField(widget=forms.HiddenInput)
 
     def clean_newpassword1(self):
         # clean the new password to match API requirements

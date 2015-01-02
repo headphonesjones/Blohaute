@@ -21,7 +21,7 @@ from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, Pass
 from booking.forms import AvailableServiceFormset, RescheduleForm
 from booking.models import Treatment, GenericItem
 from booking.views import unavailable_days, available_times_for_day
-
+from changuito.proxy import CartDoesNotExist
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -57,8 +57,10 @@ def register(request):
             new_user = authenticate(email=request.POST['email'],
                                     password=request.POST['password1'])
             auth_login(request, new_user)
-            request.cart.replace(request.session.get('CART-ID'), new_user)
-
+            try:
+                request.cart.replace(request.session.get('CART-ID'), new_user)
+            except CartDoesNotExist:
+                pass
             # store the user password for the length of the session
             client.user = new_user
 
@@ -146,8 +148,7 @@ def logout(request, next_page=None,
     }
     if extra_context is not None:
         context.update(extra_context)
-    return TemplateResponse(request, template_name, context,
-        current_app=current_app)
+    return TemplateResponse(request, template_name, context, current_app=current_app)
 
 
 @csrf_protect
@@ -157,15 +158,12 @@ def forgot_password(request):
         if form.is_valid():
             client = request.session['client']
             try:
-                client.reset_password(form.cleaned_data['email'], form.cleaned_data['first_name'])
-                messages.success(request, 'Your password has been updated successfully. Please login to continue')
-                return HttpResponseRedirect(reverse('login'))
+                client.send_reset_password_link(form.cleaned_data['email'], form.cleaned_data['first_name'])
+                return HttpResponseRedirect(reverse('forgot_success'))
             except ValidationError as e:
                 form.add_error(None, e)
-
     else:
         form = PasswordResetForm()
-
     return render(request, 'registration/forgot_password.html', {'form': form})
 
 
@@ -176,13 +174,15 @@ def reset_forogtten_password(request):
         if form.is_valid():
             client = request.session['client']
             try:
-                #update password on server
+                client.reset_password(form.cleaned_data['key'], form.cleaned_data['new_password1'])
                 form.save()
-                return HttpResponseRedirect(reverse('welcome'))
+                messages.success(request, 'Your password has been updated successfully. Please login to continue')
+                return HttpResponseRedirect(reverse('login'))
             except ValidationError as e:
                 form.add_error(None, e)
     else:
-        form = SetPasswordForm()
+        print request
+        form = SetPasswordForm(initial={'key':request.GET['Key']})
 
     return render(request, 'registration/reset_password.html', {'password_form': form})
 

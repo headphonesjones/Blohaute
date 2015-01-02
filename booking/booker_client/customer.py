@@ -148,9 +148,9 @@ class BookerCustomerMixin(object):
         response = BookerAuthedRequest('/customer/%s' % self.customer_id, self.customer_token, params).put()
         return self.process_response(response)
 
-    def reset_password(self, email, first_name):
+    def send_reset_password_link(self, email, first_name):
         """
-        resets a forgotten customer password
+        sends an email to allow the user to reset their password
         """
         params = {'Firstname': first_name,
                   'LocationID': self.location_id,
@@ -158,7 +158,16 @@ class BookerCustomerMixin(object):
                   'BaseUrlOfHost': "http://blohaute.com%s" % reverse('reset_password')
                   }
         response = BookerRequest('/forgot_password/custom', self.token, params).post()
-        print response.text
+        return self.process_response(response)
+
+    def reset_password(self, key, password):
+        """
+        resets a forgotten customer password
+        """
+        params = {'Key': key,
+                  'Password': password,
+          }
+        response = BookerRequest('/password/reset', self.token, params).post()
         return self.process_response(response)
 
     def delete_customer(self):

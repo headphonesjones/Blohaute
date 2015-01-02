@@ -132,9 +132,7 @@ $(document).ready(function() {
                     },
                     success: function(data) {
                         timePicker.set('disable', data);
-                        if (datesLoaded == true) {
-                            $('#appointment-loading').fadeOut();
-                        }
+                        $('#appointment-loading').fadeOut();
                     }
                 });
             }
@@ -157,16 +155,8 @@ $(document).ready(function() {
     var spinner = new Spinner().spin();
     $(spinner.el).appendTo(document.getElementById('appointment-loading'));
 
-    $.ajax({
-        type: 'GET',
-        url: "{% url 'unavailable_days' %}",
-        dataType: 'json',
-        success: function(data) {
-            picker.set('disable', data);
-            datesLoaded = true;
-            $('#appointment-loading').fadeOut();
-        }
-    });
+    $('#appointment-loading').hide();
+
 
     //make time and date borders red if there are errors
     if ($idCheckout.hasClass('uk-form-danger')) {

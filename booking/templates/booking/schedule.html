@@ -117,9 +117,11 @@ $(document).ready(function() {
                 $( "#spinning-loader" ).remove();
         },
         onSet: function(context) {
-            var $idCheckoutHidden = $("#id_checkout-date_hidden");
+            var $idCheckoutHidden = $("#id_date_hidden");
+            
             if (context['select'] && $idCheckoutHidden.val()) {
                 $('#appointment-loading').fadeIn();
+
                 timePicker.set('disable', true);
                 $.ajax({
                     type: 'POST',

@@ -54,7 +54,8 @@ class TreatmentDetail(DetailView):
 
 def unavailable_days(request, services_requested=None):
     if services_requested is None:
-        services_requested = get_services_from_cart(request)
+        services_requested = request.session['order'].items
+    print services_requested
     client = request.session['client']
     unavailable_days = client.get_unavailable_warm_period(services_requested)
     unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
@@ -64,7 +65,7 @@ def unavailable_days(request, services_requested=None):
 def available_times_for_day(request, services_requested=None):
     time_slots = [True]
     if services_requested is None:
-        services_requested = get_services_from_cart(request)
+        services_requested = request.session['order'].items
 
     client = request.session['client']
     available_times = client.get_available_times_for_day(services_requested, request.POST['date'])

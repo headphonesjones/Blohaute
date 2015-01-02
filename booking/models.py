@@ -181,6 +181,8 @@ class Appointment(BookerModel):
     can_cancel = None
     treatments = []
     payment = None
+    address = None
+    raw = None
 
     def __init__(self, data=None):
         if data:
@@ -193,10 +195,12 @@ class Appointment(BookerModel):
             self.status = data['Status']['ID']
             self.can_cancel = data['CanCancel']
             self.treatments = []
-            # self.payment = data['AppointmentPayment']
+            self.payment = data['AppointmentPayment']
+            self.address = data['Customer']['Address']
             for appointment in data['AppointmentTreatments']:
                 treatment = AppointmentItem(appointment)
                 self.treatments.append(treatment)
+            self.raw = data
 
     def is_past(self):
         return datetime.now() - self.start_datetime > timedelta(minutes=5)

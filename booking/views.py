@@ -169,11 +169,13 @@ class PaymentView(View):
                                                                           data['expiry_date'].month,
                                                                           data['expiry_date'].year,
                                                                           data['name_on_card'])
-                
+                coupon_code = self.coupon_form.cleaned_data.get('coupon_code')
+                if not coupon_code:
+                    coupon_code = ''
                 appointment = self.client.book_appointment(
                     self.order.itinerary, request.user.first_name, request.user.last_name, self.order.address,
                     self.order.city, self.order.state, self.order.zip_code, request.user.email,
-                    request.user.phone_number, payment_item, None)
+                    request.user.phone_number, payment_item, None, coupon_code)
 
                 if appointment is not None:
 

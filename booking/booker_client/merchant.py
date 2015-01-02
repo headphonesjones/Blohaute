@@ -5,6 +5,7 @@ from django.forms import ValidationError
 from datetime import timedelta, datetime, date
 from booking.booker_client.dates import *
 
+
 # noinspection PyUnresolvedReferences
 class BookerMerchantMixin(object):
 
@@ -73,6 +74,17 @@ class BookerMerchantMixin(object):
         result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
         print result
         return result
+
+    # def reschedule(self, appointment_id):
+    #     params = {
+    #         'CustomerID': self.customer_id,
+    #         'LocationID': self.location_id
+    #     }
+    #     response = BookerMerchantRequest('/appointment/move', self.merchant_token, params).put()
+    #     appointment_results = self.process_response(response)
+    #     result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
+    #     print result
+    #     return result
 
     def get_appointment(self, id):
         """

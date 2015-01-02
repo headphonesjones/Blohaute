@@ -301,11 +301,10 @@ def reschedule(request, pk):
         if form.is_valid():
             # update the order / delete the old order and create a new one
             pass
-    return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form':form, 'appointment': appointment})
+    return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form': form, 'appointment': appointment})
 
 
 def reschedule_days(request, pk):
-    client = request.session['client']
     return unavailable_days(request, request.session['reschedule_items'])
 
 

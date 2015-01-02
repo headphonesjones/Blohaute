@@ -89,6 +89,7 @@ def schedule(request):
     if request.GET.get('series', None):
         series = True
 
+    schedule_form = ScheduleServiceForm(data=request.POST)
     if request.method == 'GET':
         if series:
             order = request.session['order']
@@ -101,26 +102,27 @@ def schedule(request):
         schedule_form = ScheduleServiceForm()
 
     if request.method == 'POST':
+        order = request.session['order']
         print request
         client = request.session['client']
-        schedule_form = ScheduleServiceForm(data=request.POST)
         if schedule_form.is_valid():
             data = schedule_form.cleaned_data
-            request.session['order'].itinerary = client.get_itinerary_for_slot_multiple(order.items,
-                                                                                        data['date'], data['time'])
-            request.session['order'].address = data['address']
-            request.session['order'].city = data['city']
-            request.session['order'].state = data['state']
-            request.session['order'].zip_code = data['zip_code']
-            request.session['order'].notes = data['notes']
+            order.itinerary = client.get_itinerary_for_slot_multiple(order.items, data['date'], data['time'])
+            order.address = data['address']
+            order.city = data['city']
+            order.state = data['state']
+            order.zip_code = data['zip_code']
+            # request.session['order'].notes = data['notes']
             return HttpResponseRedirect(reverse('payment'))
 
-    return render(request, 'booking/schedule.html', {'schedule_form': schedule_form, 'series':series})
+    return render(request, 'booking/schedule.html', {'schedule_form': schedule_form, 'series': series})
 
 
 class PaymentView(View):
     coupon_form = CouponForm(prefix='coupon')
     payment_form = PaymentForm(prefix='payment')
+    order = None
+    client = None
 
     def get(self, request, *args, **kwargs):
         self.get_order(request)
@@ -168,10 +170,10 @@ class PaymentView(View):
                                                                           data['expiry_date'].year,
                                                                           data['name_on_card'])
                 
-                appointment = self.client.book_appointment(self.order.itinerary, request.user.first_name, request.user.last_name, self.order.address,
-                                                      self.order.city. self.order.state, self.order.zip_code,
-                                                      request.user.email, request.user.phone_number, payment_item,
-                                                      self.order.notes)
+                appointment = self.client.book_appointment(
+                    self.order.itinerary, request.user.first_name, request.user.last_name, self.order.address,
+                    self.order.city, self.order.state, self.order.zip_code, request.user.email,
+                    request.user.phone_number, payment_item, None)
 
                 if appointment is not None:
 

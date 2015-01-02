@@ -180,6 +180,7 @@ class Appointment(BookerModel):
     final_total = None
     can_cancel = None
     treatments = []
+    payment = None
 
     def __init__(self, data=None):
         if data:
@@ -192,6 +193,7 @@ class Appointment(BookerModel):
             self.status = data['Status']['ID']
             self.can_cancel = data['CanCancel']
             self.treatments = []
+            # self.payment = data['AppointmentPayment']
             for appointment in data['AppointmentTreatments']:
                 treatment = AppointmentItem(appointment)
                 self.treatments.append(treatment)

@@ -95,7 +95,6 @@ def login(request):
                 auth_login(request, form.get_user())
                 print "cart is empty %s" % request.cart.is_empty()
                 request.cart.replace(request.session.get('CART-ID'), user)
-                print next_url
                 if next_url:
                     return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse('welcome'))
@@ -103,7 +102,10 @@ def login(request):
             except ValidationError as e:
                 form.add_error(None, e)
             except CartDoesNotExist:
-                pass
+                if next_url:
+                    return HttpResponseRedirect(next_url)
+                return HttpResponseRedirect(reverse('welcome'))
+
 
     return render(request, 'registration/login_page.html', {'login_form': form, 'next': next_url})
 

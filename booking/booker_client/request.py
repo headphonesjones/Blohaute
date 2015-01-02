@@ -6,7 +6,7 @@ class BookerRequest(Request):
     """
     Sets up, sends, and processes a single request to the Booker API
     """
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/CustomerService.svc'
+    base_url = 'https://app.secure-booker.com/webservice4/json/CustomerService.svc'
     path = None
     method = None
     params = {}
@@ -75,4 +75,4 @@ class BookerAuthedRequest(BookerRequest):
 
 
 class BookerMerchantRequest(BookerRequest):
-    base_url = 'https://stable-app.secure-booker.com/webservice4/json/BusinessService.svc'
+    base_url = 'https://app.secure-booker.com/webservice4/json/BusinessService.svc'

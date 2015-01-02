@@ -95,7 +95,7 @@ class BookerMerchantMixin(object):
         return Appointment(self.process_response(response)['Appointment'])
 
     def book_appointment(self, itinerary, first_name, last_name, address, city, state, zipcode,
-                         email, phone, payment_item, notes):
+                         email, phone, payment_item, notes, coupon_code):
         if self.customer:
             adjusted_customer = self.customer.copy()
         else:
@@ -137,7 +137,7 @@ class BookerMerchantMixin(object):
             'AppointmentTreatmentDTOs': treatments,
             'AppointmentDate': first_treatment['StartDateTime'],  # Date needs to be itinerary start date
             'AppointmentPayment': {
-                'CouponCode': '',
+                'CouponCode': coupon_code,
                 'PaymentItem': payment_item
             },
             'Customer': adjusted_customer,
@@ -163,6 +163,41 @@ class BookerMerchantMixin(object):
         response = BookerMerchantRequest('/appointment/cancel', self.merchant_token, params).put()
         print response.text
         return self.process_response(response)
+
+    def change_appointment(self, itinerary, appointment):
+        treatments = []
+        first_treatment = itinerary[0]
+        for idx, treatment in enumerate(itinerary):
+            end_time_json = format_date_for_booker_json(
+                parse_date(treatment['StartDateTime']) + timedelta(minutes=treatment['Duration']))
+            treatments.append({
+                'TreatmentID': treatment['TreatmentID'],
+                'StartTime': treatment['StartDateTime'],
+                'RoomID': treatment['RoomID'],
+                'EndTime': end_time_json,
+                'EmployeeID': treatment['EmployeeID']
+            })
+        customer_object = appointment.raw['Customer']
+        if 'GUID' in customer_object:
+            customer_object.pop('GUID')
+        params = {
+            'AppointmentDate': first_treatment['StartDateTime'],
+            'AppointmentTreatmentDTOs': treatments,
+            'Customer': customer_object,
+            'ID': appointment.raw['ID'],
+            'ResourceTypeID': 1
+        }
+        print("reschedule params: %s" % params)
+        response = BookerMerchantRequest('/appointment', self.merchant_token, params).put()
+        print("response for reschedule is %s" % response)
+        appointment = self.process_response(response)
+
+        success = appointment['IsSuccess']
+        if not success:
+            print("On no, we died on booking, params was %s and appointment was %s" % (params, appointment))
+            return None
+
+        return Appointment(appointment['Appointment'])
 
     def get_availability(self, treatment, start_date, end_date):
         params = {

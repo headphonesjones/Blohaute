@@ -1,0 +1,71 @@
+{% extends "minimal_base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block page_title %}Checkout{% endblock %}
+
+{% block content %}
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+
+        <ul class="uk-breadcrumb">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'book' %}">Book</a></li>
+            <li class="uk-active"><span>Checkout</span></li>
+        </ul>
+
+        <article class="uk-article">
+            <div class="uk-grid" data-uk-grid-margin>
+                {% if checkout_form.errors %}
+                <div class="uk-width-1-1">
+                    <div class="uk-alert uk-alert-danger ">
+                        {% if checkout_form.non_field_errors %}
+                            {% for error in checkout_form.non_field_errors %}
+                                <p>{{error}}</p>
+                            {% endfor %}
+                        {% else %}
+                            There was a problem booking your order. Please correct the errors below and try again.
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% endif %}
+                <div class="uk-width-1-1">
+                    <h1>You will be able to schedule your appointements after checking out</h1>
+                    {% with WIDGET_ERROR_CLASS='uk-form-danger' WIDGET_REQUIRED_CLASS='required' %}
+                        {% for hidden in checkout_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+               
+                        <div class="uk-grid uk-margin-large-top" data-uk-grid-margin>
+                            {# if paying with series, order summary left, empty div right#}
+                    
+                            <form id="checkout-form" method="POST" class="uk-form uk-width-medium-1-2">
+                                {% csrf_token %}
+                                {% include 'form_snippets/appointment_payment.html' %}
+                            </form>   
+    
+                            <div class="uk-width-medium-1-2" id="order-summary-container">
+                                {% include 'form_snippets/single_item_order_summary.html' %}
+                            </div>
+                        </div>
+                    {% endwith %}
+                </div>
+            </div>
+        </article>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$(document).ready(function() {
+    $("#place-order-button").click(function() {
+        $("#checkout-form").submit();
+    });
+});
+
+</script>
+{% endblock %}

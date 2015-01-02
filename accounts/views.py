@@ -102,6 +102,8 @@ def login(request):
 
             except ValidationError as e:
                 form.add_error(None, e)
+            except CartDoesNotExist:
+                pass
 
     return render(request, 'registration/login_page.html', {'login_form': form, 'next': next_url})
 

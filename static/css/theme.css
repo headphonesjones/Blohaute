@@ -216,6 +216,11 @@ nav > div > ul > li > .active{
   min-height: 260px;
 }
 
+#coupon-form > button{
+  margin-left: 96px;
+  margin-top: 10px;
+}
+
 /* Links
  ========================================================================== */
 /*

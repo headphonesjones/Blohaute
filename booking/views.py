@@ -205,13 +205,20 @@ class PackagePaymentView(PaymentView):
         if self.payment_form.is_valid():
             data = self.payment_form.cleaned_data
             try:
-                self.client.buy_series(self.package.booker_id, 
+                result = self.client.buy_series(self.package.booker_id, 
                                        data['card_number'],
                                        data['name_on_card'],
                                        data['expiry_date'].year,
                                        data['expiry_date'].month,
                                        data['card_code'],
                                        data['billing_zip_code'])
+                if result['IsSuccess']:
+                    request.session['order'] = None
+                    messages.success(request, "Your order was successfully placed! You can schedule your appointments below.")
+                    return HttpResponseRedirect(reverse('welcome'))
+                else:
+                    self.payment_form.add_error(None, "There was an unknown error completing your order. Please try again.")
+
             except Exception as error:
                 print error
         else:

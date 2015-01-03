@@ -72,7 +72,8 @@ def register(request):
                 return HttpResponseRedirect(next_url)
             return HttpResponseRedirect(reverse('welcome'))
 
-        return render(request, 'registration/registration_page.html', {'registration_form': form, 'next': next_url})
+        return render(request, 'registration/registration_page.html',
+                      {'registration_form': form, 'next': next_url})
 
 
 @sensitive_post_parameters()
@@ -106,7 +107,6 @@ def login(request):
                     return HttpResponseRedirect(next_url)
                 return HttpResponseRedirect(reverse('welcome'))
 
-
     return render(request, 'registration/login_page.html', {'login_form': form, 'next': next_url})
 
 
@@ -120,6 +120,7 @@ def login_register(request):
     return render(request, 'registration/login_register.html',
                   {'login_form': login_form, 'registration_form': registration_form,
                    'next': next_url})
+
 
 def logout(request, next_page=None,
            template_name='registration/logged_out.html',
@@ -163,7 +164,8 @@ def forgot_password(request):
         if form.is_valid():
             client = request.session['client']
             try:
-                client.send_reset_password_link(form.cleaned_data['email'], form.cleaned_data['first_name'])
+                client.send_reset_password_link(form.cleaned_data['email'],
+                                                form.cleaned_data['first_name'])
                 return HttpResponseRedirect(reverse('forgot_success'))
             except ValidationError as e:
                 form.add_error(None, e)
@@ -181,13 +183,14 @@ def reset_forogtten_password(request):
             try:
                 client.reset_password(form.cleaned_data['key'], form.cleaned_data['new_password1'])
                 form.save()
-                messages.success(request, 'Your password has been updated successfully. Please login to continue')
+                messages.success(request, 'Your password has been updated successfully. \
+                                 Please login to continue')
                 return HttpResponseRedirect(reverse('login'))
             except ValidationError as e:
                 form.add_error(None, e)
     else:
         print request
-        form = SetPasswordForm(initial={'key':request.GET['Key']})
+        form = SetPasswordForm(initial={'key': request.GET['Key']})
 
     return render(request, 'registration/reset_password.html', {'password_form': form})
 
@@ -284,7 +287,8 @@ def cancel_view(request, pk):
                 raise Exception
             return HttpResponseRedirect(reverse('welcome'))
         except:
-            messages.error(request, "There was a problem canceling your appointment. If you have trouble, please call or email for assistance.")
+            messages.error(request, "There was a problem canceling your appointment. \
+                           If you have trouble, please call or email for assistance.")
 
     return render(request, 'appointment/appointment_cancel.html', {'appt_id': pk})
 
@@ -292,10 +296,16 @@ def cancel_view(request, pk):
 @login_required
 @csrf_protect
 def reschedule(request, pk):
+    #send reschedule to contact page until it actually works
+    messages.info(request, "Sorry. Online rescheduling is currently unavailable. \
+                  Please call (312) 961-6190 to reschedule or fill out the form below \
+                  and we will contact you.")
+    return HttpResponseRedirect(reverse('contact'))
+
     form = RescheduleForm()
     client = request.session['client']
     appointment = client.get_appointment(pk)
-    if appointment.customer_id != client.customer_id:  #quick security check
+    if appointment.customer_id != client.customer_id:  # quick security check
         raise Exception
 
     request.session['reschedule_items'] = [GenericItem(treatment.treatment) for treatment in appointment.treatments]

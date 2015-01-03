@@ -40,7 +40,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.blohaute.com', 'blohaute.com', 'beta.blohaute.com']
 
 
 # Application definition

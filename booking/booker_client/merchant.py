@@ -72,7 +72,6 @@ class BookerMerchantMixin(object):
         response = BookerMerchantRequest('/appointments', self.merchant_token, params).post()
         appointment_results = self.process_response(response)
         result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
-        print result
         return result
 
     # def reschedule(self, appointment_id):

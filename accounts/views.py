@@ -245,6 +245,11 @@ def profile_view(request):
                 messages.error(request, "There was a problem updating your account. Please check the form and try again.")
 
         if 'services-TOTAL_FORMS' in request.POST:
+            messages.info(request, "Sorry. Online scheduling of packages is currently unavailable. \
+                              Please call (312) 961-6190 to reschedule or fill out the form below \
+                              and we will contact you.")
+            return HttpResponseRedirect(reverse('contact'))
+
             service_formset = AvailableServiceFormset(series=series, prefix="services", data=request.POST)
             if service_formset.is_valid():
                 request.session['order'] = Order()
@@ -335,7 +340,8 @@ def reschedule(request, pk):
                 return HttpResponseRedirect(reverse('welcome'))
             else:
                 messages.error(request, "Your appointment could not be rescheduled. Please try again.")
-    return render(request, 'appointment/reschedule.html', {'appt_id': pk, 'form': form, 'appointment': appointment})
+    return render(request, 'appointment/reschedule.html',
+                  {'appt_id': pk, 'form': form, 'appointment': appointment})
 
 
 def reschedule_days(request, pk):

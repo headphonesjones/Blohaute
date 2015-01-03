@@ -252,6 +252,7 @@ class Order(object):
     items = []
     discount_text = None
     discount_amount = None
+    coupon_code = None
     itenerary = None
     appointment = None
 

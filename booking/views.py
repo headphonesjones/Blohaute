@@ -11,6 +11,7 @@ from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, PaymentForm, CouponForm, QuickBookForm, ScheduleServiceForm
 from booking.models import Treatment, Package, Order, GenericItem
 import json
+from booking.booker_client.dates import parse_date
 
 
 class TreatmentList(ListView):
@@ -153,7 +154,13 @@ class PaymentView(View):
         if self.coupon_form.is_valid():
             try:
                 coupon_code = self.coupon_form.cleaned_data.get('coupon_code')
-                coupon_data = self.client.check_coupon_code(coupon_code)
+                print 'vvvvvvvvvvv'
+                print request.session['order'].itinerary
+                print request.session['order'].itinerary[0]['StartDateTime']
+                print '^^^^^^^^^^^^'
+                
+                date = parse_date(request.session['order'].itinerary[0]['StartDateTime'])
+                coupon_data = self.client.check_coupon_code(coupon_code, date)
                 self.order.discount_text = coupon_data['description']
                 self.order.discount_amount = coupon_data['amount']
                 self.order.coupon_code = coupon_code

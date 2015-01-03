@@ -16,13 +16,13 @@ class BookerMerchantMixin(object):
     def get_locations(self):
         return BookerMerchantRequest('/locations', self.merchant_token).post()
 
-    def check_coupon_code(self, coupon_code):
+    def check_coupon_code(self, coupon_code, appointment_date):
         params = {
-            # 'LocationID': self.location_id,
-            'CouponCode': coupon_code
-            # 'ValidateSpecial': True
-            # ,'BookingDate':
-            # ,'AppointmentDate':
+            'LocationID': self.location_id,
+            'CouponCode': coupon_code,
+            'ValidateSpecial': True,
+            'BookingDate': format_date_for_booker_json(datetime.now()),
+            'AppointmentDate': format_date_for_booker_json(appointment_date),
         }
         response = BookerMerchantRequest('/special/location/%s' % self.location_id, self.merchant_token, params).get(params)
         coupon_result = self.process_response(response)

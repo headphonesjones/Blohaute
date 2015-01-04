@@ -15,7 +15,7 @@ def remove_cart_item(request):
         form = DeleteItemForm(request.POST)
         if form.is_valid():
             request.cart.remove_item(form.cleaned_data['pk'])
-        return HttpResponseRedirect(reverse('cart'))
+    return HttpResponseRedirect(reverse('cart'))
 
 
 def update_quanity(request):

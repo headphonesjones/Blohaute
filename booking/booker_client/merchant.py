@@ -22,8 +22,9 @@ class BookerMerchantMixin(object):
             'CouponCode': coupon_code,
             'ValidateSpecial': True,
             'BookingDate': format_date_for_booker_json(datetime.now()),
-            'AppointmentDate': format_date_for_booker_json(appointment_date),
         }
+        if appointment_date:
+            params['AppointmentDate'] = format_date_for_booker_json(appointment_date)
         response = BookerMerchantRequest('/special/location/%s' % self.location_id, self.merchant_token, params).get(params)
         coupon_result = self.process_response(response)
         if coupon_result['IsSuccess']:

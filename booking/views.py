@@ -154,7 +154,9 @@ class PaymentView(View):
         if self.coupon_form.is_valid():
             try:
                 coupon_code = self.coupon_form.cleaned_data.get('coupon_code')
-                date = parse_date(request.session['order'].itinerary[0]['StartDateTime'])
+                date = None
+                if hasattr(request.session['order'].itinerary, 'itinerary'):
+                    date = parse_date(request.session['order'].itinerary[0]['StartDateTime'])
                 coupon_data = self.client.check_coupon_code(coupon_code, date)
                 self.order.discount_text = coupon_data['description']
                 self.order.discount_amount = coupon_data['amount']

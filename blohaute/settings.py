@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    #3rd party libraries
+    # 3rd party libraries
     'widget_tweaks',  # allows easy modification of form widgets
     'changuito',  # shopping cart
     'django_bleach',  # safe html sanitizing
@@ -61,8 +61,9 @@ INSTALLED_APPS = (
     'localflavor',
     'adminsortable',
     'raven.contrib.django.raven_compat',
-
-    #project apps
+    'rest_framework',
+    'rest_framework.authtoken',
+    # project apps
     'accounts',
     'booking',
     'settings',
@@ -115,6 +116,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
 
 BLOHAUTE_LOCATION_ID = '29033'
 

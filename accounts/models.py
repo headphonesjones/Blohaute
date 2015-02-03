@@ -50,7 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     photo = models.ImageField(upload_to='nowhere/', blank=True)
 
-    booker_id = models.IntegerField(null=True, blank=True)
+    booker_id = models.IntegerField(default=0)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

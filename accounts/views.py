@@ -15,9 +15,19 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.edit import DeleteView
+from rest_framework import generics, permissions, status, response
+from rest_framework.views import APIView
+from rest_framework import parsers
+from rest_framework import renderers
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework import exceptions
+
 from accounts.models import User
 from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, PasswordUpdateForm,
                             EmailUpdateForm, PasswordResetForm, SetPasswordForm)
+from accounts.serializers import UserSerializer, ForgotPasswordSerializer, RegistrationSerializer
 from booking.forms import AvailableServiceFormset, RescheduleForm
 from booking.models import Treatment, GenericItem, Order
 from booking.views import unavailable_days, available_times_for_day
@@ -379,3 +389,81 @@ class UserDelete(DeleteView):
         self.object.delete()
 
         return HttpResponseRedirect(success_url)
+
+
+### API ###
+
+class ObtainAuthToken(APIView):
+    throttle_classes = ()
+    permission_classes = ()
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def post(self, request):
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        print serializer.validated_data
+
+        try:
+            client = self.request.session['client']
+            client.login(user.email, serializer.validated_data['password'])
+            client.user = user
+        except:
+            msg = _('Unable to log in with provided credentials.')
+            raise exceptions.ValidationError(msg)
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key})
+
+
+class UserProfile(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        return self.request.user
+
+
+class ForgotPassword(APIView):
+    permission_classes = ()
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+
+class RegisterUser(APIView):
+    permission_classes = ()
+    serializer_class = RegistrationSerializer
+
+    def post(self, request):
+        client = request.session['client']
+        serializer = RegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        new_user = serializer.save(commit=False)
+        validated_data = serializer.validated_data
+        password = validated_data.get('password')
+
+        try:  # create a user on the API
+            new_user.booker_id = client.create_user(new_user.email, password,
+                                                    new_user.first_name, new_user.last_name,
+                                                    new_user.phone_number)['CustomerID']
+            new_user.save()
+        except ValidationError as error:
+            raise exceptions.ValidationError(error.message)
+
+        #login
+
+        try:
+            print new_user.email
+            print password
+            client.login(new_user.email, password)
+            client.user = new_user
+        except Exception as e:
+            print e
+            msg = _('Unable to log in with provided credentials.')
+            raise exceptions.ValidationError(msg)
+
+        token, created = Token.objects.get_or_create(user=new_user)
+        return Response({'token': token.key})

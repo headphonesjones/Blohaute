@@ -2,7 +2,9 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
-                           PaymentView, available_times_for_day, unavailable_days, add_treatment_to_cart)
+                           PaymentView, available_times_for_day, unavailable_days, add_treatment_to_cart,
+                           AppointmentList, TimeSlotList, CreateAppointment)
+from accounts.views import UserProfile, ObtainAuthToken, ForgotPassword, RegisterUser
 
 urlpatterns = patterns(
     '',
@@ -26,4 +28,13 @@ urlpatterns = patterns(
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
     url(r'^(?P<slug>\w+)/add/$', add_treatment_to_cart, name='treatment_book'),
     url(r'^(?P<slug>\w+)/package/(?P<pk>\d+)/checkout/$', PackagePaymentView.as_view(), name='package_checkout'),
+
+    url(r'^api/auth/login/$', ObtainAuthToken.as_view()),
+    url(r'^api/auth/forgot_password/$', ForgotPassword.as_view()),
+    url(r'^api/auth/register/$', RegisterUser.as_view()),
+    url(r'^api/profile/$', UserProfile.as_view()),
+    url(r'^api/appointments/$', AppointmentList.as_view()),
+    url(r'^api/appointments/book/$', CreateAppointment.as_view()),
+    url(r'^api/availability/(?P<booker_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', TimeSlotList.as_view()),
+
 )

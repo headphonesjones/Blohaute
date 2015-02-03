@@ -1,3 +1,4 @@
+import datetime
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -12,6 +13,12 @@ from booking.forms import AddToCartForm, ContactForm, PaymentForm, CouponForm, Q
 from booking.models import Treatment, Package, Order, GenericItem
 import json
 from booking.booker_client.dates import parse_date
+from booking.serializers import AppointmentSerializer, BookingSerializer
+from rest_framework import generics, permissions, status, response
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.utils.six import BytesIO
+from rest_framework.parsers import JSONParser
 
 
 class TreatmentList(ListView):
@@ -108,6 +115,7 @@ def schedule(request):
         client = request.session['client']
         if schedule_form.is_valid():
             data = schedule_form.cleaned_data
+            print data
             order.itinerary = client.get_itinerary_for_slot_multiple(order.items, data['date'], data['time'])
             order.address = data['address']
             order.city = data['city']
@@ -252,3 +260,72 @@ def contact_view(request):
 def upcoming_view(request):
     client = request.session['client']
     return HttpResponse({'upcoming': client.get_upcoming()})
+
+
+class AppointmentList(generics.ListAPIView):
+    serializer_class = AppointmentSerializer
+
+    def get_queryset(self):
+        client = self.request.session['client']
+        return [appt for appt in client.get_appointments() if appt.status is not CANCELLED_STATUS]
+
+
+class CreateAppointment(APIView):
+    def post(self, *args, **kwargs):
+        client = self.request.session['client']
+        serializer = BookingSerializer(data=self.request.data)
+
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            date = validated_data.get('time')
+            time = date.strftime("%H:%M")
+            item = GenericItem(Treatment.objects.get(booker_id=validated_data.get('booker_id')))
+            try:
+                self.itinerary = client.get_itinerary_for_slot_multiple([item, ], date, time)
+            except:
+                print 'unable to get itinerary'
+
+            try:
+                self.payment_item = client.get_booker_credit_card_payment_item(validated_data.get('billing_zip_code'),
+                                                                          validated_data.get('card_code'),
+                                                                          validated_data.get('card_number'),
+                                                                          validated_data.get('expiry_month'),
+                                                                          validated_data.get('expiry_year'),
+                                                                          validated_data.get('name_on_card'))
+            except Exception as e:
+                print e
+                print 'unable to get payment item'
+
+            try:
+                appointment = client.book_appointment(
+                    self.itinerary,
+                    self.request.user.first_name,
+                    self.request.user.last_name,
+                    validated_data.get('street_address'),
+                    validated_data.get('city'),
+                    validated_data.get('state'),
+                    validated_data.get('zip_code'),
+                    self.request.user.email,
+                    self.request.user.phone_number,
+                    self.payment_item,
+                    None,
+                    None)
+            except Exception as e:
+                print e
+                print 'unable to book appointment'
+        else:
+            print serializer.errors
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TimeSlotList(APIView):
+
+    def get(self, *args, **kwargs):
+        client = self.request.session['client']
+        year = self.kwargs['year']
+        month = self.kwargs['month']
+        day = self.kwargs['day']
+        date = "%s-%s-%s" % (year, month, day)
+        item = GenericItem(Treatment.objects.get(booker_id=self.kwargs['booker_id']))
+        data = client.get_available_times_for_day([item, ], date)
+        return Response(data)

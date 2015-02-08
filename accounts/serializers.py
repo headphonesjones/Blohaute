@@ -2,16 +2,29 @@ from rest_framework import serializers
 from accounts.models import User
 
 
+class AppointmentItemSerializer(serializers.Serializer):
+    treatment = serializers.CharField(max_length=200, source='treatment.booker_id')
+    employee_name = serializers.CharField(max_length=200)
+
+
+class AppointmentSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=200)
+    start_datetime = serializers.DateTimeField()
+    can_cancel = serializers.BooleanField()
+    final_total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    treatments = AppointmentItemSerializer(many=True)
+
 class UserSerializer(serializers.ModelSerializer):
+    appointments = AppointmentSerializer(many=True)
+
     class Meta:
-        fields = ('booker_id', 'first_name', 'last_name', 'id', 'phone_number', 'photo', 'email')
+        fields = ('booker_id', 'first_name', 'last_name', 'id', 'phone_number', 'photo', 'email', 'appointments')
         model = User
 
 
-class ForgotPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ('email', 'first_name')
-        model = User
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=200)
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

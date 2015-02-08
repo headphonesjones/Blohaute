@@ -280,6 +280,7 @@ class CreateAppointment(APIView):
             date = validated_data.get('time')
             time = date.strftime("%H:%M")
             item = GenericItem(Treatment.objects.get(booker_id=validated_data.get('booker_id')))
+            print item
             try:
                 self.itinerary = client.get_itinerary_for_slot_multiple([item, ], date, time)
             except:
@@ -316,6 +317,23 @@ class CreateAppointment(APIView):
         else:
             print serializer.errors
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CancelAppointment(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, *args, **kwargs):
+        print kwargs
+        pk = kwargs['booker_id']
+        client = self.request.session['client']
+        appointment = client.get_appointment(pk)
+        if appointment.customer_id != client.customer_id:  #quick security check
+            raise Exception
+        response = client.cancel_appointment(pk)
+        print("cancel response on view is %s " % response)
+        if response['IsSuccess'] is False:
+            raise Exception
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class TimeSlotList(APIView):

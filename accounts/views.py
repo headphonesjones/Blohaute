@@ -403,7 +403,6 @@ class ObtainAuthToken(APIView):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        print serializer.validated_data
 
         try:
             client = self.request.session['client']
@@ -422,7 +421,18 @@ class UserProfile(generics.RetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
-        return self.request.user
+        client = self.request.session['client']
+        print 'client user is :'
+        print client.user
+
+        print 'request user is :'
+        print self.request.user
+        appointments = client.get_appointments()
+        user = self.request.user 
+        CANCELLED_STATUS = 6
+        user.appointments = [appt for appt in client.get_appointments() if  appt.status is not CANCELLED_STATUS]
+
+        return user
 
 
 class ForgotPassword(APIView):
@@ -430,7 +440,15 @@ class ForgotPassword(APIView):
 
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        print serializer.is_valid(raise_exception=True)
+        client = request.session['client']
+        validated_data = serializer.validated_data
+        password = validated_data.get('password')
+
+        client.send_reset_password_link(validated_data.get('email'),
+                                        validated_data.get('first_name'))
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class RegisterUser(APIView):

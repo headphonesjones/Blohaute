@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
                            PaymentView, available_times_for_day, unavailable_days, add_treatment_to_cart,
-                           AppointmentList, TimeSlotList, CreateAppointment)
+                           AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment)
 from accounts.views import UserProfile, ObtainAuthToken, ForgotPassword, RegisterUser
 
 urlpatterns = patterns(
@@ -35,6 +35,7 @@ urlpatterns = patterns(
     url(r'^api/profile/$', UserProfile.as_view()),
     url(r'^api/appointments/$', AppointmentList.as_view()),
     url(r'^api/appointments/book/$', CreateAppointment.as_view()),
+    url(r'^api/appointments/(?P<booker_id>\d+)/cancel/$', CancelAppointment.as_view()),
     url(r'^api/availability/(?P<booker_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', TimeSlotList.as_view()),
 
 )

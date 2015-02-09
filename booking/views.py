@@ -273,6 +273,8 @@ class AppointmentList(generics.ListAPIView):
 class CreateAppointment(APIView):
     def post(self, *args, **kwargs):
         client = self.request.session['client']
+        client.user = self.request.user
+        client.customer_id = client.user.customer_id
         serializer = BookingSerializer(data=self.request.data)
 
         if serializer.is_valid():
@@ -321,10 +323,12 @@ class CreateAppointment(APIView):
 
 class CancelAppointment(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    
     def post(self, *args, **kwargs):
-        print kwargs
         pk = kwargs['booker_id']
         client = self.request.session['client']
+        client.user = self.request.user
+        client.customer_id = client.user.customer_id
         appointment = client.get_appointment(pk)
         if appointment.customer_id != client.customer_id:  #quick security check
             raise Exception

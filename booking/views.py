@@ -274,7 +274,7 @@ class CreateAppointment(APIView):
     def post(self, *args, **kwargs):
         client = self.request.session['client']
         client.user = self.request.user
-        client.customer_id = client.user.customer_id
+        client.customer_id = client.user.booker_id
         serializer = BookingSerializer(data=self.request.data)
 
         if serializer.is_valid():
@@ -328,7 +328,7 @@ class CancelAppointment(APIView):
         pk = kwargs['booker_id']
         client = self.request.session['client']
         client.user = self.request.user
-        client.customer_id = client.user.customer_id
+        client.customer_id = client.user.booker_id
         appointment = client.get_appointment(pk)
         if appointment.customer_id != client.customer_id:  #quick security check
             raise Exception

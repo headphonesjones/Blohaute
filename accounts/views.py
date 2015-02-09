@@ -423,7 +423,7 @@ class UserProfile(generics.RetrieveAPIView):
     def get_object(self):
         client = self.request.session['client']
         client.user = self.request.user
-        client.customer_id = client.user.customer_id
+        client.customer_id = client.user.booker_id
         appointments = client.get_appointments()
         user = self.request.user 
         CANCELLED_STATUS = 6

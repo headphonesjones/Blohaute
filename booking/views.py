@@ -249,7 +249,7 @@ def contact_view(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             send_mail('New Message received from %s' % form.cleaned_data['name'],
-                      form.cleaned_data['message'], 'contact@blohaute.com',
+                      form.cleaned_data['message'], form.cleaned_data['email'],
                       ['amanda@blohaute.com'], fail_silently=True)
 
             messages.success(request, 'Thank you. Your message has been sent successfully')

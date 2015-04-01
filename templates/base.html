@@ -40,7 +40,7 @@
         <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
 
         <link rel="apple-touch-icon-precomposed" href="{% static 'images/apple-72.png' %}">
-
+        {% block extra_head %}{% endblock %}
     </head>
 
     <body>

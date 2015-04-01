@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block page_title %}Home{% endblock %}
+{% block extra_head %}<meta name="apple-itunes-app" content="app-id=890613530">{% endblock %}
 
 {% block content %}
 <div class="home_main_image">
@@ -186,7 +187,7 @@
         <div class="uk-grid">
 
             <div class="uk-width-1-1">
-                <img src="{% static 'images/home-banner.jpg' %}" alt="Blohaute App" />
+                <a  href="https://itunes.apple.com/us/app/blohaute/id890613530?mt=8&uo=4" target="itunes_store"><img src="{% static 'images/home-banner.jpg' %}" alt="Blohaute App" /></a>
             </div>
         </div>
     </div>

@@ -1,9 +1,7 @@
 from booking.booker_client.request import BookerRequest, BookerAuthedRequest
-from booking.models import Treatment, CustomerSeries
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import ValidationError
-from datetime import date
 from booking.booker_client.dates import *
 
 

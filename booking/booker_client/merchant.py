@@ -2,7 +2,7 @@ from booking.booker_client.request import BookerMerchantRequest
 from booking.models import Appointment, CustomerSeries
 from django.conf import settings
 from django.forms import ValidationError
-from datetime import timedelta, datetime, date
+from datetime import date
 from booking.booker_client.dates import *
 
 
@@ -64,7 +64,7 @@ class BookerMerchantMixin(object):
 
     def get_appointments(self):
         """
-        get a list of currrent and past appointments for a specific location and customer
+        get a list of current and past appointments for a specific location and customer
         """
         params = {
             'CustomerID': self.customer_id,
@@ -120,7 +120,6 @@ class BookerMerchantMixin(object):
             adjusted_customer.pop('GUID')
         adjusted_customer['ID'] = self.customer_id
 
-        # print("Adjusted customer is: %s" % adjusted_customer)
         treatments = []
         first_treatment = itinerary[0]
         for idx, treatment in enumerate(itinerary):
@@ -242,32 +241,7 @@ class BookerMerchantMixin(object):
             times.add(itin_time)
         return list(times)
 
-    def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
-        """
-        Returns a list of python dates that are unavailable during the specified range
-        """
-        end_date = start_date + timedelta(weeks=number_of_weeks)
-        days = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
-
-        current_date = start_date
-        treatment = treatments_requested[0].product
-        for i in range(0, number_of_weeks):
-            end_date = current_date + timedelta(weeks=1)
-            response = self.get_availability(treatment, start_date, end_date)
-            slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
-            dates_to_remove = [parse_date(slot['StartDateTime']).date() for slot in slots]
-            days = [day for day in days if day not in dates_to_remove]
-            current_date = end_date
-        print("days unavail is %s" % days)
-        return days
-
-    def get_unavailable_warm_period(self, treatments_requested):
-        """
-        Returns a list of python dates that are unavailable during the warm periond
-        """
-        return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
-
-    def get_itinerary_for_slot_multiple(self, treatments_requested, date, time_string):
+    def create_itenerary_for_treatments_and_time(self, treatments_requested, date, time_string):
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
         start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)

@@ -96,7 +96,7 @@ $(document).ready(function() {
         close: '',
         today: '',
         clear: '',
-        min: new  Date(),
+        min: new Date(),
 
         beforeSend: function() {
                 console.log("beforeSend fired");
@@ -157,16 +157,7 @@ $(document).ready(function() {
     var spinner = new Spinner().spin();
     $(spinner.el).appendTo(document.getElementById('appointment-loading'));
 
-    $.ajax({
-        type: 'GET',
-        url: "{% url 'reschedule_days' appt_id %}",
-        dataType: 'json',
-        success: function(data) {
-            picker.set('disable', data);
-            datesLoaded = true;
-            $('#appointment-loading').fadeOut();
-        }
-    });
+    $('#appointment-loading').hide();
 
     //make time and date borders red if there are errors
     if ($dateField.hasClass('uk-form-danger')) {

@@ -57,16 +57,6 @@ class TreatmentDetail(DetailView):
         return super(TreatmentDetail, self).get_context_data(**context)
 
 
-def unavailable_days(request, services_requested=None):
-    if services_requested is None:
-        services_requested = request.session['order'].items
-    print services_requested
-    client = request.session['client']
-    unavailable_days = client.get_unavailable_warm_period(services_requested)
-    unavailable_days = [[date.year, date.month - 1, date.day] for date in unavailable_days]
-    return HttpResponse(json.dumps(unavailable_days))
-
-
 def available_times_for_day(request, services_requested=None):
     time_slots = [True]
     if services_requested is None:
@@ -116,7 +106,7 @@ def schedule(request):
         if schedule_form.is_valid():
             data = schedule_form.cleaned_data
             print data
-            order.itinerary = client.get_itinerary_for_slot_multiple(order.items, data['date'], data['time'])
+            order.itinerary = client.create_itenerary_for_treatments_and_time(order.items, data['date'], data['time'])
             order.address = data['address']
             order.city = data['city']
             order.state = data['state']
@@ -267,7 +257,7 @@ class AppointmentList(generics.ListAPIView):
 
     def get_queryset(self):
         client = self.request.session['client']
-        return [appt for appt in client.get_appointments() if appt.status is not CANCELLED_STATUS]
+        return [appt for appt in client.get_appointments() if appt.status is not 6]
 
 
 class CreateAppointment(APIView):
@@ -284,7 +274,7 @@ class CreateAppointment(APIView):
             item = GenericItem(Treatment.objects.get(booker_id=validated_data.get('booker_id')))
             print item
             try:
-                self.itinerary = client.get_itinerary_for_slot_multiple([item, ], date, time)
+                self.itinerary = client.create_itenerary_for_treatments_and_time([item, ], date, time)
             except:
                 print 'unable to get itinerary'
 

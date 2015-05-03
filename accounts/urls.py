@@ -17,6 +17,5 @@ urlpatterns = patterns(
     url(r'^delete/', views.UserDelete.as_view(), name='delete_user'),
     url(r'^appointments/(?P<pk>\d+)/cancel/$', views.cancel_view, name='cancel'),
     url(r'^appointments/(?P<pk>\d+)/reschedule/$', views.reschedule, name='reschedule'),
-    url(r'^appointments/(?P<pk>\d+)/reschedule/days/$', views.reschedule_days, name='reschedule_days'),
     url(r'^appointments/(?P<pk>\d+)/reschedule/times/$', views.reschedule_times, name='reschedule_times'),
 )

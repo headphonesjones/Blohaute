@@ -30,7 +30,6 @@ from accounts.forms import (RegistrationForm, AuthenticationRememberMeForm, Pass
 from accounts.serializers import UserSerializer, ForgotPasswordSerializer, RegistrationSerializer
 from booking.forms import AvailableServiceFormset, RescheduleForm
 from booking.models import Treatment, GenericItem, Order
-from booking.views import unavailable_days, available_times_for_day
 from booking.views import available_times_for_day
 from changuito.proxy import CartDoesNotExist
 
@@ -330,7 +329,7 @@ def reschedule(request, pk):
         if form.is_valid():
             client = request.session['client']
             data = form.cleaned_data
-            itinerary = client.get_itinerary_for_slot_multiple(request.session['reschedule_items'], data['date'], data['time'])
+            itinerary = client.create_itenerary_for_treatments_and_time(request.session['reschedule_items'], data['date'], data['time'])
             print("got slot %s" % itinerary)
             payment_item = appointment.payment
             print("payment item is %s" % payment_item)
@@ -353,11 +352,6 @@ def reschedule(request, pk):
                 messages.error(request, "Your appointment could not be rescheduled. Please try again.")
     return render(request, 'appointment/reschedule.html',
                   {'appt_id': pk, 'form': form, 'appointment': appointment})
-
-
-def reschedule_days(request, pk):
-    return unavailable_days(request, request.session['reschedule_items'])
-
 
 def reschedule_times(request, pk):
     return available_times_for_day(request, request.session['reschedule_items'])

@@ -67,3 +67,19 @@ class BookerCustomerClientTest(TestCase):
             time_slots = slot['TreatmentTimeSlots']
             print "%s - %s" % (time_slots[0]['StartDateTime'], time_slots[1]['StartDateTime'])
             print "%s - %s" % (time_slots[0]['EmployeeID'], time_slots[1]['EmployeeID'])
+
+
+class BookerMerchantClientTest(TestCase):
+    def setUp(self):
+        self.client = BookerClient()
+
+    def test_get_available_itineraries_for_day_returns_formatted_itineraries(self):
+        treatment = Treatment.objects.create(booker_id=1500539)
+        start_date = datetime.now() + timedelta(days=7)
+        response = self.client.get_available_itineraries_for_day(treatment, start_date)
+        print response
+
+    def test_create_itinerary_for_treatment_and_time(self):
+        treatment = Treatment.objects.create(booker_id=1500539)
+        response = self.client.create_itinerary_for_treatment_and_time(treatment, datetime.now(), "15:00")
+        print response

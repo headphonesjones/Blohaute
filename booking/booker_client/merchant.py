@@ -2,7 +2,6 @@ from booking.booker_client.request import BookerMerchantRequest
 from booking.models import Appointment, CustomerSeries
 from django.conf import settings
 from django.forms import ValidationError
-from datetime import date
 from booking.booker_client.dates import *
 
 
@@ -74,17 +73,6 @@ class BookerMerchantMixin(object):
         appointment_results = self.process_response(response)
         result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
         return result
-
-    # def reschedule(self, appointment_id):
-    #     params = {
-    #         'CustomerID': self.customer_id,
-    #         'LocationID': self.location_id
-    #     }
-    #     response = BookerMerchantRequest('/appointment/move', self.merchant_token, params).put()
-    #     appointment_results = self.process_response(response)
-    #     result = [Appointment(itinerary) for itinerary in appointment_results['Results']]
-    #     print result
-    #     return result
 
     def get_appointment(self, id):
         """
@@ -202,6 +190,11 @@ class BookerMerchantMixin(object):
 
         return Appointment(appointment['Appointment'])
 
+
+    # The next 3 functions represent the original way of getting a list of times,
+    # and then creating an itinerary for that list of times.
+    # These will need to be left in place until the app is fully updated
+
     def get_availability(self, treatment, start_date, end_date, stylist_id=None):
         params = {
             'LocationID': self.location_id,
@@ -219,80 +212,32 @@ class BookerMerchantMixin(object):
         print response
         return self.process_response(response)
 
-    def get_available_times_for_day(self, treatments_requested, start_date, stylist_id=None):
+    def get_available_times_for_day(self, treatment, start_date, stylist_id=None):
         times = set()
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_date = start_date + timedelta(hours=6)  # time zone fix
+        start_date += timedelta(hours=6)  # time zone fix
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        end_date = end_date + timedelta(hours=6)  # time zone fix
-        # Only get the first service
-        treatment = treatments_requested[0].product
+        end_date += timedelta(hours=6)  # time zone fix
         response = self.get_availability(treatment, start_date, end_date, stylist_id)
-        print response
-        print response.text
+        slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
+        return [parse_as_time(parse_date(i['StartDateTime'])) for i in slots]
 
-        # When more than one employee, that 0 below goes away and we iterate
-        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            itin_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
-            emp_list = set()
-            for time_slot in itinerary_option['TreatmentTimeSlots']:
-                emp_list.add(time_slot['EmployeeID'])
-            times.add(itin_time)
-        return list(times)
-
-    def create_itenerary_for_treatments_and_time(self, treatments_requested, date, time_string):
+    def create_itinerary_for_treatment_and_time(self, treatment, start_date, time_string, stylist_id=None):
         time_string = time_string.split(" ")[0]
         new_time = map(int, time_string.split(":"))
-        start_date = datetime(date.year, date.month, date.day, new_time[0], new_time[1], 0, 0)
+        start_date = datetime(start_date.year, start_date.month, start_date.day, new_time[0], new_time[1], 0, 0)
         # TODO: end_date should be start date + duration of appt
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
         end_date = end_date + timedelta(hours=6)  # time zone fix
-        # print("start %r and end %r" % (start_date, end_date))
 
-        total_treatments = 0
-        for treatment in treatments_requested:
-            total_treatments += treatment.quantity
-        print("total treatments is %d" % total_treatments)
-        response = self.get_availability(treatments_requested[0].product, start_date, end_date)
-
-        # When more than one employee, that 0 below goes away and we iterate
+        response = self.get_availability(treatment, start_date, end_date, stylist_id)
         current_time_string = time_string
-        times_to_slot_by_employee = {}
-        employee_in_all_set = set()
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            # avail_time_slot = AvailableTimeSlot()
-            parsed_date = parse_date(itinerary_option['StartDateTime'])
-            itin_time = parse_as_time(parsed_date)
-            # parse_as_time(parse_date(itinerary_option['EndDateTime']))
-            print(itin_time)
-            if current_time_string == itin_time:
-                print("match")
-                new_date = parsed_date + timedelta(minutes=itinerary_option['TreatmentTimeSlots'][0]['Duration'])
-                emp_list = set()
-                for time_slot in itinerary_option['TreatmentTimeSlots']:
-                    emp_list.add(time_slot['EmployeeID'])
-                    times_to_slot_by_employee[current_time_string] = {time_slot['EmployeeID']: time_slot}
-                if len(times_to_slot_by_employee.keys()) == 1:
-                    employee_in_all_set.update(emp_list)
-                else:
-                    employee_in_all_set = employee_in_all_set.intersection(emp_list)
-                if len(times_to_slot_by_employee.keys()) == total_treatments:
-                    break
-                current_time_string = parse_as_time(new_date)
-            else:
-                print("nope %s vs %s" % (current_time_string, itin_time))
-        result = []
-        if len(employee_in_all_set) <= 0:
-            # what should we do here - this means no appointment is available with one employee for all services?
-            print("No timeslot actually had the same employee back to back. We don't handle this yet")
-        else:
-            employee = employee_in_all_set.pop()
-            for time in times_to_slot_by_employee:
-                by_emp = times_to_slot_by_employee.get(time)
-                for_emp = by_emp.get(employee)
-                result.append(for_emp)
-        return result
+            parsed_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
+            if current_time_string == parsed_time:
+                return itinerary_option['TreatmentTimeSlots']
+        return None
 
     def login_merchant(self):
         """

@@ -64,9 +64,9 @@ def available_times_for_day(request, services_requested=None):
 
     client = request.session['client']
     if int(request.POST['stylist']) > 0:
-        available_times = client.get_available_times_for_day(services_requested, request.POST['date'], request.POST['stylist'])
+        available_times = client.get_available_times_for_day(services_requested[0].product, request.POST['date'], request.POST['stylist'])
     else:
-        available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
+        available_times = client.get_available_times_for_day(services_requested[0].product, request.POST['date'])
     for time in available_times:
         time_parts = time.split(":")
         time_parts = map(int, time_parts)
@@ -106,12 +106,11 @@ def schedule(request):
         if schedule_form.is_valid():
             data = schedule_form.cleaned_data
             print data
-            order.itinerary = client.create_itenerary_for_treatments_and_time(order.items, data['date'], data['time'])
+            order.itinerary = client.create_itinerary_for_treatment_and_time(order.items[0].product, data['date'], data['time'])
             order.address = data['address']
             order.city = data['city']
             order.state = data['state']
             order.zip_code = data['zip_code']
-            # request.session['order'].notes = data['notes']
             return HttpResponseRedirect(reverse('payment'))
 
     return render(request, 'booking/schedule.html', {'schedule_form': schedule_form, 'series': series})
@@ -271,10 +270,9 @@ class CreateAppointment(APIView):
             validated_data = serializer.validated_data
             date = validated_data.get('time')
             time = date.strftime("%H:%M")
-            item = GenericItem(Treatment.objects.get(booker_id=validated_data.get('booker_id')))
-            print item
+            item = Treatment.objects.get(booker_id=validated_data.get('booker_id'))
             try:
-                self.itinerary = client.create_itenerary_for_treatments_and_time([item, ], date, time)
+                self.itinerary = client.create_itinerary_for_treatment_and_time(item, date, time)
             except:
                 print 'unable to get itinerary'
 
@@ -337,8 +335,8 @@ class TimeSlotList(APIView):
         month = self.kwargs['month']
         day = self.kwargs['day']
         date = "%s-%s-%s" % (year, month, day)
-        item = GenericItem(Treatment.objects.get(booker_id=self.kwargs['booker_id']))
-        data = client.get_available_times_for_day([item, ], date)
+        data = client.get_available_times_for_day(
+            Treatment.objects.get(booker_id=self.kwargs['booker_id']), date)
         return Response(data)
 
 

@@ -323,13 +323,13 @@ def reschedule(request, pk):
     if appointment.customer_id != client.customer_id:  # quick security check
         raise Exception
 
-    request.session['reschedule_items'] = [GenericItem(treatment.treatment) for treatment in appointment.treatments]
+    request.session['reschedule_items'] = appointment.treatments[0]
     if request.method == 'POST':
         form = RescheduleForm(request.POST)
         if form.is_valid():
             client = request.session['client']
             data = form.cleaned_data
-            itinerary = client.create_itenerary_for_treatments_and_time(request.session['reschedule_items'], data['date'], data['time'])
+            itinerary = client.create_itinerary_for_treatment_and_time(request.session['reschedule_items'], data['date'], data['time'])
             print("got slot %s" % itinerary)
             payment_item = appointment.payment
             print("payment item is %s" % payment_item)

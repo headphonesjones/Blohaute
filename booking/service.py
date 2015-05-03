@@ -81,7 +81,12 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
             return self.process_response(new_request.delete())
 
     def process_response(self, response):
-        formatted_response = response.json()
+        try:
+            formatted_response = response.json()
+        except ValueError:
+            print "No JSON in the response"
+            print response
+
         error_code = formatted_response.get('ErrorCode', 0)
         if error_code == 1000:
             return self.resubmit_denied_request(response)

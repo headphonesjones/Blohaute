@@ -61,3 +61,11 @@ bin/
 local_settings.py
 .myenv
 media/
+.idea/.name
+.idea/blohaute.iml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/scopes/scope_settings.xml

@@ -16,6 +16,9 @@ class BookerCustomerMixin(object):
     customer_id = None
 
     def get_server_information(self):
+        """
+        Returns server time zone information
+        """
         response = BookerRequest('/server_information', self.token, {}).get()
         return self.process_response(response)
 
@@ -50,7 +53,7 @@ class BookerCustomerMixin(object):
 
     def get_customer_series(self, treatment_id=None):
         """
-        Gets a list series for the customer, optionally filtered by a specific treatmetn
+        Gets a list series for the customer, optionally filtered by a specific treatment
         Replaced by the get customer series method in merchant.
         """
         series_list = []
@@ -188,15 +191,8 @@ class BookerCustomerMixin(object):
         print response.text
         return self.process_response(response)
 
-    # def reschedule_appointment(self):
-
-    def get_availability(self, treatments_requested, start_date, end_date):
-        treatments = []
-        for treatment in treatments_requested:
-            if isinstance(treatment.product, Treatment):
-                for i in range(0, treatment.quantity):
-                    treatments.append({'TreatmentID': treatment.product.booker_id})
-
+    def get_availability_multiservice(self, treatments_requested, start_date, end_date):
+        treatments = [{'TreatmentID': treatment.booker_id} for treatment in treatments_requested]
         itinerary = [{'IsPackage': False,
                       'Treatments': treatments}]
 
@@ -206,38 +202,15 @@ class BookerCustomerMixin(object):
                   'LocationID': self.location_id}
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
-        # print(response)
+        print(response.text)
         return self.process_response(response)
 
-    def get_unavailable_days_in_range(self, treatments_requested, start_date, number_of_weeks):
-        """
-        Returns a list of python dates that are unavailable during the specified range
-        """
-        end_date = start_date + timedelta(weeks=number_of_weeks)
-        days = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
-
-        current_date = start_date
-        for i in range(0, number_of_weeks):
-            end_date = current_date + timedelta(weeks=1)
-            response = self.get_availability(treatments_requested, current_date, end_date)
-            slots = response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']
-            dates_to_remove = [parse_date(slot['StartDateTime']).date() for slot in slots]
-            days = [day for day in days if day not in dates_to_remove]
-            current_date = end_date
-        return days
-
-    def get_unavailable_warm_period(self, treatments_requested):
-        """
-        Returns a list of python dates that are unavailable during the warm periond
-        """
-        return self.get_unavailable_days_in_range(treatments_requested, date.today(), 3)
-
-    def get_available_times_for_day(self, treatments_requested, start_date):
+    def get_available_times_for_day_multiservice(self, treatments_requested, start_date):
         times = []
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        response = self.get_availability(treatments_requested, start_date, end_date)
+        response = self.get_availability_multiservice(treatments_requested, start_date, end_date)
 
         # When more than one employee, that 0 below goes away and we iterate
         for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:

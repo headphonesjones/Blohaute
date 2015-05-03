@@ -128,7 +128,8 @@ $(document).ready(function() {
                     url: '{% url "timesforday" %}',
                     dataType: 'json',
                     data: {
-                        date: $idCheckoutHidden.val()
+                        date: $idCheckoutHidden.val(),
+                        stylist: $('#id_stylist').val()
                     },
                     success: function(data) {
                         timePicker.set('disable', data);
@@ -165,7 +166,31 @@ $(document).ready(function() {
     if ($idCheckoutTime.hasClass('uk-form-danger')) {
         $("#id_checkout-time_root").find('.picker__holder').addClass('uk-form-danger');
     }
+    //Select stylists
+    var stylistSelect = $('#id_stylist');
+    stylistSelect.prop('disabled', true);
+    $.ajax({
+        type: 'GET',
+        url: "{% url 'available_stylists' %}",
+        dataType: 'json',
+        success: function(data) {
+        $.each(data, function(key, value) {
+            stylistSelect
+         .append($("<option></option>")
+         .attr("value",value["ID"])
+         .text(value["name"]));
 
+        });
+            $('#id_stylist option:first').text('Any Stylist');
+            stylistSelect.prop('disabled', false);
+        }
+    });
+    stylistSelect.change(function() {
+        //Trigger the date selection if we have a date selected already
+        if (picker.get('select')) {
+            picker.set('select', picker.get('select'));
+        }
+    });
 });
 
 </script>

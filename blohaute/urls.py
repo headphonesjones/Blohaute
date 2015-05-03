@@ -2,8 +2,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
-                           PaymentView, available_times_for_day, unavailable_days, add_treatment_to_cart,
-                           AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment)
+                           PaymentView, available_times_for_day, add_treatment_to_cart,
+                           AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment, AvailableStylistList)
 from accounts.views import UserProfile, ObtainAuthToken, ForgotPassword, RegisterUser
 
 urlpatterns = patterns(
@@ -23,7 +23,6 @@ urlpatterns = patterns(
     url(r'^styles/', TemplateView.as_view(template_name="styles.html"), name='styles'),
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
     url(r'^timesforday/', available_times_for_day, name='timesforday'),
-    url(r'^unavailable_days/', unavailable_days, name='unavailable_days'),
 
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
     url(r'^(?P<slug>\w+)/add/$', add_treatment_to_cart, name='treatment_book'),
@@ -37,5 +36,6 @@ urlpatterns = patterns(
     url(r'^api/appointments/book/$', CreateAppointment.as_view()),
     url(r'^api/appointments/(?P<booker_id>\d+)/cancel/$', CancelAppointment.as_view()),
     url(r'^api/availability/(?P<booker_id>\d+)/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', TimeSlotList.as_view()),
+    url(r'^api/availability/stylists/$', AvailableStylistList.as_view(), name="available_stylists")
 
 )

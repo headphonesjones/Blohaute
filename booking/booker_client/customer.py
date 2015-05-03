@@ -51,28 +51,6 @@ class BookerCustomerMixin(object):
         response = BookerRequest('/series', self.token, params).post()
         return self.process_response(response)['Results']
 
-    def get_customer_series(self, treatment_id=None):
-        """
-        Gets a list series for the customer, optionally filtered by a specific treatment
-        Replaced by the get customer series method in merchant.
-        """
-        series_list = []
-        params = {
-            'LocationID': self.location_id,
-            'CustomerID': self.customer_id
-        }
-        if treatment_id is not None:
-            params['TreatmentID'] = treatment_id
-        response = BookerAuthedRequest('/customer/series', self.customer_token, params).post()
-        customer_series = self.process_response(response)['Results']
-        for series in customer_series:
-            print(series)
-            series_list.append(CustomerSeries(series['SeriesID'], series['Series']['Name'],
-                               series['QuantityRemaining'], series['QuantityOriginal'],
-                               series['ExpirationDate'], series['SeriesRedeemableItems']))
-
-        return series_list
-
     def get_employees(self):
         """
         Returns employees for a spa/location
@@ -182,15 +160,6 @@ class BookerCustomerMixin(object):
         response = BookerRequest('/customer/%s' % self.customer_id, self.token, params).delete()
         return self.process_response(response)
 
-    def cancel_appointment(self, appointment_id):
-        params = {
-            'ID': int(appointment_id)
-        }
-        print appointment_id
-        response = BookerAuthedRequest('/appointment/cancel', self.customer_token, params).put()
-        print response.text
-        return self.process_response(response)
-
     def get_availability_multiservice(self, treatments_requested, start_date, end_date):
         treatments = [{'TreatmentID': treatment.booker_id} for treatment in treatments_requested]
         itinerary = [{'IsPackage': False,
@@ -202,35 +171,8 @@ class BookerCustomerMixin(object):
                   'LocationID': self.location_id}
 
         response = BookerRequest('/availability/multiservice', self.token, params).post()
-        print(response.text)
+        # print(response)
         return self.process_response(response)
-
-    def get_available_times_for_day_multiservice(self, treatments_requested, start_date):
-        times = []
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=0)
-        response = self.get_availability_multiservice(treatments_requested, start_date, end_date)
-
-        # When more than one employee, that 0 below goes away and we iterate
-        for itinerary_option in response['ItineraryTimeSlotsLists'][0]['ItineraryTimeSlots']:
-            # avail_time_slot = AvailableTimeSlot()
-            itin_time = parse_as_time(parse_date(itinerary_option['StartDateTime']))
-            # avail_time_slot.raw_time = itin_time
-            # avail_time_slot.pretty_time = parse_as_time(itin_time)
-            # print("timeslot: %s and item %s" % (avail_time_slot.pretty_time, itinerary_option))
-            emp_list = set()
-            for time_slot in itinerary_option['TreatmentTimeSlots']:
-                emp_list.add(time_slot['EmployeeID'])
-            # print(" slot %s with employee list %r" % (avail_time_slot.pretty_time, emp_list))
-
-            # if len(emp_list) == 1:
-
-                # avail_time_slot.single_employee_slots.append(itinerary_option)
-            times.append(itin_time)
-            # elif len(emp_list) == 2:  # Just 2 for now to handle services where one employee doesnt do both only use the singles for now
-            #     avail_time_slot.multiple_employee_slots.append(itinerary_option)
-        return times
 
     def get_itinerary_for_slot(self, treatments_requested, date, time_string):
         time_string = time_string.split(" ")[0]

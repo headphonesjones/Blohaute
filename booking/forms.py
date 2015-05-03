@@ -89,6 +89,9 @@ class ScheduleServiceForm(forms.Form):
     state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
     zip_code = USZipCodeField()
 
+    CHOICES = (('0', 'Loading Stylists',), )
+
+    stylist = forms.CharField(widget=forms.Select(choices=CHOICES))
     date = forms.DateField()
     time = forms.CharField()
 

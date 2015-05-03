@@ -6,6 +6,9 @@
 		<div class="loading-bg"></div>
 		<div class="loading-text">Checking Availability</div>
 	</div>
+    <div class="uk-width-small-10-10">Choose Your Stylist
+    	{% render_field schedule_form.stylist %}
+    </div>
 
 	<div class="uk-width-small-6-10" id="booking-datepicker">Pick Date
 		{% render_field schedule_form.date %}

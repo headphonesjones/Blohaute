@@ -1,4 +1,4 @@
-import datetime
+import json
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
@@ -11,14 +11,11 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from booking.forms import AddToCartForm, ContactForm, PaymentForm, CouponForm, QuickBookForm, ScheduleServiceForm
 from booking.models import Treatment, Package, Order, GenericItem
-import json
 from booking.booker_client.dates import parse_date
-from booking.serializers import AppointmentSerializer, BookingSerializer
+from booking.serializers import AppointmentSerializer, BookingSerializer, StylistListSerializer
 from rest_framework import generics, permissions, status, response
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.utils.six import BytesIO
-from rest_framework.parsers import JSONParser
 
 
 class TreatmentList(ListView):
@@ -76,7 +73,10 @@ def available_times_for_day(request, services_requested=None):
         services_requested = request.session['order'].items
 
     client = request.session['client']
-    available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
+    if int(request.POST['stylist']) > 0:
+        available_times = client.get_available_times_for_day(services_requested, request.POST['date'], request.POST['stylist'])
+    else:
+        available_times = client.get_available_times_for_day(services_requested, request.POST['date'])
     for time in available_times:
         time_parts = time.split(":")
         time_parts = map(int, time_parts)
@@ -339,7 +339,6 @@ class CancelAppointment(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class TimeSlotList(APIView):
 
     def get(self, *args, **kwargs):
@@ -351,3 +350,20 @@ class TimeSlotList(APIView):
         item = GenericItem(Treatment.objects.get(booker_id=self.kwargs['booker_id']))
         data = client.get_available_times_for_day([item, ], date)
         return Response(data)
+
+
+class AvailableStylistList(generics.ListAPIView):
+    serializer_class = StylistListSerializer
+
+    def get_queryset(self):
+        client = self.request.session['client']
+        employees = client.get_employees()
+        return employees['Results']
+
+
+class AppointmentList(generics.ListAPIView):
+    serializer_class = AppointmentSerializer
+
+    def get_queryset(self):
+        client = self.request.session['client']
+        return [appt for appt in client.get_appointments() if appt.status is not 6]  #CANCELLED_STATUS

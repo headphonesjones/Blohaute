@@ -21,3 +21,11 @@ class BookingSerializer(serializers.Serializer):
     city = serializers.CharField()
     state = serializers.CharField()
     zip_code = serializers.CharField()
+
+
+class StylistListSerializer(serializers.Serializer):
+    name = serializers.SerializerMethodField()
+    ID = serializers.IntegerField()
+
+    def get_name(self, obj):
+        return obj['FirstName']

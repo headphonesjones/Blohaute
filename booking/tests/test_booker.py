@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.test import TestCase
 from settings.models import Setting
-from service import BookerClient
+from booking.service import BookerClient
 from booking.models import Treatment
 
 

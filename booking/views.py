@@ -29,7 +29,7 @@ def add_treatment_to_cart(request, slug):
             treatment = form.cleaned_data['treatment']
             cart = request.cart
             cart.add(treatment, treatment.price, 1)
-            return HttpResponseRedirect(reverse('cart'))
+            return HttpResponseRedirect(reverse('schedule'))
     return HttpResponseRedirect(reverse('treatment_detail', args=[slug]))
 
 

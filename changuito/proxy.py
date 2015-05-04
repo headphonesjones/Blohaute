@@ -65,6 +65,7 @@ class CartProxy:
 
     def add(self, product, unit_price, quantity=1, series_id=None):
         #mode switch when adding items
+        self.clear()
         if series_id and self.cart.needs_payment():
             self.clear()
         if series_id is None and self.cart.has_schedule_only_items():

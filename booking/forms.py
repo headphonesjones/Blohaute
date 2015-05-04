@@ -85,8 +85,8 @@ class AvailableServiceFormset(BaseAvailableServiceFormset):
 
 class ScheduleServiceForm(forms.Form):
     address = forms.CharField()
-    city = forms.CharField()
-    state = USStateField(widget=forms.TextInput(attrs={'maxlength': 2}))
+    city = forms.CharField(widget=forms.Select(choices=(('Chicago', 'Chicago',), )))
+    state = USStateField(widget=forms.Select(choices=(('IL', 'IL',), )))
     zip_code = USZipCodeField()
 
     CHOICES = (('0', 'Loading Stylists',), )

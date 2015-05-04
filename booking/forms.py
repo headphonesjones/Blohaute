@@ -3,7 +3,7 @@ from django.forms.formsets import formset_factory
 from localflavor.us.forms import USZipCodeField, USStateField
 from booking.models import Package, Membership, Treatment
 from booking.fields import CreditCardField, ExpiryDateField, VerificationValueField
-
+from booking.zip_codes import ZIP_CODE_LIST
 
 class QuickBookForm(forms.Form):
     treatment = forms.ModelChoiceField(queryset=Treatment.objects.all(),
@@ -90,10 +90,16 @@ class ScheduleServiceForm(forms.Form):
     zip_code = USZipCodeField()
 
     CHOICES = (('0', 'Loading Stylists',), )
-
     stylist = forms.CharField(widget=forms.Select(choices=CHOICES))
     date = forms.DateField()
     time = forms.CharField()
+
+    def clean_zip_code(self):
+        data = self.cleaned_data['zip_code']
+
+        if int(data) not in ZIP_CODE_LIST:
+            raise forms.ValidationError("Sorry! Service is currently limited to Chicago")
+        return data
 
 
 class ContactForm(forms.Form):

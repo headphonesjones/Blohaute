@@ -422,7 +422,7 @@ class UserProfile(generics.RetrieveAPIView):
         appointments = client.get_appointments()
         user = self.request.user 
         CANCELLED_STATUS = 6
-        user.appointments = [appt for appt in client.get_appointments() if  appt.status is not CANCELLED_STATUS]
+        user.appointments = [appt for appt in appointments if appt.status is not CANCELLED_STATUS]
 
         return user
 

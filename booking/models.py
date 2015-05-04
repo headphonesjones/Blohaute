@@ -163,8 +163,11 @@ class AppointmentItem(BookerModel):
             self.treatment_id = data['Treatment']['ID']
             self.treatment_name = data['Treatment']['Name']
             self.employee_name = data['Employee']['FirstName']
-            self.treatment = Treatment.objects.get(booker_id=self.treatment_id)
-            print 'creaeted appointment id %d' % self.appointment_id
+            try:
+                self.treatment = Treatment.objects.get(booker_id=self.treatment_id)
+            except Treatment.DoesNotExist:
+                self.treatment = Treatment(booker_id=self.treatment_id)
+            print 'created appointment id %d' % self.appointment_id
 
     def __unicode__(self):
         return "%s at %s on %s" % (self.treatment.name, self.datetime.strftime('H:i'), self.datetime.strftime('yyyy-mm-dd'))

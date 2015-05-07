@@ -335,8 +335,11 @@ class TimeSlotList(APIView):
         month = self.kwargs['month']
         day = self.kwargs['day']
         date = "%s-%s-%s" % (year, month, day)
+
+        stylist = self.request.QUERY_PARAMS.get('stylist', None)
+
         data = client.get_available_times_for_day(
-            Treatment.objects.get(booker_id=self.kwargs['booker_id']), date)
+            Treatment.objects.get(booker_id=self.kwargs['booker_id']), date, stylist)
         return Response(data)
 
 

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<div class="bh-position bh-position-light bh-position-title">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1>Products</h1>
+        </div>
+    </div>
+</div>
+
+<div class="bh-position">
+    <div class="uk-container uk-container-center">
+        <article class="uk-article">
+            <div class="uk-margin" data-shufflr-init="{animation:'fadeIn'}">
+                <div class="uk-grid uk-grid-small uk-grid-width-small-1-3 uk-grid-width-medium-1-3 shufflr-collection">
+<div data-button_background_color="9f3247" data-button_text_color="ffffff" data-buy_button_text="Buy now" data-display_size="regular" data-embed_type="product" data-has_image="true" data-product_handle="blohaute-braids" data-product_name="BloHaute Braids" data-redirect_to="product" data shop="xile-beauty.myshopify.com"></div>
+
+<script type="text/javascript">
+	document.getElementById('ShopifyEmbedScript') || document.write('<script type="text/javascript" src="https://widgets.shopifyapps.com/assets/widgets/embed/client.js" id="ShopifyEmbedScript"><\/script>');
+</script>
+
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+{% endblock %}

@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
                            PaymentView, available_times_for_day, add_treatment_to_cart,
-                           AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment, AvailableStylistList)
+                           AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment, AvailableStylistList,
+                           product_list)
 from accounts.views import UserProfile, ObtainAuthToken, ForgotPassword, RegisterUser
 
 urlpatterns = patterns(
@@ -14,7 +15,7 @@ urlpatterns = patterns(
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^contact/', contact_view, name='contact'),
     url(r'^stylists/', TemplateView.as_view(template_name="stylists.html"), name='stylists'),
-    url(r'^products/', TemplateView.as_view(template_name="products.html"), name='products'),
+    url(r'^products/', product_list, name='products'),
 
     url(r'^cart/', include('changuito.urls')),
     url(r'^schedule/', schedule, name='schedule'),

@@ -16,6 +16,7 @@ from booking.serializers import AppointmentSerializer, BookingSerializer, Stylis
 from rest_framework import generics, permissions, status, response
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
 class TreatmentList(ListView):
@@ -358,3 +359,8 @@ class AppointmentList(generics.ListAPIView):
     def get_queryset(self):
         client = self.request.session['client']
         return [appt for appt in client.get_appointments() if appt.status is not 6]  #CANCELLED_STATUS
+
+
+@xframe_options_exempt
+def product_list(request):
+    return render(request, 'products.html')

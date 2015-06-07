@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load markdown_deux_tags %}
+
+{% block page_title %}{{ post.title }}{% endblock %}
+
+{% block extra_head %}
+<link id="theme-css" rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<div class="bh-position bh-position-light bh-position-title">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="blog-title"><a href="{% url 'post_list' %}">Blohaute Blog</a></h1>
+        </div>
+    </div>
+</div>
+
+    <div class="uk-container uk-container-center post-template">
+        <article class="uk-article post post-detail">
+                <header>
+                    <h1 class="post-title">{{ post.title }}</h1>
+                    <time class="post-date" datetime="2015-05-24">{{ post.publication_date|date:"F j Y"|upper }}</time> {% if post.tags %} on {% for tag in post.tags.all %}<a href="{% url 'tag_post_list' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+
+                </header>
+                <section class="post-excerpt">
+                    <p>
+                        {{ post.content|markdown }}
+                    </p>
+                </section>
+                <footer>
+                    <h4><a href="{% url 'author_post_list' post.author.pk %}">{{ post.author.get_full_name }}</a></h4>
+                    <div>Read <a href="{% url 'author_post_list' post.author.pk %}">more posts</a> by this author.</div>
+                    <a class="uk-icon-twitter" href="https://twitter.com/share?text={{ post.title|urlencode }};url={{ post.get_absolute_url }}" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                </a>
+                </footer>
+
+        </article>
+    </div>
+
+{% endblock %}

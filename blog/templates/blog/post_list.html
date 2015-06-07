@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load markdown_deux_tags %}
+
+{% block page_title %}Blog {% if subtitle %}: {{ subtitle }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+<link id="theme-css" rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bh-position bh-position-light bh-position-title">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            {% if subtitle %}
+                <h1 class="blog-title"><a href="{% url 'post_list' %}">Blohaute Blog</a></h1>
+            {% else %}
+                <h1>Blohaute Blog</h1>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+    <div class="uk-container uk-container-center">
+            {% if subtitle %}
+                <div class="blog-subtitle">
+                    <h2 class="uk-align-center uk-text-center">{{ subtitle }}</h2>
+                    <h4 class="uk-align-center uk-text-center">{{ posts.count }} post{{ posts|pluralize }}</h4>
+                </div>
+            {% endif %}
+
+            {% for post in posts %}
+            <article class="uk-article post">
+                <header>
+                    <h2 class="post-title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+                </header>
+                <section class="post-excerpt">
+                        {{ post.content|markdown|truncatewords:25 }} <a class="read-more" href="{{ post.get_absolute_url }}">»</a></p>
+                </section>
+                <footer>
+                    <a href="{% url 'author_post_list' post.author.pk %}">{{ post.author.get_full_name }}</a>
+                    {% if post.tags %} on {% for tag in post.tags.all %}<a href="{% url 'tag_post_list' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+                    <time class="post-date" datetime="2015-05-24">{{ post.publication_date|date:"F j Y"|upper }}</time>
+                </footer>
+        </article>
+            {% endfor %}
+
+    </div>
+
+{% endblock %}

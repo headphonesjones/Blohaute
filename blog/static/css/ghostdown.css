@@ -284,14 +284,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 }
 }
 .features .editor .editorwrap {
-	padding: 40px 0;
 	margin: 0 auto;
-	position: relative;
-	height: 450px
 }
 .features .editor .entry-markdown {
 	left: 0;
-	padding-left: 15px;
 }
 .features .editor .entry-preview {
 	right: 0;
@@ -303,8 +299,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	box-sizing: border-box;
 	width: 50%;
 	position: absolute;
-	bottom: 0;
-	top: 0;
+	bottom: 40px;
+	top: 120px;
 	background: #fff
 }
 .features .editor .entry-markdown .floatingheader a, .features .editor .entry-preview .floatingheader a {
@@ -426,6 +422,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 	z-index: 100;
 	height: 40px;
 	line-height: 40px;
+	border-bottom: 1px solid #edece4;
+	padding-left: 20px;
 }
 
 .publish-bar{

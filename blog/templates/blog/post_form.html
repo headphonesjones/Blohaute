@@ -3,64 +3,76 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>{{ post.title|default_if_none:"New Post" }}</title>
+    <meta charset="UTF-8">
+    <title>{{ post.title|default_if_none:"New Post" }}</title>
 
-	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-	 <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
-	<!-- Ghosty-ness markdowny-ness -->
-	<script src="{% static 'js/ghostdown.js' %}"></script>
-{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
+    <!-- Ghosty-ness markdowny-ness -->
+    <script src="{% static 'js/ghostdown.js' %}"></script>
+    {#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
     <link href="{% static 'css/ghostdown.css' %}" media="all" rel="stylesheet">
     <link href="{% static 'css/blog-admin.css' %}" media="all" rel="stylesheet">
-	<script src="{% static 'js/jquery.ghostdown.js' %}"></script>
+    <link href="{% static 'css/jquery.tagsinput.css' %}" media="all" rel="stylesheet">
+    <link href="{% static 'css/font-awesome.min.css' %}" media="all" rel="stylesheet">
+
+    <script src="{% static 'js/jquery.ghostdown.js' %}"></script>
+    <script src="{% static 'js/jquery.tagsinput.min.js' %}"></script>
 </head>
 <body>
-    <nav class="global-nav">
+<nav class="global-nav">
 
-    </nav>
-    <nav class="mobile-nav">
+</nav>
+<nav class="mobile-nav">
 
-    </nav>
-    <main class="page-content">
+</nav>
+<main class="page-content">
 
+    <form class="features" action="." method="post">
         <header class="post-title">
             {% render_field form.title placeholder="Your Post Title" %}
         </header>
 
-	<div class="features">
-
-		<section class="editor">
-			<div class="outer">
-				<div class="editorwrap">
-					<section class="entry-markdown">
-						<header class="floatingheader">Markdown</header>
-						<section class="entry-markdown-content">
+        {% csrf_token %}
+        <section class="editor">
+            <div class="outer">
+                <div class="editorwrap">
+                    <section class="entry-markdown">
+                        <header class="floatingheader">Markdown</header>
+                        <section class="entry-markdown-content">
                             {{ form.content }}
-						</section>
-					</section>
-					<section class="entry-preview active">
-						<header class="floatingheader">
-						  &nbsp;&nbsp; Preview <span class="entry-word-count">0 words</span>
-						</header>
-						<section class="entry-preview-content">
-							<div class="rendered-markdown"></div>
-						</section>
-					</section>
-				</div>
-			</div>
-		</section>
+                        </section>
+                    </section>
+                    <section class="entry-preview active">
+                        <header class="floatingheader">
+                            &nbsp;&nbsp; Preview <span class="entry-word-count">0 words</span>
+                        </header>
+                        <section class="entry-preview-content">
+                            <div class="rendered-markdown"></div>
+                        </section>
+                    </section>
+                </div>
+            </div>
+        </section>
+        <footer class="publish-bar">
+            <span class="tag-icon">
+            <i class="fa fa-tag"></i>
 
-	</div>
-    </main>
-    <footer class="publish-bar">
+            </span>
+                {{ form.tags }}
+            <input type="submit"/>
+        </footer>
+    </form>
+</main>
 
-    </footer>
-	<script>
-		$(document).ready(function () {
-    		$(".editor").ghostDown();
-		});
-	</script>
+{{ form.errors }}
+<script>
+    $(document).ready(function () {
+        $(".editor").ghostDown();
+        $('#id_tags').tagsInput();
+
+    });
+</script>
 </body>
 </html>

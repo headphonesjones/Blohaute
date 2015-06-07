@@ -49,4 +49,4 @@ class BlogPostCreateView(CreateView):
 class BlogPostEditView(UpdateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ('title', 'content')
+    fields = ('title', 'content', 'tags')

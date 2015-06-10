@@ -22,7 +22,7 @@
 </head>
 <body>
 <nav class="global-nav">
-
+    <a class="logout-link" href="{% url 'logout' %}"><i class="fa fa-user"></i> Logout</a>
 </nav>
 <nav class="mobile-nav">
 
@@ -58,20 +58,24 @@
         <footer class="publish-bar">
             <span class="tag-icon">
             <i class="fa fa-tag"></i>
-
             </span>
-                {{ form.tags }}
-            <input type="submit"/>
+            {{ form.tags }}
+            {% if post.pk %}
+             <a href="{% url 'delete_post' post.pk %}" class="button delete-button">Delete</a>
+            {% endif %}
+            <button class="button submit-button" type="submit">Save</button>
         </footer>
     </form>
 </main>
-
 {{ form.errors }}
+{{ form.non_field_errors }}
 <script>
     $(document).ready(function () {
         $(".editor").ghostDown();
         $('#id_tags').tagsInput();
-
+        $('.tag-icon').click(function() {
+           $("#id_tags_tag").focus();
+        });
     });
 </script>
 </body>

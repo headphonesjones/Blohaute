@@ -83,9 +83,112 @@ input:focus {
   line-height: 40px;
   font-size: 20px;
   padding-left: 10px;
-  pointer-events: none;
+  transition: 1s;
+}
+.tag-icon:hover {
+  color: #fff;
 }
 
 #id_tags_tagsinput {
   padding-left: 40px;
+}
+
+.content-list {
+  width: 33%;
+  padding: 0;
+  position: absolute;
+  bottom: 0;
+  top: 60px;
+  left: 0;
+  border-right: #edece4 1px solid;
+  background: #fff;
+  overflow-y: scroll;
+  margin: 0;
+}
+
+.content-list li {
+  list-style-type: none;
+  border-bottom: 1px solid #e8eaeb;
+}
+
+.content-list li a {
+    padding: 10px 20px 0;
+  text-decoration: none;
+  color: #000;
+  display: block;
+}
+
+.content-list li.selected {
+  background-color: #f7f7f3;
+}
+
+
+.post-preview {
+    width: 67%;
+    position: absolute;
+    left:33%;
+  top: 60px;
+  bottom: 0;
+  padding: 0 20px 0;
+  overflow-y: scroll;
+}
+
+.global-nav a {
+  margin-left: 30px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  color: rgba(255,255,255,.7);
+  text-transform: uppercase;
+  border-radius: 4px;
+  white-space: nowrap;
+  -webkit-transition: color .5s,background .5s;
+  transition: color .5s,background .5s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.global-nav a:hover {
+  color: #fff;
+  background: #0e0f10;
+}
+
+.edit-button {
+  position: absolute;
+  top: 80px;
+  right: 30px;
+  text-decoration: none;
+  color: black;
+  border-radius: 3px;
+  border: 1px solid #e8eaeb;
+  padding: 5px 10px;
+}
+
+.logout-link {
+  float: right;
+  margin-right: 30px;
+}
+.button {
+  border-radius: 3px;
+  padding: 6px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.submit-button {
+  position: absolute;
+  bottom: 4px;
+  right: 15px;
+  background-color: #5BA4E5;
+  border: 1px solid #4598e2;
+}
+
+.delete-button {
+  position: absolute;
+  bottom: 4px;
+  right: 95px;
+  background-color: #aa1111;
+  border: 1px solid transparent;
+  text-decoration: none;
+  padding: 3px 15px;
 }

@@ -9,11 +9,11 @@ class Post(models.Model):
     author = models.ForeignKey(User)
     content = models.TextField()
     image = models.ImageField(upload_to='blog/images/%Y/%m/%d', blank=True)
-    publication_date = models.DateTimeField()
+    publication_date = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ('-publication_date', )

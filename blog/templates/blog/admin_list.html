@@ -1,0 +1,56 @@
+{% load staticfiles %}
+{% load humanize %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title|default_if_none:"New Post" }}</title>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    {#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
+    <link href="{% static 'css/ghostdown.css' %}" media="all" rel="stylesheet">
+    <link href="{% static 'css/blog-admin.css' %}" media="all" rel="stylesheet">
+    <link href="{% static 'css/font-awesome.min.css' %}" media="all" rel="stylesheet">
+
+</head>
+<body>
+<nav class="global-nav">
+    <a href="{% url 'create_post' %}"><i class="fa fa-plus"></i> Create Post</a>
+    <a class="logout-link" href="{% url 'logout' %}"><i class="fa fa-user"></i> Logout</a>
+</nav>
+<nav class="mobile-nav">
+
+</nav>
+<main class="page-content">
+    <ul class="content-list">
+        {% for post in posts %}
+            <li {% if forloop.first %} class="selected" {% endif  %}>
+                <a href="{% url 'blog_post_preview' post.slug %}">
+                    <h3>{{ post.title }}</h3>
+                    <h4>Published {{ post.publication_date|naturaltime }}</h4>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="post-preview">
+
+        {% include "blog/post_preview.html" with post=initial_post %}
+    </div>
+    <a class="edit-button" href="{% url 'edit_post' initial_post.pk %}">Edit Post</a>
+</main>
+<script type="text/javascript">
+    $(document).ready(function() {
+       $('.content-list a').click(function(e) {
+           e.preventDefault();
+           $('.content-list li').removeClass('selected');
+           $(this).parent().addClass('selected');
+           $.get($(this).attr("href"), function( data ) {
+               $( ".post-preview" ).html( data );
+           });
+       }) ;
+    });
+</script>
+</body>
+</html>

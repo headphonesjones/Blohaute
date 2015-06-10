@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load markdown_deux_tags %}
+<article class="uk-article post post-detail">
+    <header>
+        <h1>{{ post.title }}</h1>
+    </header>
+    <section class="post-excerpt">
+        <p>
+            {{ post.content|markdown }}
+        </p>
+    </section>
+</article>

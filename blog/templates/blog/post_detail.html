@@ -33,7 +33,7 @@
                 <footer>
                     <h4><a href="{% url 'author_post_list' post.author.pk %}">{{ post.author.get_full_name }}</a></h4>
                     <div>Read <a href="{% url 'author_post_list' post.author.pk %}">more posts</a> by this author.</div>
-                    <a class="uk-icon-twitter" href="https://twitter.com/share?text={{ post.title|urlencode }};url={{ post.get_absolute_url }}" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+{#                    <a class="uk-icon-twitter" href="https://twitter.com/share?text={{ post.title|urlencode }};url={{ post.get_absolute_url }}" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">#}
                 </a>
                 </footer>
 

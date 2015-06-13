@@ -83,7 +83,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'changuito.middleware.CartMiddleware',
-    'booking.middleware.BookerMiddleware'
+    'booking.middleware.BookerMiddleware',
+    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

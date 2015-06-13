@@ -6,7 +6,9 @@ from booking.booker_client.dates import *
 from booking.booker_client.merchant import BookerMerchantMixin
 from booking.booker_client.customer import BookerCustomerMixin
 from booking.booker_client.request import BookerRequest, BookerAuthedRequest, BookerMerchantRequest
+import logging
 
+logger = logging.getLogger(__name__)
 
 class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
     token = None
@@ -83,11 +85,31 @@ class BookerClient(BookerMerchantMixin, BookerCustomerMixin, object):
     def process_response(self, response):
         try:
             formatted_response = response.json()
+
         except ValueError:
+            logger.error('There was no json in the response', exc_info=True, extra={
+                # Optionally pass a request and we'll grab any information we can
+                'response': response,
+                'original_request': response.original_request
+            })
+
             print "No JSON in the response"
             print response
 
         error_code = formatted_response.get('ErrorCode', 0)
+
+        if error_code != 0:
+            logger.error('failed to process response', exc_info=True, extra={
+                # Optionally pass a request and we'll grab any information we can
+                'response': formatted_response,
+                'request': response.original_request,
+                'original_params': response.original_request.original_params,
+                'params': response.original_request.params,
+                'path': response.original_request.path,
+                'data': response.original_request.data,
+            })
+
+
         if error_code == 1000:
             return self.resubmit_denied_request(response)
         if error_code == 200:

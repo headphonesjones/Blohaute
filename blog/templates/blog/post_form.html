@@ -60,6 +60,8 @@
             <i class="fa fa-tag"></i>
             </span>
             {{ form.tags }}
+            <a href="{% url 'upload_blog_image' %}" class="button image-button" target="_blank"><i class="fa fa-plus"></i> Image</a>
+
             {% if post.pk %}
              <a href="{% url 'delete_post' post.pk %}" class="button delete-button">Delete</a>
             {% endif %}

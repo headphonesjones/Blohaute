@@ -33,3 +33,6 @@ class PostImage(models.Model):
 
     def __unicode__(self):
         return self.image.url
+
+    def get_absolute_url(self):
+        return reverse('blog_image_link', kwargs={'pk': self.pk})

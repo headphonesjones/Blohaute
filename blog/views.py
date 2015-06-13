@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from accounts.models import User
-from blog.models import Post
+from blog.models import Post, PostImage
 from taggit.models import Tag
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
@@ -94,3 +94,14 @@ class BlogPostEditView(SuperuserRequiredMixin, UpdateView):
 class DeleteBlogPost(SuperuserRequiredMixin, DeleteView):
     model = Post
     success_url = reverse_lazy('blog_admin')
+
+
+class PostImageUploader(SuperuserRequiredMixin, CreateView):
+    model = PostImage
+    fields = ('image',)
+    template_name = 'blog/image_uploader.html'
+
+
+class PostImageLink(DetailView):
+    model = PostImage
+    template_name = 'blog/image_link.html'

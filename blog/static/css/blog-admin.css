@@ -192,3 +192,15 @@ input:focus {
   text-decoration: none;
   padding: 3px 15px;
 }
+
+.image-button {
+  position: absolute;
+  bottom: 4px;
+  right: 185px;
+  background-color: #5BA4E5;
+  border: 1px solid #4598e2;
+  border: 1px solid transparent;
+  text-decoration: none;
+  padding: 3px 15px;
+
+}

@@ -136,6 +136,7 @@ REST_FRAMEWORK = {
 
 BLOHAUTE_LOCATION_ID = '29033'
 
+LOGIN_URL = '/account/login/'
 try:
     from local_settings import *
 except ImportError:

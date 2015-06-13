@@ -38,7 +38,7 @@
 
         {% include "blog/post_preview.html" with post=initial_post %}
     </div>
-    <a class="edit-button" href="{% url 'edit_post' initial_post.pk %}">Edit Post</a>
+    <a class="edit-button" href="{% if initial_post %}{% url 'edit_post' initial_post.pk %}{% endif %}">Edit Post</a>
 </main>
 <script type="text/javascript">
     $(document).ready(function() {

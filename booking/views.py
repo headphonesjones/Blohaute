@@ -93,7 +93,7 @@ class BridalServices(FormView):
                   ['nbrizend@gmail.com'], fail_silently=True)
         messages.success(self.request,
                          'Thank you. Your request has been sent successfully')
-
+        return super(BridalServices, self).form_valid(form)
 
 def available_times_for_day(request, services_requested=None):
     time_slots = [True]

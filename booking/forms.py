@@ -111,3 +111,11 @@ class ContactForm(forms.Form):
 class RescheduleForm(forms.Form):
     date = forms.DateField()
     time = forms.CharField()
+
+
+class BridalServicesForm(forms.Form):
+    name = forms.CharField()
+    email = forms.EmailField()
+    date_of_wedding = forms.DateField()
+    number_of_bridesmaids = forms.CharField()
+    location = forms.CharField()

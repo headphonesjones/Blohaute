@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 from booking.views import (TreatmentList, TreatmentDetail, contact_view, schedule, PackagePaymentView,
                            PaymentView, available_times_for_day, add_treatment_to_cart,
                            AppointmentList, TimeSlotList, CreateAppointment, CancelAppointment, AvailableStylistList,
-                           product_list)
+                           product_list, BridalServices)
 from accounts.views import UserProfile, ObtainAuthToken, ForgotPassword, RegisterUser
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^book/', TreatmentList.as_view(template_name="services.html"), name='book'),
     url(r'^timesforday/', available_times_for_day, name='timesforday'),
 
+    url(r'^bridal_services/$', BridalServices.as_view(), name='bridal_services'),
 
     url(r'^(?P<slug>\w+)/$', TreatmentDetail.as_view(), name='treatment_detail'),
     url(r'^(?P<slug>\w+)/add/$', add_treatment_to_cart, name='treatment_book'),

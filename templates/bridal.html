@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% block page_title %}Bridal Services{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+    <div class="bh-position bh-position-light bh-position-title">
+        <div class="uk-container uk-container-center">
+            <div class="uk-panel">
+                {% if subtitle %}
+                {% else %}
+                    <h1>Blohaute Bridal Services</h1>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="uk-container uk-container-center">
+        <article class="uk-article uk-grid uk-margin-top uk-margin-bottom">
+            <div class="uk-width-medium-1-2">
+                <span class="bh-dropcap">N</span>ow introducing Blohaute Bridal!
+                We send our highly trained team of stylists right
+                to your door for your big day.
+                <p>Interested in booking Blohaute for your wedding day hair?
+                    Inquire below to check
+
+                    our availability & rates.
+
+                <p><em>Please Note:</em> Bridal Hair Services cannot be booked
+                    through our website or app,
+
+                    and must be set up via email. Bridal Pricing differs from
+                    regular Blohaute services.
+
+                <div class="uk-panel uk-panel-box">
+                    <h2>It's your day to look stunning. We can help make it a
+                        guarantee.</h2>
+
+                    <form class="uk-form" method="post" action=".">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        <div class="uk-width-medium-1-1 uk-margin-top">
+                            <label class="uk-form-label"
+                                   for="name">{{ form.name.label }}</label>
+                            {% if form.name.errors %}
+                                {% render_field form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                {{ form.name.errors }}
+                            {% else %}
+                                {% render_field form.name placeholder="Enter your name..." class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+                        </div>
+                        <div class="uk-width-medium-1-1 uk-margin-top">
+                            <label class="uk-form-label"
+                                   for="name">{{ form.email.label }}</label>
+                            {% if form.email.errors %}
+                                {% render_field form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                {{ form.email.errors }}
+                            {% else %}
+                                {% render_field form.email placeholder="Enter your email address..." class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+                        </div>
+                        <div class="uk-width-medium-1-1 uk-margin-top">
+                            <label class="uk-form-label"
+                                   for="date_of_wedding">{{ form.date_of_wedding.label }}</label>
+                            {% if form.date_of_wedding.errors %}
+                                {% render_field form.date_of_wedding placeholder="When is the big day?" class+="uk-form-large uk-width-1-1 uk-form-danger uk-hidden" %}
+                                {{ form.date_of_wedding.errors }}
+                            {% else %}
+                                {% render_field form.date_of_wedding placeholder="When is the big day?" class+="uk-form-large uk-width-1-1 uk-hidden" %}
+                            {% endif %}
+
+                        </div>
+                        <div class="uk-width-medium-1-1 uk-margin-top">
+                            <label class="uk-form-label"
+                                   for="number_of_bridesmaids">{{ form.number_of_bridesmaids.label }}</label>
+                            {% if form.number_of_bridesmaids.errors %}
+                                {% render_field form.number_of_bridesmaids placeholder="How many people need hair styling?" class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                {{ form.number_of_bridesmaids.errors }}
+                            {% else %}
+                                {% render_field form.number_of_bridesmaids placeholder="How many people need hair styling?" class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+
+                        </div>
+                        <div class="uk-width-medium-1-1 uk-margin-top">
+                            <label class="uk-form-label"
+                                   for="location">{{ form.location.label }}</label>
+                            {% if form.location.errors %}
+                                {% render_field form.location placeholder="Where are we doing this?" class+="uk-form-large uk-width-1-1 uk-form-danger" %}
+                                {{ form.location.errors }}
+                            {% else %}
+                                {% render_field form.location placeholder="Where are we doing this?" class+="uk-form-large uk-width-1-1" %}
+                            {% endif %}
+                        </div>
+                        <div class="uk-width-1-1 uk-margin-top">
+                            <button class="uk-button bh-button" type="submit">
+                                Send
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <div class="uk-width-medium-1-2">
+                <img src="{% static 'images/bridal1_web.jpg' %}"/>
+                <img src="{% static 'images/bridal3_web.jpg' %}" class="uk-margin-top"/>
+            </div>
+
+        </article>
+
+    </div>
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static 'js/pickadate/picker.js' %}"></script>
+<script src="{% static 'js/pickadate/picker.date.js' %}"></script>
+<script type="text/javascript">
+ $(document).ready(function() {
+        var datePicker = $('#id_date_of_wedding').pickadate({
+            disable: null,
+            format: 'ddd mmmm d yyyy',
+            formatSubmit: 'yyyy-mm-dd',
+            hiddenName: true,
+            close: '',
+            today: '',
+            clear: '',
+            min: new Date()
+        });
+ });
+</script>
+{% endblock %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.date.css' %}">
+<link rel="stylesheet" href="{% static 'js/pickadate/themes/classic.time.css' %}">
+{% endblock %}

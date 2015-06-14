@@ -1,0 +1,8 @@
+A new bridal services request has been received.
+The entered information is below:
+
+Name: {{name}}
+Email Address: {{email}}
+Wedding Date: {{date}}
+Number of Bridesmaids: {{bridesmaids}}
+Location: {{location}}

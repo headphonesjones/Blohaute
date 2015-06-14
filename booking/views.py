@@ -91,7 +91,7 @@ class BridalServices(FormView):
 
         send_mail('Bridal services request from %s' % form.cleaned_data['name'],
                   template.render(d), form.cleaned_data['email'],
-                  ['nbrizend@gmail.com'], fail_silently=True)
+                  ['hello@blohaute.com'], fail_silently=True)
         messages.success(self.request,
                          'Thank you. Your request has been sent successfully')
         return super(BridalServices, self).form_valid(form)

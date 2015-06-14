@@ -74,6 +74,7 @@ class TreatmentDetail(DetailView):
 class BridalServices(FormView):
     form_class = BridalServicesForm
     template_name = 'bridal.html'
+    success_url = reverse('bridal_services')
 
     def form_invalid(self, form):
         messages.error(self.request,

@@ -17,6 +17,8 @@ from rest_framework import generics, permissions, status, response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.views.decorators.clickjacking import xframe_options_exempt
+import logging
+logger = logging.getLogger()
 
 
 class TreatmentList(ListView):
@@ -267,7 +269,7 @@ class CreateAppointment(APIView):
         client.customer_id = client.user.booker_id
         serializer = BookingSerializer(data=self.request.data)
 
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             validated_data = serializer.validated_data
             date = validated_data.get('time')
             time = date.strftime("%H:%M")
@@ -303,8 +305,15 @@ class CreateAppointment(APIView):
                     None,
                     None)
             except Exception as e:
+                logger.warning("booking an appointment failed: " + e,exc_info=True)
                 print e
                 print 'unable to book appointment'
+                if isinstance(e.detail, (list, dict)):
+                    data = exc.detail
+                else:
+                    data = {'detail': e.detail}
+
+                return Response(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             print serializer.errors
         return Response(status=status.HTTP_204_NO_CONTENT)

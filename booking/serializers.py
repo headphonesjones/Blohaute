@@ -22,6 +22,14 @@ class BookingSerializer(serializers.Serializer):
     state = serializers.CharField()
     zip_code = serializers.CharField()
 
+    def validate_card_number(self, value):
+        """
+        check that the credit card number is a valid visa, mastercard, discover card or JCB
+        """
+        if value[0] not in ["4", "5", "6"] or (value[0] == "3" and len(value) == 15):
+            raise serializers.ValidationError("Credit card must be Visa, Mastercard, Discover, or JCB")
+        return value
+
 
 class StylistListSerializer(serializers.Serializer):
     name = serializers.SerializerMethodField()

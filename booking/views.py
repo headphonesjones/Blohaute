@@ -3,7 +3,7 @@ import logging
 
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
@@ -74,7 +74,7 @@ class TreatmentDetail(DetailView):
 class BridalServices(FormView):
     form_class = BridalServicesForm
     template_name = 'bridal.html'
-    success_url = reverse('bridal_services')
+    success_url = reverse_lazy('bridal_services')
 
     def form_invalid(self, form):
         messages.error(self.request,

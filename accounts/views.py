@@ -52,9 +52,14 @@ def register(request):
             new_user = form.save(commit=False)
 
             try:  # create a user on the API
-                new_user.booker_id = client.create_user(new_user.email, request.POST['password1'],
-                                                        new_user.first_name, new_user.last_name,
-                                                        new_user.phone_number)['CustomerID']
+                data = client.create_user(new_user.email, request.POST['password1'],
+                                          new_user.first_name, new_user.last_name,
+                                          new_user.phone_number)
+
+                new_user.booker_id = data.get('CustomerID', None)
+                if not new_user.booker_id:
+                    raise ValidationError(data['ErrorMessage'],
+                                          code=data['ErrorCode'])
                 new_user.save()
             except ValidationError as error:
                 form.add_error(None, error)
@@ -442,7 +447,6 @@ class ForgotPassword(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-
 class RegisterUser(APIView):
     permission_classes = ()
     serializer_class = RegistrationSerializer
@@ -456,9 +460,14 @@ class RegisterUser(APIView):
         password = validated_data.get('password')
 
         try:  # create a user on the API
-            new_user.booker_id = client.create_user(new_user.email, password,
-                                                    new_user.first_name, new_user.last_name,
-                                                    new_user.phone_number)['CustomerID']
+            data = client.create_user(new_user.email, request.POST['password1'],
+                                      new_user.first_name, new_user.last_name,
+                                      new_user.phone_number)
+
+            new_user.booker_id = data.get('CustomerID', None)
+            if not new_user.booker_id:
+                raise ValidationError(data['ErrorMessage'],
+                                      code=data['ErrorCode'])
             new_user.save()
         except ValidationError as error:
             raise exceptions.ValidationError(error.message)

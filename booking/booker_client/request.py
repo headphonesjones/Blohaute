@@ -27,9 +27,10 @@ class BookerRequest(Request):
         prepped = self.prepare()
         s = Session()
         # print(self.data)
-        print(self.url)
-        h = s.get_adapter(url)
+        h = HTTPAdapter()
         h.max_retries = 10
+        s.mount('http://', h)
+        s.mount('https://', h)
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self

@@ -1,7 +1,7 @@
 import json
 from requests import Request, Session
+from requests.adapters import HTTPAdapter
 from django.conf import settings
-
 
 class BookerRequest(Request):
     """

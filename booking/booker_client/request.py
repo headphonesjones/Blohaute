@@ -28,6 +28,8 @@ class BookerRequest(Request):
         s = Session()
         # print(self.data)
         print(self.url)
+        h = s.get_adapter(url)
+        h.max_retries = 10
         response = s.send(prepped)
         response.needs_user_token = self.needs_user_token
         response.original_request = self

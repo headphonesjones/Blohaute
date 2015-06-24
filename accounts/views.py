@@ -460,7 +460,7 @@ class RegisterUser(APIView):
         password = validated_data.get('password')
 
         try:  # create a user on the API
-            data = client.create_user(new_user.email, request.POST['password1'],
+            data = client.create_user(new_user.email, password,
                                       new_user.first_name, new_user.last_name,
                                       new_user.phone_number)
 

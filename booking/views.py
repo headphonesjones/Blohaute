@@ -102,11 +102,16 @@ def available_times_for_day(request, services_requested=None):
         services_requested = request.session['order'].items
 
     client = request.session['client']
-    if int(request.POST['stylist']) > 0:
-        available_times = client.get_available_times_for_day(
-            services_requested[0].product, request.POST['date'],
-            request.POST['stylist'])
-    else:
+    try:
+        if int(request.POST['stylist']) > 0:
+            available_times = client.get_available_times_for_day(
+                services_requested[0].product, request.POST['date'],
+                request.POST['stylist'])
+        else:
+            available_times = client.get_available_times_for_day(
+                services_requested[0].product, request.POST['date'])
+    except ValueError:
+        # Do the same as else if the value of stylist is an empty string
         available_times = client.get_available_times_for_day(
             services_requested[0].product, request.POST['date'])
     for time in available_times:

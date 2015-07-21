@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.core.mail import send_mail
 from booking.models import Appointment, AppointmentManager
-
+from accounts.fields import CaseInsensitiveEmailField
 
 class UserManager(BaseUserManager):
 
@@ -36,7 +36,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
+    email = CaseInsensitiveEmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30)
     last_name = models.CharField(_('last name'), max_length=30)
     phone_number = models.CharField(_('phone number'), max_length=30)

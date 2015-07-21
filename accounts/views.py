@@ -70,7 +70,7 @@ def register(request):
             client.login(new_user.email, request.POST['password1'])
 
             # authenticate and login the user locally
-            new_user = authenticate(email=request.POST['email'],
+            new_user = authenticate(email=request.POST['email'].lower(),
                                     password=request.POST['password1'])
             auth_login(request, new_user)
             try:

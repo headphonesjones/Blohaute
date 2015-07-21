@@ -41,6 +41,7 @@ class PasswordValidationMixin(object):
             )
         return password2
 
+
 class RegistrationForm(forms.ModelForm, PasswordValidationMixin):
 
     error_messages = {
@@ -64,14 +65,14 @@ class RegistrationForm(forms.ModelForm, PasswordValidationMixin):
         fields = ("phone_number", "email", "first_name", "last_name")
 
     def clean_email(self):
-        users = User.objects.filter(email=self.cleaned_data.get('email')).count()
+        email = self.cleaned_data.get('email').lower()
+        users = User.objects.filter(email=email).count()
         if users > 0:
             raise forms.ValidationError(
                 self.error_messages['existing_account'],
                 code='existing_account'
             )
-        return self.cleaned_data.get('email')
-
+        return email
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -157,7 +158,7 @@ class SetPasswordForm(forms.Form):
         return password2
 
     def save(self, commit=True):
-        self.user = User.objects.get(email=self.cleaned_data['email'])
+        self.user = User.objects.get(email__iexact=self.cleaned_data['email'])
         self.user.set_password(self.cleaned_data['new_password1'])
         if commit:
             self.user.save()
@@ -202,7 +203,7 @@ class EmailUpdateForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'New Email Address'}))
 
     def clean_email(self):
-        users = User.objects.filter(email=self.cleaned_data.get('email')).count()
+        users = User.objects.filter(email__iexact=self.cleaned_data.get('email')).count()
         if users > 0:
             raise forms.ValidationError(
                 self.error_messages['existing_account'],

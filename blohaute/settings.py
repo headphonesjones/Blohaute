@@ -84,7 +84,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'changuito.middleware.CartMiddleware',
     'booking.middleware.BookerMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+    #'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 
 )
 

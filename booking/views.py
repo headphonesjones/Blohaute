@@ -377,12 +377,11 @@ class CreateAppointment(APIView):
                     None,
                     None)
             except Exception as e:
-                logger.warning("booking an appointment failed: " + e,
-                               exc_info=True)
+                logger.exception("booking an appointment failed")
                 print e
                 print 'unable to book appointment'
                 if isinstance(e.detail, (list, dict)):
-                    data = exc.detail
+                    data = e.detail
                 else:
                     data = {'detail': e.detail}
 
